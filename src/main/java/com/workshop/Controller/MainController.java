@@ -185,7 +185,7 @@ public class MainController {
 
 	@GetMapping("/Lgatpuri")
 	public String Lgatpuri() {
-		return " Lgatpuri";
+		return "Lgatpuri";
 	}
 
 	@GetMapping("/Alibag")
@@ -366,7 +366,7 @@ public class MainController {
 		return "Surat";
 	}
 
-	@GetMapping("/Indore")
+	@GetMapping("/Corporate-Cab-Services-Indoree")
 	public String Indor() {
 		return "Indor";
 	}

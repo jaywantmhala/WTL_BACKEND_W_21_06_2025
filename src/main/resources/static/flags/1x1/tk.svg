@@ -321,7 +321,7 @@ Password                                </label><div class="form-group mb-3">
 <span class="la la-lock input-icon"></span>
 <input class="form-control" type="password" id="password" placeholder="Type your password"></div></div><div class="d-flex align-items-center justify-content-between"><div class="custom-checkbox mb-0">
 <label for="rememberme" class="inline">
-<input name="rememberme" type="checkbox" id="rememberme" value="forever" /> Remember me                                    </label></div><p class="forgot-password edd-lost-password">
+<input name="rememberme" type="checkbox" id="rememberme" value="forever" /> Remember me                                    </label></div><p class="/word edd-lost-password">
 <a href="https://techydevs.com/gate/?action=lostpassword" title="Lost Password">
 Forgot Password?                                    </a></p></div><div class="btn-box pt-3">
 <button id="techydevs-pop-login-submit" class="btn td-btn w-100" type="submit">

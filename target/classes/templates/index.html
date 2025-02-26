@@ -57,7 +57,7 @@
   <style>
     .call-button {
       position: fixed;
-      bottom: 50px;
+      bottom: 20px;
       right: 20px;
       display: inline-block;
       background-color: rgb(19, 141, 19);
@@ -78,6 +78,13 @@
     }
   </style>
   <style>
+
+    body{
+     box-sizing: border-box;
+     margin: 0;
+     padding: 0;
+     overflow-x: hidden;
+    }
     /* Base styles for the card and city section */
     .card {
       background-color: white;
@@ -633,12 +640,12 @@
   <!-- ================================
          END HEADER AREA
 ================================= -->
-  <hr>
+ 
 
   <!-- ================================
     START HERO-WRAPPER AREA
 ================================= -->
-  <section class="hero-wrapper" id="Form">
+  <section class="hero-wrapper p-0" id="Form">
     <div class="hero-box hero-bg1">
       <!-- <span class="line-bg line-bg1"></span>
         <span class="line-bg line-bg2"></span>
@@ -2702,19 +2709,19 @@
 
   <!-- Bootstrap 5 CDN (Add this if not included in your project) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <section class="offercard2">
+  <!-- <section class="offercard2">
     <div class="card2" style="width: 100%;box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);background-color: #f0f0f0;">
 
-      <h2 style="color:black">Unbeatable Deal : Get <span th:text="${discountPercentage}"></span>Discount</h2>
+    - <h2 style="color:black">Unbeatable Deal : Get <span th:text="${discountPercentage}"></span>Discount</h2>
       <div class="offer" id="offer">
-		<h2 style="color:black">Special Offers <span th:text="${discountPercentage}"></span></h2>
+		<h2 style="color:black">Special Offers <span th:text="${discountPercentage}"></span></h2> -->
 
 <!--        <p>Special Offers <span th:text="${discountPercentage}" ></span></p>
--->      </div>
-    </div>
+      </div>-->
+    <!-- </div> -->
 
-  </section>
-  <section class="section-container">
+  <!-- </section> --> 
+  <!-- <section class="section-container">
     <div class="card-container3">
       <div class="card3">
         <img src="https://aimcabbooking.com/admin/wtl-image/offer-image.jpg" alt="Special Cab Offer">
@@ -2730,7 +2737,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
   <script>
     // Check if there is an offer and display it if available
     const offerDiv = document.getElementById("offer");
@@ -2847,7 +2854,7 @@
               <div class="hotel-card-carousel carousel-action">
                 <div class="card-item mb-0">
                   <div class="card-img">
-                    <a href="hotel-single.html" class="d-block">
+                    <a href="/" class="d-block">
                       <img src="images/img1.jpg" alt="hotel-img" />
                     </a>
                     <span class="badge">Bestseller</span>
@@ -2862,7 +2869,7 @@
                   </div>
                   <div class="card-body">
                     <h3 class="card-title">
-                      <a href="hotel-single.html"
+                      <a href="/"
                         >The Millennium Hilton New York</a
                       >
                     </h3>
@@ -2887,7 +2894,7 @@
                
                 <div class="card-item mb-0">
                   <div class="card-img">
-                    <a href="hotel-single.html" class="d-block">
+                    <a href="/" class="d-block">
                       <img src="images/img2.jpg" alt="hotel-img" />
                     </a>
                     <div
@@ -2901,7 +2908,7 @@
                   </div>
                   <div class="card-body">
                     <h3 class="card-title">
-                      <a href="hotel-single.html"
+                      <a href="/"
                         >Best Western Grant Park Hotel</a
                       >
                     </h3>
@@ -2926,7 +2933,7 @@
                 
                 <div class="card-item mb-0">
                   <div class="card-img">
-                    <a href="hotel-single.html" class="d-block">
+                    <a href="/" class="d-block">
                       <img src="images/img3.jpg" alt="hotel-img" />
                     </a>
                     <span class="badge">Featured</span>
@@ -2941,7 +2948,7 @@
                   </div>
                   <div class="card-body">
                     <h3 class="card-title">
-                      <a href="hotel-single.html"
+                      <a href="/"
                         >Hyatt Regency Maui Resort & Spa</a
                       >
                     </h3>
@@ -2966,7 +2973,7 @@
                 <!-- end card-item -->
   <!-- <div class="card-item mb-0">
                   <div class="card-img">
-                    <a href="hotel-single.html" class="d-block">
+                    <a href="/" class="d-block">
                       <img src="images/img4.jpg" alt="hotel-img" />
                     </a>
                     <span class="badge">Popular</span>
@@ -2981,7 +2988,7 @@
                   </div>
                   <div class="card-body">
                     <h3 class="card-title">
-                      <a href="hotel-single.html"
+                      <a href="/"
                         >Four Seasons Resort Maui at Wailea</a
                       >
                     </h3>
@@ -3006,7 +3013,7 @@
           
                 <div class="card-item mb-0">
                   <div class="card-img">
-                    <a href="hotel-single.html" class="d-block">
+                    <a href="/" class="d-block">
                       <img src="images/img5.jpg" alt="hotel-img" />
                     </a>
                     <div
@@ -3020,7 +3027,7 @@
                   </div>
                   <div class="card-body">
                     <h3 class="card-title">
-                      <a href="hotel-single.html"
+                      <a href="/"
                         >Ibis Styles London Heathrow</a
                       >
                     </h3>
@@ -3045,7 +3052,7 @@
             
                 <div class="card-item mb-0">
                   <div class="card-img">
-                    <a href="hotel-single.html" class="d-block">
+                    <a href="/" class="d-block">
                       <img src="images/img6.jpg" alt="hotel-img" />
                     </a>
                     <div
@@ -3059,7 +3066,7 @@
                   </div>
                   <div class="card-body">
                     <h3 class="card-title">
-                      <a href="hotel-single.html"
+                      <a href="/"
                         >Hotel Europe Saint Severin Paris</a
                       >
                     </h3>
@@ -3086,7 +3093,7 @@
 
   <!-- <div class="card-item mb-0">
                   <div class="card-img">
-                    <a href="hotel-single.html" class="d-block">
+                    <a href="/" class="d-block">
                       <img src="images/img1.jpg" alt="hotel-img" />
                     </a>
                     <span class="badge">Bestseller</span>
@@ -3101,7 +3108,7 @@
                   </div>
                   <div class="card-body">
                     <h3 class="card-title">
-                      <a href="hotel-single.html"
+                      <a href="/"
                         >The Millennium Hilton New York</a
                       >
                     </h3>
@@ -3126,7 +3133,7 @@
               -->
   <!-- <div class="card-item mb-0">
                   <div class="card-img">
-                    <a href="hotel-single.html" class="d-block">
+                    <a href="/" class="d-block">
                       <img src="images/img2.jpg" alt="hotel-img" />
                     </a>
                     <div
@@ -3140,7 +3147,7 @@
                   </div>
                   <div class="card-body">
                     <h3 class="card-title">
-                      <a href="hotel-single.html"
+                      <a href="/"
                         >Best Western Grant Park Hotel</a
                       >
                     </h3>
@@ -3179,7 +3186,7 @@
   <!-- ================================
     START DESTINATION AREA
 ================================= -->
-   <section class="destination-area section--padding">
+   <section class="destination-area ">
       <div class="container">
         <div class="row align-items-center">
           <div class="col-lg-8">
@@ -3439,7 +3446,7 @@
                 <div class="card-body">
                   <!-- <p class="card-meta">Compact SUV</p> -->
                   <h3 class="card-title">
-                    <a href="car-single.html">Luxury</a>
+                    <a href="/">Luxury</a>
                   </h3>
                   <!-- <div class="card-rating">
                       <span class="badge text-white">4.4/5</span>
@@ -3480,7 +3487,7 @@
               <div class="card-item car-card mb-0">
                 <div class="card-img">
                   <a href="/" class="d-block">
-                    <img src="images/corolla.jpg" alt="car-img" />
+                    <img src="images/i20.jpeg" alt="car-img" />
                   </a>
                   <div class="add-to-wishlist icon-element" data-toggle="tooltip" data-placement="top"
                     title="Save for later">
@@ -3490,7 +3497,7 @@
                 <div class="card-body">
                   <!-- <p class="card-meta">Standard</p> -->
                   <h3 class="card-title">
-                    <a href="car-single.html">Hatchback</a>
+                    <a href="/">Hatchback</a>
                   </h3>
                   <!-- <div class="card-rating">
                       <span class="badge text-white">4.4/5</span>
@@ -3541,7 +3548,7 @@
                 <div class="card-body">
                   <!-- <p class="card-meta">Luxury</p> -->
                   <h3 class="card-title">
-                    <a href="car-single.html">Sedan</a>
+                    <a href="/">Sedan</a>
                   </h3>
                   <!-- <div class="card-rating">
                       <span class="badge text-white">4.4/5</span>
@@ -3584,7 +3591,7 @@
                 <div class="card-body">
                   <!-- <p class="card-meta">Mini</p> -->
                   <h3 class="card-title">
-                    <a href="car-single.html">Sedan</a>
+                    <a href="/">Sedan</a>
                   </h3>
                   <!-- <div class="card-rating">
                       <span class="badge text-white">4.4/5</span>
@@ -3932,7 +3939,7 @@
             </div> -->
 
   <!-- <div class="btn-box padding-top-35px">
-              <a href="become-local-expert.html" class="theme-btn border-0"
+              <a href="/" class="theme-btn border-0"
                 >Join with us</a
               >
             </div>
@@ -3985,7 +3992,7 @@
                     <a href="#" class="badge">lifestyle</a>
                   </div>
                   <h3 class="card-title line-height-26">
-                    <a href="blog-single.html"
+                    <a href="/"
                       >When Traveling Avoid Expensive Hotels & Resorts</a
                     >
                   </h3>
@@ -4042,7 +4049,7 @@
                     <a href="#" class="badge">Video</a>
                   </div>
                   <h3 class="card-title line-height-26">
-                    <a href="blog-single.html"
+                    <a href="/"
                       >My Best Travel Tips: The Ultimate Travel Guide</a
                     >
                   </h3>
@@ -4098,7 +4105,7 @@
                     <a href="#" class="badge">audio</a>
                   </div>
                   <h3 class="card-title line-height-26">
-                    <a href="blog-single.html" -->
+                    <a href="/" -->
   <!-- >By all Means, Travel to Popular Sites & Don’t Rule Out
                       Other Locations</a -->
 
@@ -4149,7 +4156,7 @@
   <!-- <div class="row">
           <div class="col-lg-12">
             <div class="btn-box text-center pt-4">
-              <a href="blog-grid.html" class="theme-btn">Read More Post</a>
+              <a href="/" class="theme-btn">Read More Post</a>
             </div>
           </div>
         </div>
@@ -4285,6 +4292,7 @@
   /* Mobile View */
   @media (max-width: 768px) {
     .responsive-flex {
+      
       flex-direction: column;
       align-items: center;
     }
@@ -4403,8 +4411,8 @@
   </div>
 
 
-  <div  style="background-color: #f5f7fc;">
-    <div class="row align-items-center justify-content-arround">
+  <!-- <div  style="background-color: #f5f7fc;"> -->
+    <!-- <div class="row align-items-center justify-content-arround">
     <div class="col-lg-8">
       <div class="term-box footer-item" style="margin-top: 10px;">
         <p class="copy__desc">
@@ -4417,19 +4425,69 @@
     <div>
      <a class="text-black" href="/privacy-policy">Privacy And Policy</a> 
     </div>
-  </div>
+  </div> -->
     <!-- end col-lg-8 -->
+
+
+    <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; position: relative; top: -13px; margin-top: 22px;">
+      <!-- Left: Copyright Section and Right: Privacy Policy Link -->
+      <div style="">
+          <p class="copy__desc" style="">
+              &copy; Copyright WTL 2023 Made with
+              <span class="la la-heart" style="color: red;"></span> by
+              <a href="https://www.cobaztech.com/" style="text-decoration: none; color: inherit;">cobaztech</a>
+          </p>
+      </div>
+  
+      <!-- Center: Social Links and Right: Privacy Policy Link -->
+      <div style="margin: 10px;">
+          <ul class="social-profile" style="">
+              <li>
+                  <a href="https://www.facebook.com/profile.php?id=61554946222967&mibextid=ZbWKwL" 
+                     style="text-decoration: none; color: #3b5998; font-size: 20px; transition: color 0.3s ease;">
+                      <i class="fab fa-facebook-f"></i>
+                  </a>
+              </li>
+              <li>
+                  <a href="https://x.com/world_trip_link" 
+                     style="text-decoration: none; color: #1da1f2; font-size: 20px; transition: color 0.3s ease;">    
+                      <i class="fab fa-twitter"></i>
+                  </a>
+              </li>
+              <li>
+                  <a href="https://www.instagram.com/worldtriplink/" 
+                     style="text-decoration: none; color: #e1306c; font-size: 20px; transition: color 0.3s ease;">
+                      <i class="fab fa-instagram"></i>
+                  </a>
+              </li>
+              <li>
+                  <a href="https://www.linkedin.com/in/world-trip-link9562762a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" 
+                     style="text-decoration: none; color: #0077b5; font-size: 20px; transition: color 0.3s ease;">
+                      <i class="fab fa-linkedin-in"></i>
+                  </a>
+              </li>
+          </ul>
+      </div>
+  
+      <!-- Right: Privacy Policy Link -->
+      <div style="">
+          <a href="/privacy-policy" style="text-decoration: none; color: #0077b5; font-size: 16px;">Privacy Policy</a>
+      </div>
+  </div>
+
+  
+  
 	<!--Changes form here-->
 		<head>
 		  <!-- Font Awesome CDN for icons -->
 		  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 		</head>
 		
-		<div style="display: flex; justify-content: center; align-items: center; padding-left: 20%;">
+		 <!-- <div style="display: flex; justify-content: center; align-items: center; padding-left: 20%;">
 		    <div class="col-lg-4">
 		        <div class="footer-social-box" style="position: relative; top: -30px;">
-		            <ul class="social-profile" style="list-style: none; padding: 0; margin: 0; display: inline-flex; gap: 15px;">
-		                <!-- Facebook Icon -->
+		            <ul class="social-profile" style="list-style: none; padding: 0; margin: 0; display: inline-flex; gap: 15px; position: relative;padding: 11px;left: -48px;">
+		                <!-- Facebook Icon 
 		                <li style="display: inline;">
 		                    <a href="https://www.facebook.com/profile.php?id=61554946222967&mibextid=ZbWKwL" 
 		                       style="text-decoration: none; color: #3b5998; font-size: 20px; transition: color 0.3s ease;">
@@ -4437,7 +4495,7 @@
 		                    </a>
 		                </li>
 
-		                <!-- Twitter Icon -->
+		                <!-- Twitter Icon 
 		                <li style="display: inline;">
 		                    <a href="https://x.com/world_trip_link" 
 		                       style="text-decoration: none; color: #1da1f2; font-size: 20px; transition: color 0.3s ease;">	
@@ -4445,7 +4503,7 @@
 		                    </a>
 		                </li>
 
-		                <!-- Instagram Icon -->
+		                <!-- Instagram Icon -
 		                <li style="display: inline;">
 		                    <a href="https://www.instagram.com/worldtriplink/" 
 		                       style="text-decoration: none; color: #e1306c; font-size: 20px; transition: color 0.3s ease;">
@@ -4453,7 +4511,7 @@
 		                    </a>
 		                </li>
 
-		                <!-- LinkedIn Icon -->
+		                <!-- LinkedIn Icon 
 		                <li style="display: inline;">
 		                    <a href="https://www.linkedin.com/in/world-trip-link9562762a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" 
 		                       style="text-decoration: none; color: #0077b5; font-size: 20px; transition: color 0.3s ease;">
@@ -4463,7 +4521,9 @@
 		            </ul>
 		        </div>
 		    </div>
-		</div>
+		</div>  -->
+
+    
     
     <!-- end col-lg-4 -->
   </div>
@@ -4691,7 +4751,7 @@
                       <input type="checkbox" id="rememberchb" />
                       <label for="rememberchb">Remember me</label>
                     </div>
-                    <p class="forgot-password">
+                    <p class="/word">
                       <a href="">Forgot Password?</a>
                     </p>
                   </div>
@@ -4903,6 +4963,7 @@
       "welcomeMessage": "",
       "zIndex": 999999,
       "btnColorScheme": "light"
+      
     };
     window.onload = () => {
       _waEmbed(wa_btnSetting);

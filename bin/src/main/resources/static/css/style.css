@@ -32,11 +32,11 @@
 	+ Content
 		+ Main Files
 			- index.html
-			- index2.html
-			- index3.html
-			- index4.html
-			- index5.html
-			- index6.html
+			- /
+			- /
+			- /
+			- /
+			- /
 	+ Banner Area
 			- Breadcrumb
 	+ Tour
@@ -2479,16 +2479,16 @@ body {
 #resume_text {
   display: none; }
 
-.forgot-password {
+./word {
   font-size: 14px; }
-  .forgot-password a {
+  ./word a {
     color: #5d646d;
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     -ms-transition: all 0.3s;
     -o-transition: all 0.3s;
     transition: all 0.3s; }
-    .forgot-password a:hover {
+    ./word a:hover {
       color: #287dfa; }
 
 /*==== contact-address ======*/
