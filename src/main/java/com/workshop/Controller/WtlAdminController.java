@@ -1,7 +1,5 @@
 
-
 package com.workshop.Controller;
-
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.workshop.DTO.BookingDTO;
 import com.workshop.DTO.CityDTO;
+import com.workshop.DTO.LoginRequest;
 import com.workshop.DTO.PriceUpdateRequest;
 import com.workshop.DTO.StateDTO;
 import com.workshop.Entity.Booking;
@@ -50,42 +51,37 @@ import com.workshop.Service.TripService;
 import com.workshop.Service.UserDetailServiceImpl;
 import com.workshop.Service.TripRateService;
 
-
-
 @RestController
-//@RequestMapping
+// @RequestMapping
 public class WtlAdminController {
     @Autowired
     BookingService ser;
-    
-     @Autowired
-      private TripService tripSer;
-     
-     
-     @Autowired
-     CabInfoService cabser;
-     
-     @Autowired
-     private TripRateService tripRateService;
-     
+
+    @Autowired
+    private TripService tripSer;
+
+    @Autowired
+    CabInfoService cabser;
+
+    @Autowired
+    private TripRateService tripRateService;
+
     @Autowired
     private StatesService statesService;
 
     @Autowired
     private CitiesService citiesService;
 
-     @Autowired
-        PopupService service;
-      
-     
-     @Autowired
-        UserDetailServiceImpl userService;
-     
-//      private final String apiKey = "AIzaSyCelDo4I5cPQ72TfCTQW-arhPZ7ALNcp8w"; // Replace with your Google API key
+    @Autowired
+    PopupService service;
 
-    
+    @Autowired
+    UserDetailServiceImpl userService;
 
- @GetMapping("/states/{id}")
+    // private final String apiKey = "AIzaSyCelDo4I5cPQ72TfCTQW-arhPZ7ALNcp8w"; //
+    // Replace with your Google API key
+
+    @GetMapping("/states/{id}")
     public ResponseEntity<States> getStateById(@PathVariable Long id) {
         return this.statesService.getStateById(id)
                 .map(ResponseEntity::ok)
@@ -93,12 +89,13 @@ public class WtlAdminController {
     }
 
     @GetMapping("/all")
-    public List<States> getAllState(){
+    public List<States> getAllState() {
         return this.statesService.getAllState();
     }
 
     @Autowired
-    private  StateRepository stateRepository;
+    private StateRepository stateRepository;
+
     @GetMapping("/api/states")
     public List<StateDTO> getStates() {
         return stateRepository.findAll()
@@ -106,7 +103,6 @@ public class WtlAdminController {
                 .map(state -> new StateDTO(state.getId(), state.getName()))
                 .collect(Collectors.toList());
     }
-     
 
     @GetMapping("/city/all")
     public List<Cities> getAllCities() {
@@ -118,50 +114,43 @@ public class WtlAdminController {
         return citiesService.getCityById(id);
     }
 
-  
-    
-   @GetMapping("/cities/{stateId}")
-public ResponseEntity<List<CityDTO>> getCitiesByState(@PathVariable Long stateId) {
-    List<Cities> cities = citiesService.getCitiesByState(stateId);
-    if (cities.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+    @GetMapping("/cities/{stateId}")
+    public ResponseEntity<List<CityDTO>> getCitiesByState(@PathVariable Long stateId) {
+        List<Cities> cities = citiesService.getCitiesByState(stateId);
+        if (cities.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        }
+
+        // Convert Cities entities to CityDTO
+        List<CityDTO> cityDTOs = cities.stream()
+                .map(city -> {
+                    CityDTO dto = new CityDTO();
+                    dto.setId(city.getId());
+                    dto.setName(city.getName());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(cityDTOs);
     }
 
-    // Convert Cities entities to CityDTO
-    List<CityDTO> cityDTOs = cities.stream()
-        .map(city -> {
-            CityDTO dto = new CityDTO();
-            dto.setId(city.getId());
-            dto.setName(city.getName());
-            return dto;
-        })
-        .collect(Collectors.toList());
-
-    return ResponseEntity.ok(cityDTOs);
-}
-
-
-    
-
-
-    
     @PostMapping("/updateTripPricing")
-       public ResponseEntity<Map<String, String>> updateTripPricing(@RequestBody Tripprice tripPricing) {
-    // Update trip pricing logic
-            this.tripRateService.updateTripPricing(tripPricing);
+    public ResponseEntity<Map<String, String>> updateTripPricing(@RequestBody Tripprice tripPricing) {
+        // Update trip pricing logic
+        this.tripRateService.updateTripPricing(tripPricing);
 
-    // Create a map to return as a JSON object
-              Map<String, String> response = new HashMap<>();
-            response.put("message", "Trip pricing updated successfully!");
+        // Create a map to return as a JSON object
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Trip pricing updated successfully!");
 
-            return ResponseEntity.ok(response);
-       }
+        return ResponseEntity.ok(response);
+    }
 
-
-        @PutMapping("/update-price/{id}")
+    @PutMapping("/update-price/{id}")
     public ResponseEntity<onewayTrip> updateTripPrice(@PathVariable Long id, @RequestBody PriceUpdateRequest request) {
         onewayTrip updatedTrip = tripSer.updatePrice(id, request.getHatchback(), request.getSedan(),
-                request.getSedanpremium(), request.getSuv(), request.getSuvplus(), request.getSourceState(), request.getSourceCity(), request.getDestinationState(), request.getDestinationCity());
+                request.getSedanpremium(), request.getSuv(), request.getSuvplus(), request.getSourceState(),
+                request.getSourceCity(), request.getDestinationState(), request.getDestinationCity());
         return ResponseEntity.ok(updatedTrip);
     }
 
@@ -188,8 +177,6 @@ public ResponseEntity<List<CityDTO>> getCitiesByState(@PathVariable Long stateId
         return ResponseEntity.ok(response);
     }
 
-
-    
     @DeleteMapping("/delete-booking/{bookingId}")
     public ResponseEntity<String> deleteBooking(@PathVariable String bookingId) {
         String responseMessage = ser.deleteBookingByBookingId(bookingId);
@@ -198,51 +185,38 @@ public ResponseEntity<List<CityDTO>> getCitiesByState(@PathVariable Long stateId
         }
         return ResponseEntity.ok(responseMessage); // Return 200 OK with the success message
     }
-    
-    
-    
-           
-        
-    
 
-    
-    
-    
-    //  @PostMapping("/getPrice")
-    //   public List<Trip> getPrice(@RequestBody Map<String, String> requestBody) {
-    //       String to = requestBody.get("to");
-    //       String from = requestBody.get("from");
-    //       String tripType = requestBody.get("tripType");
+    // @PostMapping("/getPrice")
+    // public List<Trip> getPrice(@RequestBody Map<String, String> requestBody) {
+    // String to = requestBody.get("to");
+    // String from = requestBody.get("from");
+    // String tripType = requestBody.get("tripType");
 
-    //       String city1 = userService.getLongNameByCity(to, apiKey);
-    //       String[] parts = city1.split(" ");
-    //       String cityName = parts[0];
-    //       String city2 = userService.getLongNameByCity(from, apiKey);
-    //       String[] parts1 = city2.split(" ");
-    //       String cityName1 = parts1[0];
-          
-    //       System.out.println(city1);
-    //       System.out.println(city2);
-    //       System.out.println(cityName);
-    //       System.out.println(cityName1);
+    // String city1 = userService.getLongNameByCity(to, apiKey);
+    // String[] parts = city1.split(" ");
+    // String cityName = parts[0];
+    // String city2 = userService.getLongNameByCity(from, apiKey);
+    // String[] parts1 = city2.split(" ");
+    // String cityName1 = parts1[0];
 
-    //       if ("oneWay".equals(tripType)) {
-    //           return tripSer.getonewayTrip(cityName, cityName1);
-    //       } else if ("roundTrip".equals(tripType)) {
-    //           return tripSer.getRoundTrip(cityName, cityName1);
-    //       } else {
-    //           // Handle other cases or return an empty list if needed
-    //           return new ArrayList<>();
-    //       }
-    //   }
-     
-    
-     
-     @Autowired
-     private CabInfoService cabInfoService;
- 
-     
-    
+    // System.out.println(city1);
+    // System.out.println(city2);
+    // System.out.println(cityName);
+    // System.out.println(cityName1);
+
+    // if ("oneWay".equals(tripType)) {
+    // return tripSer.getonewayTrip(cityName, cityName1);
+    // } else if ("roundTrip".equals(tripType)) {
+    // return tripSer.getRoundTrip(cityName, cityName1);
+    // } else {
+    // // Handle other cases or return an empty list if needed
+    // return new ArrayList<>();
+    // }
+    // }
+
+    @Autowired
+    private CabInfoService cabInfoService;
+
     @Autowired
     private BookingService bookingService;
 
@@ -251,30 +225,40 @@ public ResponseEntity<List<CityDTO>> getCitiesByState(@PathVariable Long stateId
         List<Booking> bookings = bookingService.getAllBookings();
         return ResponseEntity.ok(bookings); // Return the list of bookings with HTTP 200 OK status
     }
-    
-    
-    @GetMapping("/booking/{id}")  // Define the path variable for booking ID
-    public ResponseEntity<Booking> getBookingById(@PathVariable int id) {
-        // Fetch the booking by ID using the service
-        Booking booking = bookingService.findBookingbyId(id);
 
-        // Check if the booking is found
-        if (booking != null) {
-            return new ResponseEntity<>(booking, HttpStatus.OK);  // Return the booking with a 200 OK status
+    // @GetMapping("/booking/{id}") // Define the path variable for booking ID
+    // public ResponseEntity<Booking> getBookingById(@PathVariable int id) {
+    // // Fetch the booking by ID using the service
+    // Booking booking = bookingService.findBookingbyId(id);
+
+    // // Check if the booking is found
+    // if (booking != null) {
+    // return new ResponseEntity<>(booking, HttpStatus.OK); // Return the booking
+    // with a 200 OK status
+    // } else {
+    // return new ResponseEntity<>(HttpStatus.NOT_FOUND); // If not found, return
+    // 404 Not Found
+    // }
+    // }
+
+    @GetMapping("/booking/{id}")
+    public ResponseEntity<BookingDTO> getBookingSById(@PathVariable int id) {
+        // Call the service to fetch the booking as a DTO
+        BookingDTO bookingDTO = bookingService.getBooking(id);
+
+        // Check if the booking was found
+        if (bookingDTO != null) {
+            return ResponseEntity.ok(bookingDTO); // Return HTTP 200 OK with the booking DTO data
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // If not found, return 404 Not Found
+            return ResponseEntity.notFound().build(); // Return HTTP 404 if booking is not found
         }
     }
-    
-    
-    
-
 
     @PutMapping("/{id}/status")
     public ResponseEntity<Booking> changeStatus(
-            @PathVariable int id, 
+            @PathVariable int id,
             @RequestBody Map<String, Integer> requestBody) {
-        
+
         int newStatus = requestBody.get("status"); // Extract status from the request body
 
         try {
@@ -285,18 +269,17 @@ public ResponseEntity<List<CityDTO>> getCitiesByState(@PathVariable Long stateId
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Return 404 if booking not found
         }
     }
-    
+
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable int id) {
-    	this.bookingService.deleteBooking(id);
+        this.bookingService.deleteBooking(id);
     }
-    
+
     @GetMapping("/getStatus/{status}")
-	 public List<Booking> getBookingByStatus(@PathVariable int status){
-		 return this.bookingService.getBookingByStatus(status);
-	 }
-    
-    
+    public List<Booking> getBookingByStatus(@PathVariable int status) {
+        return this.bookingService.getBookingByStatus(status);
+    }
+
     @PutMapping("/update-roundway-prices")
     public ResponseEntity<Map<String, String>> updateRoundWayPrices(
             @RequestParam String sourceState,
@@ -319,36 +302,15 @@ public ResponseEntity<List<CityDTO>> getCitiesByState(@PathVariable Long stateId
 
         return ResponseEntity.ok(response);
     }
-    
-    
-    @PostMapping("/customBooking")
-    public ResponseEntity<Booking> createCustomBooking(@RequestBody Booking booking) {
-        try {
-            // Log the incoming request to ensure the fields are being passed correctly
-            System.out.println("Booking received: " + booking.toString());
 
-            // Pass the booking to the service layer for processing
-            Booking savedBooking = bookingService.customBooking(booking);
-
-            // Log the saved booking to verify its values
-            System.out.println("Booking saved: " + savedBooking.toString());
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedBooking);
-        } catch (Exception e) {
-            // Log the exception
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-    
     @PutMapping("/{bookingId}/assignVendor/{vendorId}")
     public ResponseEntity<Booking> assignVendorToBooking(
-            @PathVariable int bookingId, 
+            @PathVariable int bookingId,
             @PathVariable Long vendorId) {
 
         // Call the service method to assign vendor
         Booking updatedBooking = bookingService.assignVendorToBooking(bookingId, vendorId);
-        
+
         if (updatedBooking == null) {
             // If the booking or vendor was not found, return a 404 Not Found
             return ResponseEntity.notFound().build();
@@ -356,5 +318,62 @@ public ResponseEntity<List<CityDTO>> getCitiesByState(@PathVariable Long stateId
 
         // If the vendor is assigned successfully, return the updated booking
         return ResponseEntity.ok(updatedBooking);
-    }    
+    }
+
+    @GetMapping("/{vendorId}/vendorByBookings")
+    public ResponseEntity<List<Booking>> getBookingsByVendor(@PathVariable Long vendorId) {
+        List<Booking> bookings = bookingService.getBookingByVendor(vendorId);
+        if (bookings.isEmpty()) {
+            return ResponseEntity.noContent().build(); // Returns 204 if no bookings found
+        }
+        return ResponseEntity.ok(bookings); // Returns 200 with the list of bookings
+    }
+
+    @PutMapping("/{bookingId}/assignVendorCab/{vendorCabId}")
+    public ResponseEntity<Booking> assignVendorCabToBooking(
+            @PathVariable int bookingId,
+            @PathVariable int vendorCabId) {
+
+        // Call the service method to assign vendor
+        Booking updatedBooking = bookingService.assignVendorCabToBooking(bookingId, vendorCabId);
+
+        if (updatedBooking == null) {
+            // If the booking or vendor was not found, return a 404 Not Found
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(updatedBooking);
+    }
+
+    @PutMapping("/{bookingId}/assignVendorDriver/{vendorDriverId}")
+    public ResponseEntity<Booking> assignVendorDriverToBooking(
+            @PathVariable int bookingId,
+            @PathVariable int vendorDriverId) {
+
+        // Call the service method to assign vendor
+        Booking updatedBooking = bookingService.assignVendorDriverToBooking(bookingId, vendorDriverId);
+
+        if (updatedBooking == null) {
+            // If the booking or vendor was not found, return a 404 Not Found
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(updatedBooking);
+    }
+
+    @PostMapping("/wtlLogin")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        if (user != null) {
+            user.setPassword(null);
+            return ResponseEntity.ok(user);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid username or password");
+    }
+
+    @PostMapping("/customBooking/b")
+    public Booking createCustomBooking(@RequestBody Booking b) {
+        return this.bookingService.createCustomBooking(b);
+    }
 }

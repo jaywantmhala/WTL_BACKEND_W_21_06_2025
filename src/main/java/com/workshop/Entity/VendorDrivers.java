@@ -1,69 +1,80 @@
 package com.workshop.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class VendorDrivers {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int vendorDriverId;
-	
+
 	private String driverName;
-	
+
 	private String contactNo;
-	
+
 	private String altContactNo;
-	
+
 	private String address;
-	
+
 	private String driverImage;
-	
+
 	private String driverSelfie;
-	
+
 	private String dLNo;
-	
+
 	private String pvcNo;
-	
+
 	private String dLnoImage;
-	
+
 	private String pvcImage;
-	
+
 	private String driverDoc1Image;
-	
+
 	private String driverDoc2Image;
 
 	private String driverDoc3Image;
-	
+
 	private String emailId;
-	
+
 	private String driverOtherDetails;
-	
-	
+
 	@JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "id")
-    private Vendor vendor;
+	// @ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
+	@JoinColumn(name = "vendor_id")
+	private Vendor vendor;
+
+	// One-to-many relationship with Booking
+	@JsonManagedReference
+	// @OneToMany(mappedBy = "vendorDriver", cascade = CascadeType.ALL, fetch =
+	// FetchType.LAZY)
+	@OneToMany(mappedBy = "vendorDriver")
+
+	private List<Booking> booking;
 
 	public VendorDrivers() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	
-
 	public VendorDrivers(int vendorDriverId, String driverName, String contactNo, String altContactNo, String address,
 			String driverImage, String driverSelfie, String dLNo, String pvcNo, String dLnoImage, String pvcImage,
 			String driverDoc1Image, String driverDoc2Image, String driverDoc3Image, String emailId,
-			String driverOtherDetails, Vendor vendor) {
-		super();
+			String driverOtherDetails, Vendor vendor, List<Booking> booking) {
 		this.vendorDriverId = vendorDriverId;
 		this.driverName = driverName;
 		this.contactNo = contactNo;
@@ -81,9 +92,8 @@ public class VendorDrivers {
 		this.emailId = emailId;
 		this.driverOtherDetails = driverOtherDetails;
 		this.vendor = vendor;
+		this.booking = booking;
 	}
-
-
 
 	public int getVendorDriverId() {
 		return vendorDriverId;
@@ -220,9 +230,13 @@ public class VendorDrivers {
 	public void setVendor(Vendor vendor) {
 		this.vendor = vendor;
 	}
-	
-	
-	
 
-	
+	public List<Booking> getBooking() {
+		return booking;
+	}
+
+	public void setBooking(List<Booking> booking) {
+		this.booking = booking;
+	}
+
 }

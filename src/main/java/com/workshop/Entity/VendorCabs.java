@@ -1,84 +1,72 @@
 package com.workshop.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class VendorCabs {
 
-	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int vendorCabId;
-	
-	
+
 	private String carName;
-	
+
 	private String rCNo;
-	
+
 	private String rCImage;
-	
+
 	private String vehicleNo;
-	
+
 	private String vehicleNoImage;
-	
+
 	private String insuranceImage;
-	
+
 	private String permitImage;
-	
+
 	private String authorizationImage;
-	
+
 	private String cabNoPlateImage;
-	
+
 	private String cabImage;
-	
+
 	private String cabFrontImage;
-	
+
 	private String cabBackImage;
-	
+
 	private String cabOtherDetails;
-	
+
 	private String cabSideImage;
-	
-	
-	
+
 	@JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "id")
-    private Vendor vendor;
+	// @ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "vendor_id")
+	@ManyToOne
+	private Vendor vendor;
+
+	// One-to-many relationship with Booking
+	@JsonManagedReference
+	// @OneToMany(mappedBy = "vendorCab", cascade = CascadeType.ALL, fetch =
+	// FetchType.LAZY)
+	@OneToMany(mappedBy = "vendorCab")
+
+	private List<Booking> booking;
 
 	public VendorCabs() {
 		super();
-		// TODO Auto-generated constructor stub
-	}
 
-	public VendorCabs(int vendorCabId, String carName, String rCNo, String rCImage, String vehicleNo,
-			String vehicleNoImage, String insuranceImage, String permitImage, String authorizationImage,
-			String cabNoPlateImage, String cabImage, String cabFrontImage, String cabBackImage,
-			String cabOtherDetails, Vendor vendor, String cabSideImage) {
-		super();
-		this.vendorCabId = vendorCabId;
-		this.carName = carName;
-		this.rCNo = rCNo;
-		this.rCImage = rCImage;
-		this.vehicleNo = vehicleNo;
-		this.vehicleNoImage = vehicleNoImage;
-		this.insuranceImage = insuranceImage;
-		this.permitImage = permitImage;
-		this.authorizationImage = authorizationImage;
-		this.cabNoPlateImage = cabNoPlateImage;
-		this.cabImage = cabImage;
-		this.cabFrontImage = cabFrontImage;
-		this.cabBackImage = cabBackImage;
-		this.cabOtherDetails = cabOtherDetails;
-		this.vendor=vendor;
-		this.cabSideImage=cabSideImage;
 	}
 
 	public int getVendorCabId() {
@@ -208,10 +196,36 @@ public class VendorCabs {
 	public void setVendor(Vendor vendor) {
 		this.vendor = vendor;
 	}
-	
-	
-	
-	
-	
-	
+
+	public List<Booking> getBooking() {
+		return booking;
+	}
+
+	public void setBooking(List<Booking> booking) {
+		this.booking = booking;
+	}
+
+	public VendorCabs(int vendorCabId, String carName, String rCNo, String rCImage, String vehicleNo,
+			String vehicleNoImage, String insuranceImage, String permitImage, String authorizationImage,
+			String cabNoPlateImage, String cabImage, String cabFrontImage, String cabBackImage, String cabOtherDetails,
+			String cabSideImage, Vendor vendor, List<Booking> booking) {
+		this.vendorCabId = vendorCabId;
+		this.carName = carName;
+		this.rCNo = rCNo;
+		this.rCImage = rCImage;
+		this.vehicleNo = vehicleNo;
+		this.vehicleNoImage = vehicleNoImage;
+		this.insuranceImage = insuranceImage;
+		this.permitImage = permitImage;
+		this.authorizationImage = authorizationImage;
+		this.cabNoPlateImage = cabNoPlateImage;
+		this.cabImage = cabImage;
+		this.cabFrontImage = cabFrontImage;
+		this.cabBackImage = cabBackImage;
+		this.cabOtherDetails = cabOtherDetails;
+		this.cabSideImage = cabSideImage;
+		this.vendor = vendor;
+		this.booking = booking;
+	}
+
 }

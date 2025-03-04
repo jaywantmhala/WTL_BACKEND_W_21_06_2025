@@ -1,6 +1,5 @@
 package com.workshop.Controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/vendors")
-//@CrossOrigin(origins = "http://localhost:3000") // ✅ Allow frontend access
+// @CrossOrigin(origins = "http://localhost:3000") // ✅ Allow frontend access
 public class VendorController {
 
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
@@ -33,24 +32,23 @@ public class VendorController {
     // ✅ Add Vendor with File Upload
     @PostMapping("/add")
     public ResponseEntity<?> addVendor(
-        @RequestParam("vendorCompanyName") String vendorCompanyName,
-        @RequestParam("contactNo") String contactNo,
-        @RequestParam("alternateMobileNo") String alternateMobileNo,
-        @RequestParam("city") String city,
-        @RequestParam("vendorEmail") String vendorEmail,
-        @RequestParam("bankName") String bankName,
-        @RequestParam("bankAccountNo") String bankAccountNo,
-        @RequestParam("ifscCode") String ifscCode,
-        @RequestParam("aadharNo") String aadharNo,
-        @RequestParam("panNo") String panNo,
-        @RequestParam("udyogAadharNo") String udyogAadharNo,
-        @RequestPart(value = "govtApprovalCertificate", required = false) MultipartFile govtApprovalCertificate,
-        @RequestPart(value = "vendorDocs", required = false) MultipartFile vendorDocs,
-        @RequestPart(value = "vendorImage", required = false) MultipartFile vendorImage,
-        @RequestPart(value = "aadharPhoto", required = false) MultipartFile aadharPhoto,
-        @RequestPart(value = "panPhoto", required = false) MultipartFile panPhoto,
-        @RequestParam(value = "vendorOtherDetails", required = false) String vendorOtherDetails
-    ) {
+            @RequestParam("vendorCompanyName") String vendorCompanyName,
+            @RequestParam("contactNo") String contactNo,
+            @RequestParam("alternateMobileNo") String alternateMobileNo,
+            @RequestParam("city") String city,
+            @RequestParam("vendorEmail") String vendorEmail,
+            @RequestParam("bankName") String bankName,
+            @RequestParam("bankAccountNo") String bankAccountNo,
+            @RequestParam("ifscCode") String ifscCode,
+            @RequestParam("aadharNo") String aadharNo,
+            @RequestParam("panNo") String panNo,
+            @RequestParam("udyogAadharNo") String udyogAadharNo,
+            @RequestPart(value = "govtApprovalCertificate", required = false) MultipartFile govtApprovalCertificate,
+            @RequestPart(value = "vendorDocs", required = false) MultipartFile vendorDocs,
+            @RequestPart(value = "vendorImage", required = false) MultipartFile vendorImage,
+            @RequestPart(value = "aadharPhoto", required = false) MultipartFile aadharPhoto,
+            @RequestPart(value = "panPhoto", required = false) MultipartFile panPhoto,
+            @RequestParam(value = "vendorOtherDetails", required = false) String vendorOtherDetails) {
         try {
             // ✅ Ensure Upload Directory Exists
             ensureUploadDirExists();
@@ -85,7 +83,7 @@ public class VendorController {
             return ResponseEntity.ok(service.saveVendor(vendor));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error while saving vendor: " + e.getMessage());
+                    .body("Error while saving vendor: " + e.getMessage());
         }
     }
 
@@ -94,7 +92,7 @@ public class VendorController {
     public ResponseEntity<List<Vendor>> getAllVendors() {
         return ResponseEntity.ok(service.getAllVendors());
     }
-    
+
     // ✅ Get Vendor by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getVendorById(@PathVariable Long id) {
@@ -115,17 +113,17 @@ public class VendorController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
         }
     }
-    
- // ✅ Get Vendor by Email
-//    @GetMapping("/email/{email}")
-//    public ResponseEntity<?> getVendorByEmail(@PathVariable String email) {
-//        Vendor vendor = service.getVendorByEmail(email);
-//        if (vendor == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Vendor not found"));
-//        }
-//        return ResponseEntity.ok(generateVendorResponse(vendor));
-//    }
 
+    // ✅ Get Vendor by Email
+    // @GetMapping("/email/{email}")
+    // public ResponseEntity<?> getVendorByEmail(@PathVariable String email) {
+    // Vendor vendor = service.getVendorByEmail(email);
+    // if (vendor == null) {
+    // return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error",
+    // "Vendor not found"));
+    // }
+    // return ResponseEntity.ok(generateVendorResponse(vendor));
+    // }
 
     // ✅ Utility: Ensure Upload Directory Exists
     private void ensureUploadDirExists() {
@@ -157,7 +155,7 @@ public class VendorController {
     // ✅ Utility: Format Vendor Response
     private Map<String, Object> generateVendorResponse(Vendor vendor) {
         Map<String, Object> response = new HashMap<>();
-        response.put("id", vendor.getId()); 
+        response.put("id", vendor.getId());
         response.put("vendorCompanyName", vendor.getVendorCompanyName());
         response.put("contactNo", vendor.getContactNo());
         response.put("alternateMobileNo", vendor.getAlternateMobileNo());
@@ -183,28 +181,31 @@ public class VendorController {
     private String getFilePath(String fileName) {
         return fileName != null ? "/uploads/" + fileName : null;
     }
-    
+
     @PostMapping("/vendorLogin")
     public ResponseEntity<?> vendorLogin(@RequestBody VendorLoginRequest loginRequest) {
         try {
             // Call vendorService to validate and retrieve vendor login response
-            VendorLoginResponse vendorLoginResponse = service.vendorLogin(loginRequest.getEmail(), loginRequest.getPassword());
-            return ResponseEntity.ok(vendorLoginResponse);  // Return the response as JSON
+            VendorLoginResponse vendorLoginResponse = service.vendorLogin(loginRequest.getEmail(),
+                    loginRequest.getPassword());
+            return ResponseEntity.ok(vendorLoginResponse); // Return the response as JSON
         } catch (Exception e) {
             return ResponseEntity.status(400).body("Invalid credentials or other error.");
         }
-        
-        
-        
-//       @GetMapping("/{vendorId}/bookings")
-//        public ResponseEntity<List<Booking>> getBookingsByVendor(@PathVariable Long vendorId) {
-//            try {
-//                List<Booking> bookings = vendorService.getBookingsByVendor(vendorId);
-//                return ResponseEntity.ok(bookings);
-//            } catch (RuntimeException e) {
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//            }
-//        }       
-//        
     }
+
+    // @GetMapping("/{vendorId}/vendorByBookings")
+    // public ResponseEntity<List<Booking>> getBookingsByVendor(@PathVariable Long
+    // vendorId) {
+    // List<Booking> bookings = service.getBookingByVendor(vendorId);
+    // if (bookings.isEmpty()) {
+    // return ResponseEntity.noContent().build(); // Returns 204 if no bookings
+    // found
+    // }
+    // return ResponseEntity.ok(bookings); // Returns 200 with the list of bookings
+    // }
+
+
+    
+
 }
