@@ -1,5 +1,9 @@
 package com.workshop.Service;
 
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.workshop.DTO.BookingDTO;
+import com.workshop.DTO.CancellationResult;
 import com.workshop.Entity.Booking;
 import com.workshop.Entity.Vendor;
 import com.workshop.Entity.VendorCabs;
@@ -221,6 +226,92 @@ public class BookingService {
 
     public Booking createCustomBooking(Booking b) {
         return repo.save(b);
+    }
+
+    // booking cancel
+
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
+    /**
+     * Check if a booking can be cancelled based on the time difference
+     */
+    public CancellationResult checkCancellation(String bookingTime, String cancellationTime) {
+        try {
+            LocalTime bookTime = LocalTime.parse(bookingTime, TIME_FORMATTER);
+            LocalTime cancelTime = LocalTime.parse(cancellationTime, TIME_FORMATTER);
+
+            // Calculate the duration between cancellation time and booking time
+            Duration duration;
+            boolean isAfterBooking = false;
+
+            if (cancelTime.isAfter(bookTime)) {
+                // Cancellation is after booking time
+                duration = Duration.between(bookTime, cancelTime);
+                isAfterBooking = true;
+            } else {
+                // Cancellation is before booking time
+                duration = Duration.between(cancelTime, bookTime);
+            }
+
+            // Convert duration to minutes for easier comparison
+            long minutesDifference = duration.toMinutes();
+
+            if (isAfterBooking) {
+                return new CancellationResult(
+                        false,
+                        "Booking cancelled after the scheduled time.",
+                        "AFTER_BOOKING");
+            } else if (minutesDifference >= 60) {
+                // Cancellation is at least 1 hour before booking time
+                return new CancellationResult(
+                        true,
+                        "Booking cancellation is allowed. Cancelled " + minutesDifference
+                                + " minutes before scheduled time.",
+                        "ALLOWED");
+            } else {
+                // Cancellation is less than 1 hour before booking time
+                return new CancellationResult(
+                        false,
+                        "Booking cancellation time is too close to booking time. Only " + minutesDifference
+                                + " minutes before scheduled time.",
+                        "TOO_CLOSE");
+            }
+        } catch (DateTimeParseException e) {
+            return new CancellationResult(
+                    false,
+                    "Error processing cancellation: Invalid time format",
+                    "ERROR");
+        } catch (Exception e) {
+            return new CancellationResult(
+                    false,
+                    "Error processing cancellation: " + e.getMessage(),
+                    "ERROR");
+        }
+    }
+
+    /**
+     * Process booking cancellation
+     */
+    public CancellationResult cancelBooking(int bookingId, String cancellationTime) {
+        Booking booking = repo.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
+
+        CancellationResult result = checkCancellation(booking.getTime(), cancellationTime);
+
+        if (result.isAllowed()) {
+            // Proceed with cancellation logic
+            booking.setStatus(-1); // Assuming -1 represents cancelled status
+            repo.save(booking);
+        } else if ("TOO_CLOSE".equals(result.getStatus())) {
+            // Maybe apply cancellation fee or other policy
+            booking.setStatus(-1); // Still cancel but with penalty
+            repo.save(booking);
+        } else if ("AFTER_BOOKING".equals(result.getStatus())) {
+            booking.setStatus(-2); // Different status for after-booking cancellation
+            repo.save(booking);
+        }
+
+        return result;
     }
 
 }

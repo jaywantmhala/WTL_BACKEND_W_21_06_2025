@@ -1,6 +1,8 @@
 
 package com.workshop.Controller;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +29,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.workshop.DTO.BookingDTO;
+import com.workshop.DTO.CancellationRequest;
+import com.workshop.DTO.CancellationResult;
 import com.workshop.DTO.CityDTO;
 import com.workshop.DTO.LoginRequest;
 import com.workshop.DTO.PriceUpdateRequest;
@@ -375,5 +379,20 @@ public class WtlAdminController {
     @PostMapping("/customBooking/b")
     public Booking createCustomBooking(@RequestBody Booking b) {
         return this.bookingService.createCustomBooking(b);
+    }
+
+    @PostMapping("/{bookingId}/cancel")
+    public ResponseEntity<CancellationResult> cancelBooking(
+            @PathVariable int bookingId,
+            @RequestBody CancellationRequest request) {
+
+        // Get current time if not provided
+        String cancellationTime = request.getCancellationTime();
+        if (cancellationTime == null || cancellationTime.isEmpty()) {
+            cancellationTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+        }
+
+        CancellationResult result = bookingService.cancelBooking(bookingId, cancellationTime);
+        return ResponseEntity.ok(result);
     }
 }

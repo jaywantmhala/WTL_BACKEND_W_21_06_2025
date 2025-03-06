@@ -51,11 +51,15 @@ public class Vendor {
     @OneToMany
     private List<VendorDrivers> vendorDrivers;
 
+    @JsonManagedReference
+    @OneToMany
+    private List<Penalty> penalty;
+
     public Vendor(Long id, String vendorCompanyName, String contactNo, String alternateMobileNo, String city,
             String vendorEmail, String bankName, String bankAccountNo, String ifscCode, String aadharNo, String panNo,
             String udyogAadharNo, String govtApprovalCertificate, String vendorDocs, String vendorImage,
             String aadharPhoto, String panPhoto, String vendorOtherDetails, String password, List<Booking> booking,
-            List<VendorCabs> vendorCabs, List<VendorDrivers> vendorDrivers) {
+            List<VendorCabs> vendorCabs, List<VendorDrivers> vendorDrivers, List<Penalty> penalty) {
         this.id = id;
         this.vendorCompanyName = vendorCompanyName;
         this.contactNo = contactNo;
@@ -78,6 +82,7 @@ public class Vendor {
         this.booking = booking;
         this.vendorCabs = vendorCabs;
         this.vendorDrivers = vendorDrivers;
+        this.penalty = penalty;
     }
 
     public Vendor() {
@@ -258,6 +263,14 @@ public class Vendor {
 
     public void setVendorDrivers(List<VendorDrivers> vendorDrivers) {
         this.vendorDrivers = vendorDrivers;
+    }
+
+    public List<Penalty> getPenalty() {
+        return penalty;
+    }
+
+    public void setPenalty(List<Penalty> penalty) {
+        this.penalty = penalty;
     }
 
 }
