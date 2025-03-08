@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Table(name = "user_booking")
@@ -84,13 +85,16 @@ public class Booking {
 	@ManyToOne
 	private VendorDrivers vendorDriver;
 
+	@OneToOne
+	private Penalty penalty;
+
 	public Booking(int id, String fromLocation, String toLocation, String tripType, LocalDate startDate,
 			LocalDate returnDate, String time, String distance, String userId, String bookingId, String name,
 			String email, String phone, String userPickup, String userDrop, LocalDate date, String userTripType,
 			String bookid, String car, String baseAmount, Integer amount, Integer status, String driverBhata,
 			Integer nightCharges, Integer gst, Integer serviceCharge, String offer, Integer offerPartial,
 			String offerAmount, String txnId, String payment, LocalDate dateEnd, String timeEnd, String bookingType,
-			String description, Vendor vendor, VendorCabs vendorCab, VendorDrivers vendorDriver) {
+			String description, Vendor vendor, VendorCabs vendorCab, VendorDrivers vendorDriver, Penalty penalty) {
 		this.id = id;
 		this.fromLocation = fromLocation;
 		this.toLocation = toLocation;
@@ -129,6 +133,7 @@ public class Booking {
 		this.vendor = vendor;
 		this.vendorCab = vendorCab;
 		this.vendorDriver = vendorDriver;
+		this.penalty=penalty;
 	}
 
 	public Booking() {
@@ -439,6 +444,7 @@ public class Booking {
 		this.vendorDriver = vendorDriver;
 	}
 
+	
 	@Override
 	public String toString() {
 		return "Booking [id=" + id + ", fromLocation=" + fromLocation + ", toLocation=" + toLocation + ", tripType="
@@ -467,6 +473,14 @@ public class Booking {
 				+ ", getTimeEnd()=" + getTimeEnd() + ", getBookingType()=" + getBookingType() + ", getDescription()="
 				+ getDescription() + ", getVendor()=" + getVendor() + ", getVendorCab()=" + getVendorCab()
 				+ ", getVendorDriver()=" + getVendorDriver() + ", toString()=" + super.toString() + "]";
+	}
+
+	public Penalty getPenalty() {
+		return penalty;
+	}
+
+	public void setPenalty(Penalty penalty) {
+		this.penalty = penalty;
 	}
 
 }

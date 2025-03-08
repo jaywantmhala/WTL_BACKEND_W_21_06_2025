@@ -395,4 +395,26 @@ public class WtlAdminController {
         CancellationResult result = bookingService.cancelBooking(bookingId, cancellationTime);
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/get/{sourceCity}/{sourceState}/{destinationCity}/{destinationState}")
+    public List<onewayTrip> getDate(@PathVariable String sourceCity, @PathVariable String sourceState,
+            @PathVariable String destinationState, @PathVariable String destinationCity) {
+        return this.tripSer.getAllData(sourceCity, sourceState, destinationState, destinationCity);
+
+    }
+
+    @GetMapping("/getData/{pickupLocation}/{dropLocation}")
+    public List<onewayTrip> getOneWayTripData(
+            @PathVariable String pickupLocation,
+            @PathVariable String dropLocation) {
+        return tripSer.getOneWayTripData(pickupLocation, dropLocation);
+    }
+
+    @GetMapping("/getData1/{pickupLocation}/{dropLocation}")
+    public List<roundTrip> getRoundWayTripData(
+            @PathVariable String pickupLocation,
+            @PathVariable String dropLocation) {
+        return tripSer.getRoundWayTripData(pickupLocation, dropLocation);
+    }
+
 }

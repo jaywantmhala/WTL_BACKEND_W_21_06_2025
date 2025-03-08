@@ -11,13 +11,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Penalty {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID pId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int pId;
 
     private String reason;
 
@@ -28,22 +29,31 @@ public class Penalty {
     @ManyToOne
     private Vendor vendor;
 
-    public Penalty(UUID pId, String reason, int amount, Vendor vendor) {
+    @OneToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
+
+    public Penalty(int pId, String reason, int amount, Vendor vendor, Booking booking) {
         this.pId = pId;
         this.reason = reason;
         this.amount = amount;
         this.vendor = vendor;
+        this.booking = booking;
     }
 
     public Penalty() {
         super();
     }
 
-    public UUID getpId() {
+    public Penalty(Booking booking2, Long vendorId, int i, String string) {
+        // TODO Auto-generated constructor stub
+    }
+
+    public int getpId() {
         return pId;
     }
 
-    public void setpId(UUID pId) {
+    public void setpId(int pId) {
         this.pId = pId;
     }
 
@@ -69,6 +79,14 @@ public class Penalty {
 
     public void setVendor(Vendor vendor) {
         this.vendor = vendor;
+    }
+
+    public Booking getBooking() {
+        return booking;
+    }
+
+    public void setBooking(Booking booking) {
+        this.booking = booking;
     }
 
 }

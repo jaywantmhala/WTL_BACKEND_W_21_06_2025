@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.workshop.Entity.Penalty;
 
 @Repository
-public interface PenaltyRepo extends JpaRepository<Penalty, UUID> {
+public interface PenaltyRepo extends JpaRepository<Penalty, Integer> {
 
 }
