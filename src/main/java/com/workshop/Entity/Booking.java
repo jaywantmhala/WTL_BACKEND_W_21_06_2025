@@ -2,9 +2,11 @@ package com.workshop.Entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -85,8 +88,21 @@ public class Booking {
 	@ManyToOne
 	private VendorDrivers vendorDriver;
 
+
 	@OneToOne
+	@JoinColumn(name = "penalty_id")
 	private Penalty penalty;
+
+	
+
+	
+
+	// @JsonIgnore
+	// @JsonBackReference
+    // @OneToOne
+    // @JoinColumn(name = "penalty_id")
+    // private Penalty penalty;
+
 
 	public Booking(int id, String fromLocation, String toLocation, String tripType, LocalDate startDate,
 			LocalDate returnDate, String time, String distance, String userId, String bookingId, String name,

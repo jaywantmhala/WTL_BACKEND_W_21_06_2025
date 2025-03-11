@@ -38,6 +38,7 @@ import com.workshop.DTO.StateDTO;
 import com.workshop.Entity.Booking;
 import com.workshop.Entity.CabInfo;
 import com.workshop.Entity.Cities;
+import com.workshop.Entity.Penalty;
 import com.workshop.Entity.Popup;
 import com.workshop.Entity.States;
 import com.workshop.Entity.Tripprice;
@@ -381,20 +382,7 @@ public class WtlAdminController {
         return this.bookingService.createCustomBooking(b);
     }
 
-    @PostMapping("/{bookingId}/cancel")
-    public ResponseEntity<CancellationResult> cancelBooking(
-            @PathVariable int bookingId,
-            @RequestBody CancellationRequest request) {
-
-        // Get current time if not provided
-        String cancellationTime = request.getCancellationTime();
-        if (cancellationTime == null || cancellationTime.isEmpty()) {
-            cancellationTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
-        }
-
-        CancellationResult result = bookingService.cancelBooking(bookingId, cancellationTime);
-        return ResponseEntity.ok(result);
-    }
+   
 
     @GetMapping("/get/{sourceCity}/{sourceState}/{destinationCity}/{destinationState}")
     public List<onewayTrip> getDate(@PathVariable String sourceCity, @PathVariable String sourceState,
@@ -417,4 +405,13 @@ public class WtlAdminController {
         return tripSer.getRoundWayTripData(pickupLocation, dropLocation);
     }
 
+
+    // @GetMapping("/{vendorId}/length/vendorByBookings")
+    // public ResponseEntity<List<Booking>> getBookingsByVendorLength(@PathVariable Long vendorId) {
+    //     List<Booking> bookings = bookingService.getBookingByVendor(vendorId);
+    //     return bookings.length();
+        
+    // }
+
+   
 }

@@ -2,6 +2,7 @@ package com.workshop.Entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
@@ -51,9 +52,17 @@ public class Vendor {
     @OneToMany
     private List<VendorDrivers> vendorDrivers;
 
-    @JsonManagedReference
-    @OneToMany
-    private List<Penalty> penalty;
+    // @JsonIgnore
+	@JsonManagedReference
+    @OneToMany(mappedBy = "vendor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Penalty> penalty;
+
+
+    
+
+    // @JsonManagedReference
+    // @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // private List<Penalty> penalty;
 
     public Vendor(Long id, String vendorCompanyName, String contactNo, String alternateMobileNo, String city,
             String vendorEmail, String bankName, String bankAccountNo, String ifscCode, String aadharNo, String panNo,
@@ -273,4 +282,7 @@ public class Vendor {
         this.penalty = penalty;
     }
 
+    
+
+   
 }
