@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Controller
-@RequestMapping("/sitemap")
+@RequestMapping("/sitemap.xml")
 public class SitemapController {
 
     @GetMapping("")
