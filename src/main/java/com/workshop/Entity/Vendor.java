@@ -92,6 +92,7 @@ public class Vendor {
         this.vendorCabs = vendorCabs;
         this.vendorDrivers = vendorDrivers;
         this.penalty = penalty;
+        
     }
 
     public Vendor() {

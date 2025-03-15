@@ -105,5 +105,15 @@ public class CabAdminController {
 	    }
 	}
 
+    @GetMapping("/cab/{status}")
+    public ResponseEntity<?> getCabsByStatus(@PathVariable String status) {
+        List<CabAdmin> cabs = cabAdminService.getCabByStatus(status);
+        if (cabs.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No cabs found with status: " + status);
+        }
+        return ResponseEntity.ok(cabs); // Return the list of cabs with HTTP 200 OK
+    }
+
     
 }

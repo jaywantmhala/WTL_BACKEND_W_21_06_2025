@@ -19,6 +19,7 @@ import jakarta.persistence.OneToOne;
 @Entity
 public class Penalty {
 
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int pId;

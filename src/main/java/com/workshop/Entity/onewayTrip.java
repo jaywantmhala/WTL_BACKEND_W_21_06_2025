@@ -1,5 +1,8 @@
 package com.workshop.Entity;
 
+import java.io.Serializable;
+import java.time.LocalDate;
+
 import com.workshop.Repo.Trip;
 
 import jakarta.persistence.Entity;
@@ -9,7 +12,11 @@ import jakarta.persistence.Id;
 
 @Entity
 
-public class onewayTrip implements Trip {
+public class onewayTrip implements Trip, Serializable{
+
+	private static final long serialVersionUID = 1L; // Add a serialVersionUID
+
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -24,6 +31,8 @@ public class onewayTrip implements Trip {
 	private int suv;
 	private int suvplus;
 	private String status;
+	private LocalDate startDate;
+    private LocalDate endDate;
 
 	public Long getId() {
 		return id;
@@ -113,9 +122,27 @@ public class onewayTrip implements Trip {
 		this.status = status;
 	}
 
+	
+
+	public LocalDate getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
+	}
+
+	public LocalDate getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
+	}
+
 	public onewayTrip(Long id, String sourceState, String sourceCity, String destinationState,
 			String destinationCity, int hatchback, int sedan, int sedanpremium, int suv, int suvplus,
-			String status) {
+			String status, LocalDate startDate, LocalDate endDate) {
 		super();
 		this.id = id;
 		this.sourceState = sourceState;
@@ -128,6 +155,8 @@ public class onewayTrip implements Trip {
 		this.suv = suv;
 		this.suvplus = suvplus;
 		this.status = status;
+		this.startDate=startDate;
+		this.endDate=endDate;
 	}
 
 	public onewayTrip() {

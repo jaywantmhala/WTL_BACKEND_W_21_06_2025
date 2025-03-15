@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.workshop.Entity.CabAdmin;
+import com.workshop.Entity.DriveAdmin;
 import com.workshop.Entity.OutSourceCarCab;
 import com.workshop.Service.VehicleService;
 
@@ -104,4 +105,15 @@ public class VehicleController {
    	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
    	    }
    	}
+
+
+    @GetMapping("/outsource/{status}")
+    public ResponseEntity<?> getCabsByStatus(@PathVariable String status) {
+        List<OutSourceCarCab> cabs = vehicleService.getCabByStatus(status);
+        if (cabs.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No cabs found with status: " + status);
+        }
+        return ResponseEntity.ok(cabs); // Return the list of cabs with HTTP 200 OK
+    }
 }

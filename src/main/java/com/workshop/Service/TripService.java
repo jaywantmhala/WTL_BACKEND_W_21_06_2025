@@ -254,13 +254,32 @@ public class TripService {
 		return new String[] { "Unknown City", "Unknown State" };
 	}
 
-	public List<onewayTrip> getAllData(String sourceCity, String sourceState, String destinationState,
-			String destinationCity) {
-		// Note: The repository method expects parameters in the order: sourceState,
-		// sourceCity, destinationState, destinationCity
-		return repo.findBySourceStateAndSourceCityAndDestinationStateAndDestinationCity(
+	public List<onewayTrip> getAllData(String sourceCity, String sourceState, String destinationState, String destinationCity) {
+		// Retrieve data from the repository
+		List<onewayTrip> trips = repo.findBySourceStateAndSourceCityAndDestinationStateAndDestinationCity(
 				sourceState, sourceCity, destinationState, destinationCity);
+	
+		// If no data is found, return a list with a default onewayTrip
+		if (trips == null || trips.isEmpty()) {
+			onewayTrip newTrip = new onewayTrip();
+			newTrip.setId(null); // Adjust as needed
+			newTrip.setSourceState(sourceState);
+			newTrip.setSourceCity(sourceCity);
+			newTrip.setDestinationState(destinationState);
+			newTrip.setDestinationCity(destinationCity);
+			newTrip.setHatchback(10);
+			newTrip.setSedan(11);
+			newTrip.setSedanpremium(14);
+			newTrip.setSuv(14);
+			newTrip.setSuvplus(21);
+			newTrip.setStatus("");
+	
+			return List.of(newTrip);
+		}
+	
+		return trips;
 	}
+	
 
 	// -------------------------
 

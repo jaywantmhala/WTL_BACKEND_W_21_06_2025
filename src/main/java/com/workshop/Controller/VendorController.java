@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+
 @RestController
 @RequestMapping("/vendors")
 // @CrossOrigin(origins = "http://localhost:3000") // ✅ Allow frontend access
@@ -115,15 +116,15 @@ public class VendorController {
     }
 
     // ✅ Get Vendor by Email
-    // @GetMapping("/email/{email}")
-    // public ResponseEntity<?> getVendorByEmail(@PathVariable String email) {
-    // Vendor vendor = service.getVendorByEmail(email);
-    // if (vendor == null) {
-    // return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error",
-    // "Vendor not found"));
-    // }
-    // return ResponseEntity.ok(generateVendorResponse(vendor));
-    // }
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> getVendorByEmail(@PathVariable String email) {
+    Vendor vendor = service.getVendorByEmail(email);
+    if (vendor == null) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error",
+    "Vendor not found"));
+    }
+    return ResponseEntity.ok(generateVendorResponse(vendor));
+    }
 
     // ✅ Utility: Ensure Upload Directory Exists
     private void ensureUploadDirExists() {
@@ -206,6 +207,10 @@ public class VendorController {
     // }
 
 
-    
+   @PutMapping("/update/{id}")
+    public ResponseEntity<Vendor> update(@RequestBody Vendor vendor, @PathVariable Long id) {
+        Vendor updatedVendor = this.service.updatePassword(vendor, id);
+        return ResponseEntity.ok(updatedVendor);
+    }
 
 }

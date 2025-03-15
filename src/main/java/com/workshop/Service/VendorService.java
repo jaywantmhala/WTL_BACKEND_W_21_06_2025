@@ -1,11 +1,16 @@
 package com.workshop.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.workshop.DTO.VendorLoginResponse;
 import com.workshop.Entity.Booking;
 import com.workshop.Entity.Vendor;
 import com.workshop.Repo.VendorRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -13,12 +18,16 @@ import java.util.Optional;
 public class VendorService {
     private final VendorRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public VendorService(VendorRepository repository) {
         this.repository = repository;
     }
 
     // ✅ Save Vendor
     public Vendor saveVendor(Vendor vendor) {
+        vendor.setPassword("Vendor@123");
         return repository.save(vendor);
     }
 
@@ -38,9 +47,9 @@ public class VendorService {
     }
 
     // // ✅ Get Vendor by Email (NEW METHOD)
-    // public Vendor getVendorByEmail(String email) {
-    // return repository.findByVendorEmail(email).orElse(null);
-    // }
+    public Vendor getVendorByEmail(String email) {
+    return repository.findByVendorEmail(email);
+    }
 
     // ✅ Delete Vendor
     public String deleteVendor(Long id) {
@@ -74,6 +83,23 @@ public class VendorService {
     // public List<Booking> getBookingByVendor(Long vendorId) {
     // return repository.findByVendorId(vendorId);
     // }
+
+
+    public Vendor updatePassword(Vendor vendor, Long id) {
+        Optional<Vendor> existingVendorOpt = this.repository.findById(id);
+
+        if (existingVendorOpt.isPresent()) {
+            Vendor existingVendor = existingVendorOpt.get();
+
+            // Update only the password field
+            existingVendor.setPassword(passwordEncoder.encode(vendor.getPassword()));
+
+            // Save the updated vendor (this keeps the existing ID)
+            return repository.save(existingVendor);
+        } else {
+            throw new EntityNotFoundException("Vendor not found with ID: " + id);
+        }
+    }
 
     
 

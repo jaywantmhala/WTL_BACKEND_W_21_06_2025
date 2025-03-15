@@ -594,103 +594,102 @@ public class BookingController {
 			@RequestParam("time") String time,
 			@RequestParam("distance") String distance,
 			Model model
-
+			
 	) {
 		// Store form data in the model
-		List<Trip> tripinfo = new ArrayList<>();
-		System.out.println(distance);
+	  List<Trip> tripinfo = new ArrayList<>();
+	  System.out.println(distance);
 		String numericString = distance.replaceAll("[^0-9.]", "");
 		double floatValue = Double.parseDouble(numericString);
 
 		int Dist = (int) floatValue;
-		// int Dist = Integer.parseInt(distance);
+	   // int Dist = Integer.parseInt(distance);
+	  
 
-		int Distance = 0;
-		int days = 0;
-		System.out.println(Distance);
-		String cityName = "";
-		String city1 = userService.getLongNameByCity(dropLocation, apiKey);
-		if ("Administrative Area Level 3 not found.".equals(city1)) {
+		int Distance =0;
+		int days =0;
+	  System.out.println(Distance);
+	  String cityName="";
+	  String city1 = userService.getLongNameByCity(dropLocation, apiKey);
+	  if ("Administrative Area Level 3 not found.".equals(city1) ) {
 			city1 = dropLocation;
 			String[] parts = city1.split(", ");
-			cityName = parts[0];
-			System.out.println(cityName + " test");
-		} else if ("North Goa".equals(city1) || "South Goa".equals(city1)) {
-			String[] parts = city1.split(", ");
-			cityName = parts[0];
-		} else {
-			String[] parts = city1.split(" ");
-			cityName = parts[0];
+			   cityName = parts[0];
+			   System.out.println(cityName+" test");
+		}else if("North Goa".equals(city1)|| "South Goa".equals(city1)) {
+			 String[] parts = city1.split(", ");
+			   cityName = parts[0];
 		}
-
-		String city2 = userService.getLongNameByCity(pickupLocation, apiKey);
-		String[] parts1 = city2.split(" ");
-		String cityName1 = parts1[0];
-
-		System.out.println(city1 + " this is city 1 values");
-		System.out.println(city2);
-		System.out.println(cityName);
-		System.out.println(cityName1);
-
-		if (cityName.equals("Bengaluru")) {
-			cityName = "Bangalore";
-		} else if (cityName1.equals("Bengaluru")) {
-			cityName1 = "Bangalore";
-
+	  else {
+			 String[] parts = city1.split(" ");
+			   cityName = parts[0];		
 		}
+	 
+	  String city2 = userService.getLongNameByCity(pickupLocation, apiKey);
+	  String[] parts1 = city2.split(" ");
+	  String cityName1 = parts1[0];
+	  
+	  System.out.println(city1+" this is city 1 values");
+	  System.out.println(city2);
+	  System.out.println(cityName);
+	  System.out.println(cityName1);
+	  
+	  
+	  if(cityName.equals("Bengaluru") ) {
+		  cityName  = "Bangalore";
+	  }else if(cityName1.equals("Bengaluru")) {
+		  cityName1  = "Bangalore";
 
-		locationExtractor(pickupLocation, dropLocation);
-
-		if ("oneWay".equals(tripType)) {
-			tripinfo = tripSer.getonewayTrip(cityName, cityName1);
-
-			System.out.println("CityName" + " " + cityName);
-			System.out.println("CityName1" + " " + cityName1);
-
-			if (tripinfo.isEmpty()) {
+	  }
+	  
+	  
+	  
+	  if ("oneWay".equals(tripType)) {
+		  tripinfo= tripSer.getonewayTrip(cityName, cityName1);
+		 
+		  if (tripinfo.isEmpty()) {
 				// Assign a default value to tripinfo if it is empty
 				// You may need to modify this based on your actual default value
-				System.out.println("it is empty ");
-
-				List<onewayTrip> d = this.tripSer.getOneWayTripData(pickupLocation, dropLocation);
-
-				// If the list is empty, create and add a default onewayTrip
-				if (tripinfo.isEmpty()) {
-					System.out.println("it is empty");
-
-					onewayTrip defaultTrip = new onewayTrip();
-					defaultTrip.setId(null); // or leave unset if auto-generated
-					defaultTrip.setSourceState(defaultTrip.getSourceState()); // default values
-					defaultTrip.setSourceCity(defaultTrip.getSourceCity());
-					defaultTrip.setDestinationState(defaultTrip.getDestinationState());
-					defaultTrip.setDestinationCity(defaultTrip.getDestinationCity());
-					defaultTrip.setHatchback(defaultTrip.getHatchback()); // default hatchback value
-					defaultTrip.setSedan(defaultTrip.getSedan()); // default sedan value
-					defaultTrip.setSedanpremium(defaultTrip.getSedanpremium()); // default sedan premium value
-					defaultTrip.setSuv(defaultTrip.getSuv()); // default suv value
-					defaultTrip.setSuvplus(defaultTrip.getSuvplus()); // default suvplus value
-					defaultTrip.setStatus("");
-
-					// Add the default trip to the list
-					tripinfo.add(defaultTrip);
-				}
-
+			  System.out.println("it is empty ");
+			  
+			  
+			  onewayTrip defaultTrip = new onewayTrip(
+						null, // Set default value for id (you might want to adjust this)
+						"",   // Set default value for sourceState
+						"",   // Set default value for sourceCity
+						"",   // Set default value for destinationState
+						"",   // Set default value for destinationCity
+						12,    // Set default value for hatchback
+						15,    // Set default value for sedan
+						18,    // Set default value for sedanpremium
+						21,    // Set default value for suv
+						26,    // Set default value for suvplus
+						"",
+						null
+						 ,null  // Set default value for status
+					);
+			  
+			  
+			 
+			  
+				tripinfo.add(defaultTrip);
 			}
 
-			Distance = Dist;
-			System.out.println(Distance);
-		} else if ("roundTrip".equals(tripType)) {
-
-			String startdate = date;
-			String enddate = returndate;
-			String time1 = time;
-			String endtime = "23:30:00";
-			String distances = Integer.toString(Dist);
-			System.out.println(startdate + " " + enddate + " " + time + " " + distance);
-			LocalDate localDate1 = LocalDate.parse(startdate, DateTimeFormatter.ISO_DATE);
+		  Distance = Dist;
+		  System.out.println(Distance);
+	  } else if ("roundTrip".equals(tripType)) {
+		  
+		  
+		  String startdate = date;
+		  String enddate = returndate;
+		  String time1 = time;
+		  String endtime = "23:30:00";
+		  String distances = Integer.toString(Dist);
+		  System.out.println(startdate+" "+enddate+" "+time+" "+distance);
+		  LocalDate localDate1 = LocalDate.parse(startdate, DateTimeFormatter.ISO_DATE);
 			LocalDate localDate2 = LocalDate.parse(enddate, DateTimeFormatter.ISO_DATE);
-			days = (int) ChronoUnit.DAYS.between(localDate1, localDate2);
-			days++;
+			 days = (int) ChronoUnit.DAYS.between(localDate1, localDate2);
+			 days++;
 			System.out.println(days);
 
 			// Use ISO_TIME pattern for parsing time strings
@@ -698,54 +697,68 @@ public class BookingController {
 			LocalTime localTime2 = LocalTime.parse(endtime, DateTimeFormatter.ISO_TIME);
 
 			Distance = tripSer.getRoundDistance(localDate1, localTime1, localDate2, localTime2, distances);
-
-			tripinfo = tripSer.getRoundTrip(cityName, cityName1);
-
-			if (tripinfo.isEmpty()) {
+		  
+		  
+		  
+		  
+		  tripinfo =  tripSer.getRoundTrip(cityName, cityName1);
+		  
+		  
+		  if (tripinfo.isEmpty()) {
 				// Assign a default value to tripinfo if it is empty
 				// You may need to modify this based on your actual default value
-				System.out.println("round trip is empty ");
-
-				roundTrip defaultTrip = new roundTrip(
+			  System.out.println("round trip is empty ");
+			  
+			  
+			  roundTrip defaultTrip = new roundTrip(
 						null, // Set default value for id (you might want to adjust this)
-						"", // Set default value for sourceState
-						"", // Set default value for sourceCity
-						"", // Set default value for destinationState
-						"", // Set default value for destinationCity
-						10, // Set default value for hatchback
-						11, // Set default value for sedan
-						14, // Set default value for sedanpremium
-						14, // Set default value for suv
-						21, // Set default value for suvplus
-						"" // Set default value for status
-				);
-
+						"",   // Set default value for sourceState
+						"",   // Set default value for sourceCity
+						"",   // Set default value for destinationState
+						"",   // Set default value for destinationCity
+						10,    // Set default value for hatchback
+						11,    // Set default value for sedan
+						14,    // Set default value for sedanpremium
+						14,    // Set default value for suv
+						21,    // Set default value for suvplus
+						""    // Set default value for status
+					);
+			  
+			  
+			 
+			  
 				tripinfo.add(defaultTrip);
 			}
-
-		}
-
-		List<CabInfo> c = cabser.getAll();
-		System.out.println(tripinfo + " trip info  ");
-
-		System.out.println(tripType);
-		System.out.println(pickupLocation);
+		  
+		  
+		  
+		  
+		  
+	  }
+	  
+	  List<CabInfo> c = cabser.getAll();
+	  System.out.println(tripinfo+" trip info  ");
+	  
+	  System.out.println(tripType);
+	  System.out.println(pickupLocation);
 		model.addAttribute("tripType", tripType);
 		model.addAttribute("pickupLocation", pickupLocation);
 		model.addAttribute("dropLocation", dropLocation);
 		model.addAttribute("date", date);
 		model.addAttribute("returndate", returndate);
-		System.out.println("returndate " + returndate);
+		System.out.println("returndate "+returndate);
 
 		model.addAttribute("time", time);
 		model.addAttribute("distance", Distance);
 		model.addAttribute("cabinfo", c);
 		model.addAttribute("price", 10);
-		model.addAttribute("tripinfo", tripinfo);
-		model.addAttribute("days", days);
+		model.addAttribute("tripinfo",tripinfo);
+		model.addAttribute("days",days);
 
-		// Redirect to another page (replace "redirect:/destinationPage" with the actual
-		// destination URL)
+
+		
+
+		// Redirect to another page (replace "redirect:/destinationPage" with the actual destination URL)
 		return "Cabs";
 	}
 

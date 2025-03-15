@@ -45,6 +45,9 @@ public class BookingService {
     @Autowired
     private PenaltyRepo penaltyRepo;
 
+    @Autowired
+    private EmailService emailService;
+
     public void saveBooking(Booking booking) {
         repo.save(booking);
     }
@@ -238,6 +241,30 @@ public class BookingService {
     public Penalty createPenalty(int bookingId, Long vendorId, Penalty penalty){
       Booking b = this.repo.findById(bookingId).orElse(null);
       Vendor v = this.vendorRepo.findById(vendorId).orElse(null);
+
+      String subject = "For booking Cancellation Penalty - " + b.getUserPickup() + " "+b.getUserDrop();
+      String message = "<h3>Hello " + v.getVendorCompanyName() + ",</h3>" +
+              "<p>Your booking has been has been cancelled.</p>" +
+              "<p><strong>Booking Details:</strong></p>" +
+              "<ul>" +
+              "<li><strong>Booking ID:</strong> " + b.getBookid() + "</li>" +
+              "<li><strong>Pickup Location:</strong> " + b.getUserPickup() + "</li>" +
+              "<li><strong>Drop Location:</strong> " + b.getUserDrop() + "</li>" +
+              "<li><strong>Trip Type:</strong> " + b.getTripType() + "</li>" +
+              "<li><strong>Date:</strong> " + b.getDate() + "</li>" +
+              "<li><strong>Time:</strong> " + b.getTime() + "</li>" +
+              "<li><strong>Fine: </strong>₹ " + 2000 + "</li>" +
+              "</ul>" +
+              "<p>Thank you for choosing us!</p>";
+
+      boolean emailSent = emailService.sendEmail(message, subject, v.getVendorEmail());
+
+      if (emailSent) {
+          System.out.println("Booking confirmation email sent successfully.");
+      } else {
+          System.out.println("Failed to send booking confirmation email.");
+      }
+
 
       penalty.setVendor(v);
       penalty.setBooking(b);

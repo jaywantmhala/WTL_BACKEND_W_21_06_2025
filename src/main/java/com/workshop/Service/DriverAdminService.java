@@ -6,12 +6,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.workshop.Entity.CabAdmin;
 import com.workshop.Entity.DriveAdmin;
 import com.workshop.Entity.OutSourceCarCab;
 import com.workshop.Repo.DriverAdminRepo;
@@ -91,6 +94,18 @@ public class DriverAdminService {
         // Return a default image if no file is provided
         return "default.jpg";
     }
-	
+
+    
+	 public DriveAdmin udpateStatus(int id, String status) {
+    	DriveAdmin cab = this.driverAdminRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Cart not found"));
+    	cab.setStatus(status);
+		    return driverAdminRepo.save(cab);
+    }
+
+    public List<DriveAdmin> getCabByStatus(String status) {
+    return driverAdminRepo.findAll().stream() // Use stream to filter
+            .filter(c -> c.getStatus().equals(status)) // Filter by status
+            .collect(Collectors.toList()); // Collect the filtered results into a list
+}
 	
 }

@@ -50,10 +50,14 @@ import com.workshop.Repo.Trip;
 import com.workshop.Service.BookingService;
 import com.workshop.Service.CabInfoService;
 import com.workshop.Service.CitiesService;
+import com.workshop.Service.EmailService;
 import com.workshop.Service.PopupService;
 import com.workshop.Service.StatesService;
 import com.workshop.Service.TripService;
 import com.workshop.Service.UserDetailServiceImpl;
+
+import jakarta.transaction.Transactional;
+
 import com.workshop.Service.TripRateService;
 
 @RestController
@@ -67,6 +71,9 @@ public class WtlAdminController {
 
     @Autowired
     CabInfoService cabser;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private TripRateService tripRateService;
@@ -182,6 +189,8 @@ public class WtlAdminController {
         return ResponseEntity.ok(response);
     }
 
+
+    @Transactional
     @DeleteMapping("/delete-booking/{bookingId}")
     public ResponseEntity<String> deleteBooking(@PathVariable String bookingId) {
         String responseMessage = ser.deleteBookingByBookingId(bookingId);
@@ -334,21 +343,72 @@ public class WtlAdminController {
         return ResponseEntity.ok(bookings); // Returns 200 with the list of bookings
     }
 
+
     @PutMapping("/{bookingId}/assignVendorCab/{vendorCabId}")
+
     public ResponseEntity<Booking> assignVendorCabToBooking(
-            @PathVariable int bookingId,
-            @PathVariable int vendorCabId) {
+        @PathVariable int bookingId,
+        @PathVariable int vendorCabId) {
 
-        // Call the service method to assign vendor
-        Booking updatedBooking = bookingService.assignVendorCabToBooking(bookingId, vendorCabId);
+    // Call the service method to assign vendor
+    Booking updatedBooking = bookingService.assignVendorCabToBooking(bookingId, vendorCabId);
 
-        if (updatedBooking == null) {
-            // If the booking or vendor was not found, return a 404 Not Found
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(updatedBooking);
+    if (updatedBooking == null) {
+        // If the booking or vendor was not found, return a 404 Not Found
+        return ResponseEntity.notFound().build();
     }
+
+    if (updatedBooking.getVendor() == null || updatedBooking.getVendorCab() == null) {
+        System.out.println("Vendor is not assigned");
+    } else {
+        String subject = "Booking Confirmation - " + updatedBooking.getBookid();
+        String message = "<!DOCTYPE html>"
+        + "<html>"
+        + "<head>"
+        + "<style>"
+        + "body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px; background-color: #f9f9f9; }"
+        + "h3 { color: #007BFF; font-size: 24px; margin-bottom: 20px; }"
+        + "p { font-size: 16px; line-height: 1.5; }"
+        + "ul { list-style-type: none; padding: 0; }"
+        + "li { margin-bottom: 10px; }"
+        + "strong { color: #007BFF; }"
+        + ".center { text-align: center; margin-top: 30px; }"
+        + "</style>"
+        + "</head>"
+        + "<body>"
+        + "<h3>Hello " + updatedBooking.getName() + ",</h3>"
+        + "<p>Your booking has been confirmed.</p>"
+        + "<p style='font-size: 18px; font-weight: bold; margin-top: 20px; margin-bottom: 10px;'>Booking Details:</p>"
+        + "<ul>"
+        + "<li><strong>Booking ID:</strong> " + updatedBooking.getBookid() + "</li>"
+        + "<li><strong>Pickup Location:</strong> " + updatedBooking.getUserPickup() + "</li>"
+        + "<li><strong>Drop Location:</strong> " + updatedBooking.getUserDrop() + "</li>"
+        + "<li><strong>Trip Type:</strong> " + updatedBooking.getTripType() + "</li>"
+        + "<li><strong>Date:</strong> " + updatedBooking.getDate() + "</li>"
+        + "<li><strong>Time:</strong> " + updatedBooking.getTime() + "</li>"
+        + "<li><strong>Amount Paid:</strong> ₹" + updatedBooking.getAmount() + "</li>"
+        + "<li><strong>Cab Name:</strong> " + updatedBooking.getVendorCab().getCarName() + "</li>"
+        + "<li><strong>Vehicle No:</strong> " + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
+        + "<li><strong>Driver Name:</strong> " + updatedBooking.getVendorDriver().getDriverName() + "</li>"
+        + "<li><strong>Driver Contact:</strong> " + updatedBooking.getVendorDriver().getContactNo() + "</li>"
+        + "</ul>"
+        + "<p style='font-size: 16px; line-height: 1.5; margin-top: 20px;'>Thank you for choosing us!</p>"
+        + "<div class='center'>"
+        + "<img src='https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjc1OGk0ZGVqNHFseDRrM3FvOW0xYnVyenJkcmQ2OXNsODE0djUzZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPhUfA1h2U2Koko/giphy.gif' alt='Namaskar' style='width: 100px; height: auto;' />"
+        + "</div>"
+        + "</body>"
+        + "</html>";
+    boolean emailSent = emailService.sendEmail(message, subject, updatedBooking.getEmail());
+
+    if (emailSent) {
+        System.out.println("Booking confirmation email sent successfully.");
+    } else {
+        System.out.println("Failed to send booking confirmation email.");
+    }
+    }
+
+    return ResponseEntity.ok(updatedBooking);
+}
 
     @PutMapping("/{bookingId}/assignVendorDriver/{vendorDriverId}")
     public ResponseEntity<Booking> assignVendorDriverToBooking(
@@ -362,6 +422,55 @@ public class WtlAdminController {
             // If the booking or vendor was not found, return a 404 Not Found
             return ResponseEntity.notFound().build();
         }
+
+        if (updatedBooking.getVendor() == null || updatedBooking.getVendorCab() == null) {
+            System.out.println("Vendor is not assigned");
+        } else {
+            String subject = "Booking Confirmation - " + updatedBooking.getBookid();
+            String message = "<!DOCTYPE html>"
+            + "<html>"
+            + "<head>"
+            + "<style>"
+            + "body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px; background-color: #f9f9f9; }"
+            + "h3 { color: #007BFF; font-size: 24px; margin-bottom: 20px; }"
+            + "p { font-size: 16px; line-height: 1.5; }"
+            + "ul { list-style-type: none; padding: 0; }"
+            + "li { margin-bottom: 10px; }"
+            + "strong { color: #007BFF; }"
+            + ".center { text-align: center; margin-top: 30px; }"
+            + "</style>"
+            + "</head>"
+            + "<body>"
+            + "<h3>Hello " + updatedBooking.getName() + ",</h3>"
+            + "<p>Your booking has been confirmed.</p>"
+            + "<p style='font-size: 18px; font-weight: bold; margin-top: 20px; margin-bottom: 10px;'>Booking Details:</p>"
+            + "<ul>"
+            + "<li><strong>Booking ID:</strong> " + updatedBooking.getBookid() + "</li>"
+            + "<li><strong>Pickup Location:</strong> " + updatedBooking.getUserPickup() + "</li>"
+            + "<li><strong>Drop Location:</strong> " + updatedBooking.getUserDrop() + "</li>"
+            + "<li><strong>Trip Type:</strong> " + updatedBooking.getTripType() + "</li>"
+            + "<li><strong>Date:</strong> " + updatedBooking.getDate() + "</li>"
+            + "<li><strong>Time:</strong> " + updatedBooking.getTime() + "</li>"
+            + "<li><strong>Amount Paid:</strong> ₹" + updatedBooking.getAmount() + "</li>"
+            + "<li><strong>Cab Name:</strong> " + updatedBooking.getVendorCab().getCarName() + "</li>"
+            + "<li><strong>Vehicle No:</strong> " + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
+            + "<li><strong>Driver Name:</strong> " + updatedBooking.getVendorDriver().getDriverName() + "</li>"
+            + "<li><strong>Driver Contact:</strong> " + updatedBooking.getVendorDriver().getContactNo() + "</li>"
+            + "</ul>"
+            + "<p style='font-size: 16px; line-height: 1.5; margin-top: 20px;'>Thank you for choosing us!</p>"
+            + "<div class='center'>"
+            + "<img src='https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjc1OGk0ZGVqNHFseDRrM3FvOW0xYnVyenJkcmQ2OXNsODE0djUzZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPhUfA1h2U2Koko/giphy.gif' alt='Namaskar' style='width: 100px; height: auto;' />"
+            + "</div>"
+            + "</body>"
+            + "</html>";
+    
+        boolean emailSent = emailService.sendEmail(message, subject, updatedBooking.getEmail());
+    
+        if (emailSent) {
+            System.out.println("Booking confirmation email sent successfully.");
+        } else {
+            System.out.println("Failed to send booking confirmation email.");
+        }}
 
         return ResponseEntity.ok(updatedBooking);
     }
@@ -412,6 +521,13 @@ public class WtlAdminController {
     //     return bookings.length();
         
     // }
+
+
+
+
+    // Excel code
+
+    
 
    
 }

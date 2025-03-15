@@ -8,12 +8,14 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.workshop.Entity.CabAdmin;
+import com.workshop.Entity.DriveAdmin;
 import com.workshop.Entity.OutSourceCarCab;
 import com.workshop.Repo.VehicleRepository;
 
@@ -98,6 +100,13 @@ public class VehicleService {
     	outSourceCarCab.setStatus(status);
 		    return vehicleRepository.save(outSourceCarCab);
     }
+
+
+     public List<OutSourceCarCab> getCabByStatus(String status) {
+    return vehicleRepository.findAll().stream() // Use stream to filter
+            .filter(c -> c.getStatus().equals(status)) // Filter by status
+            .collect(Collectors.toList()); // Collect the filtered results into a list
+}
     
     
 	

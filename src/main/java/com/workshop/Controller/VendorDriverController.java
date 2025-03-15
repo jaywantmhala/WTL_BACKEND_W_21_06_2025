@@ -122,6 +122,7 @@ private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/
           v.setdLNo(dLNo);
           v.setPvcNo(pvcNo);
           v.setdLnoImage(dLnoImageName);
+          v.setEmailId(emailId);
           v.setPvcImage(pvcImageName);
           v.setDriverDoc1Image(driverDoc1ImageName);
           v.setDriverDoc2Image(driverDoc2ImageName);
