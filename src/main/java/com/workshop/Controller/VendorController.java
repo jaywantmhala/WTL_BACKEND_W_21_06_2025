@@ -2,6 +2,7 @@ package com.workshop.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -207,7 +208,7 @@ public class VendorController {
     // }
 
 
-   @PutMapping("/update/{id}")
+    @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Vendor> update(@RequestBody Vendor vendor, @PathVariable Long id) {
         Vendor updatedVendor = this.service.updatePassword(vendor, id);
         return ResponseEntity.ok(updatedVendor);

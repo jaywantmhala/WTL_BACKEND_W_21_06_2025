@@ -1,6 +1,7 @@
 package com.workshop.DTO;
 
 import com.workshop.Entity.Booking;
+import com.workshop.Entity.Vendor;
 
 import java.time.LocalDate;
 
@@ -41,9 +42,11 @@ public class BookingDTO {
     private String timeEnd;
     private String bookingType;
     private String description;
-
+    private VendorDTO vendor;
     private VendorCabsDTO vendorCab;
     private VendorDriversDTO vendorDriver;
+    private CabAdminDTO cabAdmin;
+    private DriverAdminDTO driverAdmin;
 
     // Constructor to map from Booking entity
     public BookingDTO(Booking booking) {
@@ -82,6 +85,7 @@ public class BookingDTO {
         this.timeEnd = booking.getTimeEnd();
         this.bookingType = booking.getBookingType();
         this.description = booking.getDescription();
+        
 
         // Map vendorCab and vendorDriver to their respective DTOs
         if (booking.getVendorCab() != null) {
@@ -90,6 +94,18 @@ public class BookingDTO {
 
         if (booking.getVendorDriver() != null) {
             this.vendorDriver = new VendorDriversDTO(booking.getVendorDriver());
+        }
+
+        if (booking.getVendor() != null) {
+            this.vendor = new VendorDTO(booking.getVendor());
+        }
+
+        if(booking.getCabAdmin()!=null){
+            this.cabAdmin = new CabAdminDTO(booking.getCabAdmin());
+        }
+
+        if(booking.getDriveAdmin()!=null){
+            this.driverAdmin=new DriverAdminDTO(booking.getDriveAdmin());
         }
     }
 
@@ -390,4 +406,31 @@ public class BookingDTO {
     public void setVendorDriver(VendorDriversDTO vendorDriver) {
         this.vendorDriver = vendorDriver;
     }
+
+    public VendorDTO getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(VendorDTO vendor) {
+        this.vendor = vendor;
+    }
+
+    public CabAdminDTO getCabAdmin() {
+        return cabAdmin;
+    }
+
+    public void setCabAdmin(CabAdminDTO cabAdmin) {
+        this.cabAdmin = cabAdmin;
+    }
+
+    public DriverAdminDTO getDriverAdmin() {
+        return driverAdmin;
+    }
+
+    public void setDriverAdmin(DriverAdminDTO driverAdmin) {
+        this.driverAdmin = driverAdmin;
+    }
+
+    
+    
 }

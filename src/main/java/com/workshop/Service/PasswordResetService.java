@@ -1,13 +1,13 @@
 package com.workshop.Service;
 
+import com.workshop.Entity.User;
+import com.workshop.Repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.workshop.Entity.User;
-import com.workshop.Repo.UserRepo;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -22,6 +22,9 @@ public class PasswordResetService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Temporary storage for OTPs (email -> OTP)
+    private final Map<String, String> otpStorage = new HashMap<>();
+
     public void sendPasswordResetEmail(String email) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
@@ -29,6 +32,8 @@ public class PasswordResetService {
         }
 
         String otp = generateOTP();
+        otpStorage.put(email, otp); // Store OTP in memory
+
         boolean emailSent = emailService.sendEmail(otp, "Password Reset OTP", email);
 
         if (emailSent) {
@@ -43,23 +48,23 @@ public class PasswordResetService {
     }
 
     public boolean validateOTP(String email, String otp) {
-
-        return true;
+        String storedOtp = otpStorage.get(email); // Retrieve OTP from memory
+        if (storedOtp != null && storedOtp.equals(otp)) {
+            otpStorage.remove(email); // Clear OTP after validation
+            return true;
+        }
+        return false;
     }
 
     public void resetPassword(String email, String newPassword) {
-        if (validateOTP(email, "OTP_FROM_USER")) {
-            User user = userRepository.findByEmail(email);
-            if (user != null) {
-                String encodedPassword = passwordEncoder.encode(newPassword);
-                user.setPassword(encodedPassword); // Save the hashed password
-                userRepository.save(user);
-                System.out.println("Password reset successfully.");
-            } else {
-                throw new RuntimeException("User not found");
-            }
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            user.setPassword(encodedPassword); // Save the hashed password
+            userRepository.save(user);
+            System.out.println("Password reset successfully.");
         } else {
-            throw new RuntimeException("Invalid OTP");
+            throw new RuntimeException("User not found");
         }
     }
 }

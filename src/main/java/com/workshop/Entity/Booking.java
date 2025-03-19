@@ -66,6 +66,7 @@ public class Booking {
 	private String timeEnd;
 	private String bookingType;
 	private String description;
+	private String carrier;
 
 	@JsonIgnore
 	@JsonBackReference
@@ -93,6 +94,18 @@ public class Booking {
 	@JoinColumn(name = "penalty_id")
 	private Penalty penalty;
 
+
+	@ManyToOne
+@JoinColumn
+@JsonManagedReference
+private CabAdmin cabAdmin;
+
+@ManyToOne
+@JoinColumn
+@JsonManagedReference
+private DriveAdmin driveAdmin;
+
+
 	
 
 	
@@ -110,7 +123,7 @@ public class Booking {
 			String bookid, String car, String baseAmount, Integer amount, Integer status, String driverBhata,
 			Integer nightCharges, Integer gst, Integer serviceCharge, String offer, Integer offerPartial,
 			String offerAmount, String txnId, String payment, LocalDate dateEnd, String timeEnd, String bookingType,
-			String description, Vendor vendor, VendorCabs vendorCab, VendorDrivers vendorDriver, Penalty penalty) {
+			String description, Vendor vendor, VendorCabs vendorCab, VendorDrivers vendorDriver, Penalty penalty, CabAdmin cabAdmin, DriveAdmin driveAdmin, String carrier) {
 		this.id = id;
 		this.fromLocation = fromLocation;
 		this.toLocation = toLocation;
@@ -142,6 +155,7 @@ public class Booking {
 		this.offerAmount = offerAmount;
 		this.txnId = txnId;
 		this.payment = payment;
+		this.carrier=carrier;
 		this.dateEnd = dateEnd;
 		this.timeEnd = timeEnd;
 		this.bookingType = bookingType;
@@ -150,6 +164,8 @@ public class Booking {
 		this.vendorCab = vendorCab;
 		this.vendorDriver = vendorDriver;
 		this.penalty=penalty;
+		this.cabAdmin=cabAdmin;
+		this.driveAdmin=driveAdmin;
 	}
 
 	public Booking() {
@@ -312,6 +328,8 @@ public class Booking {
 		return baseAmount;
 	}
 
+	
+
 	public void setBaseAmount(String baseAmount) {
 		this.baseAmount = baseAmount;
 	}
@@ -461,6 +479,23 @@ public class Booking {
 	}
 
 	
+	
+	public CabAdmin getCabAdmin() {
+		return cabAdmin;
+	}
+
+	public void setCabAdmin(CabAdmin cabAdmin) {
+		this.cabAdmin = cabAdmin;
+	}
+
+	public DriveAdmin getDriveAdmin() {
+		return driveAdmin;
+	}
+
+	public void setDriveAdmin(DriveAdmin driveAdmin) {
+		this.driveAdmin = driveAdmin;
+	}
+
 	@Override
 	public String toString() {
 		return "Booking [id=" + id + ", fromLocation=" + fromLocation + ", toLocation=" + toLocation + ", tripType="
@@ -497,6 +532,14 @@ public class Booking {
 
 	public void setPenalty(Penalty penalty) {
 		this.penalty = penalty;
+	}
+
+	public String getCarrier() {
+		return carrier;
+	}
+
+	public void setCarrier(String carrier) {
+		this.carrier = carrier;
 	}
 
 }

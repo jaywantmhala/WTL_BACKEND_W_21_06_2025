@@ -1,9 +1,15 @@
 package com.workshop.Entity;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class CabAdmin{
@@ -27,13 +33,18 @@ public class CabAdmin{
     private String frontImage; //image filename or path
     private String backImage; //image filename or path
     private String sideImage; //image filename or path
+
+
+	@OneToMany(mappedBy = "cabAdmin")
+	@JsonBackReference
+	private List<Booking> booking;
 	public CabAdmin() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public CabAdmin(Long id, String vehicleNameAndRegNo, String vehicleRcNo, String carOtherDetails,
 			String vehicleRcImg, String insurance, String permit, String fitnessCert, String cabImage,
-			String frontImage, String backImage, String sideImage, String status) {
+			String frontImage, String backImage, String sideImage, String status, List<Booking> booking) {
 		super();
 		this.id = id;
 		this.vehicleNameAndRegNo = vehicleNameAndRegNo;
@@ -48,6 +59,7 @@ public class CabAdmin{
 		this.backImage = backImage;
 		this.sideImage = sideImage;
 		this.status=status;
+		this.booking=booking;
 //		this.vehicleName=vehicleName;
 	}
 	public Long getId() {
@@ -134,6 +146,14 @@ public class CabAdmin{
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public List<Booking> getBooking() {
+		return booking;
+	}
+	public void setBooking(List<Booking> booking) {
+		this.booking = booking;
+	}
+
+	
     
 	
 	

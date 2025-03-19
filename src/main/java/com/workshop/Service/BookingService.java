@@ -15,11 +15,15 @@ import org.springframework.stereotype.Service;
 import com.workshop.DTO.BookingDTO;
 import com.workshop.DTO.CancellationResult;
 import com.workshop.Entity.Booking;
+import com.workshop.Entity.CabAdmin;
+import com.workshop.Entity.DriveAdmin;
 import com.workshop.Entity.Penalty;
 import com.workshop.Entity.Vendor;
 import com.workshop.Entity.VendorCabs;
 import com.workshop.Entity.VendorDrivers;
 import com.workshop.Repo.BookingRepo;
+import com.workshop.Repo.CabAdminRepo;
+import com.workshop.Repo.DriverAdminRepo;
 import com.workshop.Repo.PenaltyRepo;
 import com.workshop.Repo.VendorCabRepo;
 import com.workshop.Repo.VendorDriverRepo;
@@ -47,6 +51,12 @@ public class BookingService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private CabAdminRepo cabAdminRepo;
+
+    @Autowired
+    private DriverAdminRepo driverAdminRepo;
 
     public void saveBooking(Booking booking) {
         repo.save(booking);
@@ -241,6 +251,9 @@ public class BookingService {
     public Penalty createPenalty(int bookingId, Long vendorId, Penalty penalty){
       Booking b = this.repo.findById(bookingId).orElse(null);
       Vendor v = this.vendorRepo.findById(vendorId).orElse(null);
+      b.setVendorCab(null);
+      b.setVendorDriver(null);
+    //   b.setVendor(null);
 
       String subject = "For booking Cancellation Penalty - " + b.getUserPickup() + " "+b.getUserDrop();
       String message = "<h3>Hello " + v.getVendorCompanyName() + ",</h3>" +
@@ -270,6 +283,32 @@ public class BookingService {
       penalty.setBooking(b);
       penalty.setDate(LocalDate.now()); 
        return this.penaltyRepo.save(penalty);
+    }
+
+
+    public Booking assignCabAdminToBooking(Long cabAdminId, int bookingId){
+        Booking existingbooking = this.repo.findById(bookingId).orElse(null);
+        CabAdmin cabAdmin = this.cabAdminRepo.findById(cabAdminId).orElse(null);
+        existingbooking.setVendor(null);
+        existingbooking.setVendorCab(null);
+        existingbooking.setVendorDriver(null);
+
+
+        existingbooking.setCabAdmin(cabAdmin);
+        return this.repo.save(existingbooking);
+
+    }
+
+
+    public Booking assignDriveAdminToBooking(int driveAdminId, int bookingId){
+        Booking booking = this.repo.findById(bookingId).orElse(null);
+        DriveAdmin driveAdmin = this.driverAdminRepo.findById(driveAdminId).orElse(null);
+        booking.setVendor(null);
+        booking.setVendorCab(null);
+        booking.setVendorDriver(null);
+        booking.setDriveAdmin(driveAdmin);
+        return this.repo.save(booking);
+
     }
 
 

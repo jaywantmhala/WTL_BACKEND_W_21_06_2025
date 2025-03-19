@@ -1,9 +1,15 @@
 package com.workshop.Entity;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class DriveAdmin {
@@ -40,6 +46,11 @@ public class DriveAdmin {
 	
 	private String status;
 
+
+	@OneToMany(mappedBy = "driveAdmin")
+	@JsonBackReference
+	private List<Booking> booking;
+
 	public DriveAdmin() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -49,7 +60,7 @@ public class DriveAdmin {
 
 	public DriveAdmin(int id, String driverName, String contactNo, String altMobNum, String emailId, String adress,
 			String aadhaNo, String drLicenseNo, String pvcNo, String driverImgSelfie, String aadhar,
-			String drLicenceNum, String pvcNo2, String otherDetails, String status) {
+			String drLicenceNum, String pvcNo2, String otherDetails, String status, List<Booking> booking) {
 		super();
 		this.id = id;
 		DriverName = driverName;
@@ -66,6 +77,7 @@ public class DriveAdmin {
 		PvcNo = pvcNo2;
 		this.otherDetails = otherDetails;
 		this.status=status;
+		this.booking=booking;
 	}
 
 
@@ -204,6 +216,18 @@ public class DriveAdmin {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+
+
+	public List<Booking> getBooking() {
+		return booking;
+	}
+
+
+
+	public void setBooking(List<Booking> booking) {
+		this.booking = booking;
 	} 
 	
 	

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Page</title>
+    <style>
+        /* Reset some default styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Create a container for the error page */
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f1f1f1;
+        }
+
+        /* Style the error message */
+        .error-message {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Style the error description */
+        .error-description {
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        /* Style the error image */
+        .error-image {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Style a link to return to the homepage */
+        .home-link {
+            text-decoration: none;
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        /* Style the link on hover */
+        .home-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <img src="./images/error.png" alt="Error Image" class="error-image">
+        <div class="error-message">Oops! Something went wrong.</div>
+        <div class="error-description">We're sorry, but the page you're looking for cannot be found.</div>
+        <a href="/" class="home-link">Return to Homepage</a>
+    </div>
+</body>
+</html>

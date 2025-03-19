@@ -1,9 +1,8 @@
 package com.workshop.Controller;
 
+import com.workshop.Service.PasswordResetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import com.workshop.Service.PasswordResetService;
 
 @RestController
 @RequestMapping("/api/password-reset")
@@ -13,23 +12,18 @@ public class PasswordResetController {
     private PasswordResetService passwordResetService;
 
     @PostMapping("/request-reset")
-    public String requestPasswordReset(@RequestParam("email") String email) {
+    public String sendPasswordResetEmail(@RequestParam String email) {
         passwordResetService.sendPasswordResetEmail(email);
-        return "Password reset OTP sent to your email.";
+        return "OTP sent successfully!";
     }
 
     @PostMapping("/verify-otp")
-    public String verifyOTP(@RequestParam("email") String email, @RequestParam("otp") String otp) {
-        boolean isValid = passwordResetService.validateOTP(email, otp);
-        if (isValid) {
-            return "OTP verified successfully.";
-        } else {
-            return "Invalid OTP.";
-        }
+    public boolean verifyOTP(@RequestParam String email, @RequestParam String otp) {
+        return passwordResetService.validateOTP(email, otp);
     }
 
     @PostMapping("/reset-password")
-    public String resetPassword(@RequestParam("email") String email, @RequestParam("newPassword") String newPassword) {
+    public String resetPassword(@RequestParam String email, @RequestParam String newPassword) {
         passwordResetService.resetPassword(email, newPassword);
         return "Password reset successfully.";
     }

@@ -539,6 +539,9 @@ public class BookingController {
 			System.out.println("Failed to send booking confirmation email.");
 		}
 
+
+		
+
 		return "redirect:/testpage";
 	}
 

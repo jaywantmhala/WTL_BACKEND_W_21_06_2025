@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -52,6 +53,7 @@ import com.workshop.Service.CabInfoService;
 import com.workshop.Service.CitiesService;
 import com.workshop.Service.EmailService;
 import com.workshop.Service.PopupService;
+import com.workshop.Service.SmsService;
 import com.workshop.Service.StatesService;
 import com.workshop.Service.TripService;
 import com.workshop.Service.UserDetailServiceImpl;
@@ -63,11 +65,16 @@ import com.workshop.Service.TripRateService;
 @RestController
 // @RequestMapping
 public class WtlAdminController {
+
+    private final AuthenticationManagerBuilder authenticationManager;
     @Autowired
     BookingService ser;
 
     @Autowired
     private TripService tripSer;
+
+    @Autowired
+    private SmsService smsService;
 
     @Autowired
     CabInfoService cabser;
@@ -84,11 +91,17 @@ public class WtlAdminController {
     @Autowired
     private CitiesService citiesService;
 
+    
+
     @Autowired
     PopupService service;
 
     @Autowired
     UserDetailServiceImpl userService;
+
+    WtlAdminController(AuthenticationManagerBuilder authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
 
     // private final String apiKey = "AIzaSyCelDo4I5cPQ72TfCTQW-arhPZ7ALNcp8w"; //
     // Replace with your Google API key
@@ -363,41 +376,44 @@ public class WtlAdminController {
     } else {
         String subject = "Booking Confirmation - " + updatedBooking.getBookid();
         String message = "<!DOCTYPE html>"
-        + "<html>"
-        + "<head>"
-        + "<style>"
-        + "body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px; background-color: #f9f9f9; }"
-        + "h3 { color: #007BFF; font-size: 24px; margin-bottom: 20px; }"
-        + "p { font-size: 16px; line-height: 1.5; }"
-        + "ul { list-style-type: none; padding: 0; }"
-        + "li { margin-bottom: 10px; }"
-        + "strong { color: #007BFF; }"
-        + ".center { text-align: center; margin-top: 30px; }"
-        + "</style>"
-        + "</head>"
-        + "<body>"
-        + "<h3>Hello " + updatedBooking.getName() + ",</h3>"
-        + "<p>Your booking has been confirmed.</p>"
-        + "<p style='font-size: 18px; font-weight: bold; margin-top: 20px; margin-bottom: 10px;'>Booking Details:</p>"
-        + "<ul>"
-        + "<li><strong>Booking ID:</strong> " + updatedBooking.getBookid() + "</li>"
-        + "<li><strong>Pickup Location:</strong> " + updatedBooking.getUserPickup() + "</li>"
-        + "<li><strong>Drop Location:</strong> " + updatedBooking.getUserDrop() + "</li>"
-        + "<li><strong>Trip Type:</strong> " + updatedBooking.getTripType() + "</li>"
-        + "<li><strong>Date:</strong> " + updatedBooking.getDate() + "</li>"
-        + "<li><strong>Time:</strong> " + updatedBooking.getTime() + "</li>"
-        + "<li><strong>Amount Paid:</strong> ₹" + updatedBooking.getAmount() + "</li>"
-        + "<li><strong>Cab Name:</strong> " + updatedBooking.getVendorCab().getCarName() + "</li>"
-        + "<li><strong>Vehicle No:</strong> " + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
-        + "<li><strong>Driver Name:</strong> " + updatedBooking.getVendorDriver().getDriverName() + "</li>"
-        + "<li><strong>Driver Contact:</strong> " + updatedBooking.getVendorDriver().getContactNo() + "</li>"
-        + "</ul>"
-        + "<p style='font-size: 16px; line-height: 1.5; margin-top: 20px;'>Thank you for choosing us!</p>"
-        + "<div class='center'>"
-        + "<img src='https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjc1OGk0ZGVqNHFseDRrM3FvOW0xYnVyenJkcmQ2OXNsODE0djUzZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPhUfA1h2U2Koko/giphy.gif' alt='Namaskar' style='width: 100px; height: auto;' />"
-        + "</div>"
-        + "</body>"
-        + "</html>";
+    + "<html lang='en'>"
+    + "<head>"
+    + "<meta charset='UTF-8'>"
+    + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+    + "<title>Booking Confirmation</title>"
+    + "</head>"
+    + "<body style='font-family: Arial, sans-serif; background-color: #f7f7f7; margin: 0; padding: 0;'>"
+    + "<div style='max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow: hidden;'>"
+    + "<div style='background-color: #007BFF; color: #ffffff; padding: 20px; text-align: center;'>"
+    + "<h1 style='margin: 0; font-size: 24px; font-weight: bold;'>Booking Confirmation</h1>"
+    + "</div>"
+    + "<div style='padding: 20px;'>"
+    + "<h3 style='color: #007BFF; font-size: 20px; margin-bottom: 20px;'>Hello " + updatedBooking.getName() + ",</h3>"
+    + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-bottom: 20px;'>Your booking has been confirmed. Below are the details of your booking:</p>"
+    + "<div style='margin-top: 20px;'>"
+    + "<ul style='list-style-type: none; padding: 0;'>"
+    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Booking ID:</strong> " + updatedBooking.getBookid() + "</li>"
+    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Pickup Location:</strong> " + updatedBooking.getUserPickup() + "</li>"
+    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Drop Location:</strong> " + updatedBooking.getUserDrop() + "</li>"
+    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Trip Type:</strong> " + updatedBooking.getTripType() + "</li>"
+    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Date:</strong> " + updatedBooking.getDate() + "</li>"
+    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Time:</strong> " + updatedBooking.getTime() + "</li>"
+    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Amount Paid:</strong> ₹" + updatedBooking.getAmount() + "</li>"
+    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Cab Name:</strong> " + updatedBooking.getVendorCab().getCarName() + "</li>"
+    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Vehicle No:</strong> " + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
+    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Name:</strong> " + updatedBooking.getVendorDriver().getDriverName() + "</li>"
+    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Contact:</strong> " + updatedBooking.getVendorDriver().getContactNo() + "</li>"
+    + "</ul>"
+    + "</div>"
+    + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-top: 20px;'>Thank you for choosing us! We wish you a safe and pleasant journey.</p>"
+    + "</div>"
+    + "<div style='text-align: center; padding: 20px; background-color: #f1f1f1; color: #777777; font-size: 14px;'>"
+    + "<p style='margin: 0;'>If you have any questions, feel free to contact us at <a href='mailto:support@example.com' style='color: #007BFF; text-decoration: none;'>support@example.com</a>.</p>"
+    + "<img src='https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjc1OGk0ZGVqNHFseDRrM3FvOW0xYnVyenJkcmQ2OXNsODE0djUzZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPhUfA1h2U2Koko/giphy.gif' alt='Namaskar' style='width: 100px; height: auto; margin-top: 10px;'>"
+    + "</div>"
+    + "</div>"
+    + "</body>"
+    + "</html>";
     boolean emailSent = emailService.sendEmail(message, subject, updatedBooking.getEmail());
 
     if (emailSent) {
@@ -405,6 +421,9 @@ public class WtlAdminController {
     } else {
         System.out.println("Failed to send booking confirmation email.");
     }
+
+
+   
     }
 
     return ResponseEntity.ok(updatedBooking);
@@ -428,38 +447,41 @@ public class WtlAdminController {
         } else {
             String subject = "Booking Confirmation - " + updatedBooking.getBookid();
             String message = "<!DOCTYPE html>"
-            + "<html>"
+            + "<html lang='en'>"
             + "<head>"
-            + "<style>"
-            + "body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px; background-color: #f9f9f9; }"
-            + "h3 { color: #007BFF; font-size: 24px; margin-bottom: 20px; }"
-            + "p { font-size: 16px; line-height: 1.5; }"
-            + "ul { list-style-type: none; padding: 0; }"
-            + "li { margin-bottom: 10px; }"
-            + "strong { color: #007BFF; }"
-            + ".center { text-align: center; margin-top: 30px; }"
-            + "</style>"
+            + "<meta charset='UTF-8'>"
+            + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+            + "<title>Booking Confirmation</title>"
             + "</head>"
-            + "<body>"
-            + "<h3>Hello " + updatedBooking.getName() + ",</h3>"
-            + "<p>Your booking has been confirmed.</p>"
-            + "<p style='font-size: 18px; font-weight: bold; margin-top: 20px; margin-bottom: 10px;'>Booking Details:</p>"
-            + "<ul>"
-            + "<li><strong>Booking ID:</strong> " + updatedBooking.getBookid() + "</li>"
-            + "<li><strong>Pickup Location:</strong> " + updatedBooking.getUserPickup() + "</li>"
-            + "<li><strong>Drop Location:</strong> " + updatedBooking.getUserDrop() + "</li>"
-            + "<li><strong>Trip Type:</strong> " + updatedBooking.getTripType() + "</li>"
-            + "<li><strong>Date:</strong> " + updatedBooking.getDate() + "</li>"
-            + "<li><strong>Time:</strong> " + updatedBooking.getTime() + "</li>"
-            + "<li><strong>Amount Paid:</strong> ₹" + updatedBooking.getAmount() + "</li>"
-            + "<li><strong>Cab Name:</strong> " + updatedBooking.getVendorCab().getCarName() + "</li>"
-            + "<li><strong>Vehicle No:</strong> " + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
-            + "<li><strong>Driver Name:</strong> " + updatedBooking.getVendorDriver().getDriverName() + "</li>"
-            + "<li><strong>Driver Contact:</strong> " + updatedBooking.getVendorDriver().getContactNo() + "</li>"
+            + "<body style='font-family: Arial, sans-serif; background-color: #f7f7f7; margin: 0; padding: 0;'>"
+            + "<div style='max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow: hidden;'>"
+            + "<div style='background-color: #007BFF; color: #ffffff; padding: 20px; text-align: center;'>"
+            + "<h1 style='margin: 0; font-size: 24px; font-weight: bold;'>Booking Confirmation</h1>"
+            + "</div>"
+            + "<div style='padding: 20px;'>"
+            + "<h3 style='color: #007BFF; font-size: 20px; margin-bottom: 20px;'>Hello " + updatedBooking.getName() + ",</h3>"
+            + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-bottom: 20px;'>Your booking has been confirmed. Below are the details of your booking:</p>"
+            + "<div style='margin-top: 20px;'>"
+            + "<ul style='list-style-type: none; padding: 0;'>"
+            + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Booking ID:</strong> " + updatedBooking.getBookid() + "</li>"
+            + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Pickup Location:</strong> " + updatedBooking.getUserPickup() + "</li>"
+            + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Drop Location:</strong> " + updatedBooking.getUserDrop() + "</li>"
+            + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Trip Type:</strong> " + updatedBooking.getTripType() + "</li>"
+            + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Date:</strong> " + updatedBooking.getDate() + "</li>"
+            + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Time:</strong> " + updatedBooking.getTime() + "</li>"
+            + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Amount Paid:</strong> ₹" + updatedBooking.getAmount() + "</li>"
+            + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Cab Name:</strong> " + updatedBooking.getVendorCab().getCarName() + "</li>"
+            + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Vehicle No:</strong> " + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
+            + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Name:</strong> " + updatedBooking.getVendorDriver().getDriverName() + "</li>"
+            + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Contact:</strong> " + updatedBooking.getVendorDriver().getContactNo() + "</li>"
             + "</ul>"
-            + "<p style='font-size: 16px; line-height: 1.5; margin-top: 20px;'>Thank you for choosing us!</p>"
-            + "<div class='center'>"
-            + "<img src='https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjc1OGk0ZGVqNHFseDRrM3FvOW0xYnVyenJkcmQ2OXNsODE0djUzZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPhUfA1h2U2Koko/giphy.gif' alt='Namaskar' style='width: 100px; height: auto;' />"
+            + "</div>"
+            + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-top: 20px;'>Thank you for choosing us! We wish you a safe and pleasant journey.</p>"
+            + "</div>"
+            + "<div style='text-align: center; padding: 20px; background-color: #f1f1f1; color: #777777; font-size: 14px;'>"
+            + "<p style='margin: 0;'>If you have any questions, feel free to contact us at <a href='mailto:support@example.com' style='color: #007BFF; text-decoration: none;'>support@example.com</a>.</p>"
+            + "<img src='https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjc1OGk0ZGVqNHFseDRrM3FvOW0xYnVyenJkcmQ2OXNsODE0djUzZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPhUfA1h2U2Koko/giphy.gif' alt='Namaskar' style='width: 100px; height: auto; margin-top: 10px;'>"
+            + "</div>"
             + "</div>"
             + "</body>"
             + "</html>";
@@ -527,7 +549,153 @@ public class WtlAdminController {
 
     // Excel code
 
-    
 
-   
+    @PutMapping("/{bookingId}/assignCabAdmin/{cabAdminId}")
+    public ResponseEntity<Booking> assignCabAdminToBooking(@PathVariable int bookingId, @PathVariable Long cabAdminId){
+    
+    Booking updatedBooking = bookingService.assignCabAdminToBooking(cabAdminId, bookingId);
+
+    if (updatedBooking == null) {
+        // If the booking or vendor was not found, return a 404 Not Found
+        return ResponseEntity.notFound().build();
+    }
+
+    if (updatedBooking.getCabAdmin() == null || updatedBooking.getDriveAdmin() == null) {
+        System.out.println("Vendor is not assigned");
+    } else {
+        String subject = "Booking Confirmation - " + updatedBooking.getBookid();
+        String message = "<!DOCTYPE html>"
+        + "<html lang='en'>"
+        + "<head>"
+        + "<meta charset='UTF-8'>"
+        + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+        + "<title>Booking Confirmation</title>"
+        + "</head>"
+        + "<body style='font-family: Arial, sans-serif; background-color: #f7f7f7; margin: 0; padding: 0;'>"
+        + "<div style='max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow: hidden;'>"
+        + "<div style='background-color: #007BFF; color: #ffffff; padding: 20px; text-align: center;'>"
+        + "<h1 style='margin: 0; font-size: 24px; font-weight: bold;'>Booking Confirmation</h1>"
+        + "</div>"
+        + "<div style='padding: 20px;'>"
+        + "<h3 style='color: #007BFF; font-size: 20px; margin-bottom: 20px;'>Hello " + updatedBooking.getName() + ",</h3>"
+        + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-bottom: 20px;'>Your booking has been confirmed. Below are the details of your booking:</p>"
+        + "<div style='margin-top: 20px;'>"
+        + "<ul style='list-style-type: none; padding: 0;'>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Booking ID:</strong> " + updatedBooking.getBookid() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Pickup Location:</strong> " + updatedBooking.getUserPickup() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Drop Location:</strong> " + updatedBooking.getUserDrop() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Trip Type:</strong> " + updatedBooking.getTripType() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Date:</strong> " + updatedBooking.getDate() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Time:</strong> " + updatedBooking.getTime() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Amount Paid:</strong> ₹" + updatedBooking.getAmount() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Cab Name:</strong> " + updatedBooking.getVendorCab().getCarName() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Vehicle No:</strong> " + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Name:</strong> " + updatedBooking.getVendorDriver().getDriverName() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Contact:</strong> " + updatedBooking.getVendorDriver().getContactNo() + "</li>"
+        + "</ul>"
+        + "</div>"
+        + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-top: 20px;'>Thank you for choosing us! We wish you a safe and pleasant journey.</p>"
+        + "</div>"
+        + "<div style='text-align: center; padding: 20px; background-color: #f1f1f1; color: #777777; font-size: 14px;'>"
+        + "<p style='margin: 0;'>If you have any questions, feel free to contact us at <a href='mailto:support@example.com' style='color: #007BFF; text-decoration: none;'>support@example.com</a>.</p>"
+        + "<img src='https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjc1OGk0ZGVqNHFseDRrM3FvOW0xYnVyenJkcmQ2OXNsODE0djUzZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPhUfA1h2U2Koko/giphy.gif' alt='Namaskar' style='width: 100px; height: auto; margin-top: 10px;'>"
+        + "</div>"
+        + "</div>"
+        + "</body>"
+        + "</html>";
+
+    boolean emailSent = emailService.sendEmail(message, subject, updatedBooking.getEmail());
+
+    if (emailSent) {
+        System.out.println("Booking confirmation email sent successfully.");
+    } else {
+        System.out.println("Failed to send booking confirmation email.");
+    }}
+
+    return ResponseEntity.ok(updatedBooking);
+
 }
+
+
+
+@PutMapping("/{bookingId}/assignDriveAdmin/{driveAdminId}")
+    public ResponseEntity<Booking> assignDriveAdminToBooking(@PathVariable int bookingId, @PathVariable int driveAdminId){
+    
+    Booking updatedBooking = bookingService.assignDriveAdminToBooking(driveAdminId, bookingId);
+
+    if (updatedBooking == null) {
+        // If the booking or vendor was not found, return a 404 Not Found
+        return ResponseEntity.notFound().build();
+    }
+
+    if (updatedBooking.getCabAdmin() == null || updatedBooking.getDriveAdmin() == null) {
+        System.out.println("Vendor is not assigned");
+    } else {
+        String subject = "Booking Confirmation - " + updatedBooking.getBookid();
+        String message = "<!DOCTYPE html>"
+        + "<html lang='en'>"
+        + "<head>"
+        + "<meta charset='UTF-8'>"
+        + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+        + "<title>Booking Confirmation</title>"
+        + "</head>"
+        + "<body style='font-family: Arial, sans-serif; background-color: #f7f7f7; margin: 0; padding: 0;'>"
+        + "<div style='max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow: hidden;'>"
+        + "<div style='background-color: #007BFF; color: #ffffff; padding: 20px; text-align: center;'>"
+        + "<h1 style='margin: 0; font-size: 24px; font-weight: bold;'>Booking Confirmation</h1>"
+        + "</div>"
+        + "<div style='padding: 20px;'>"
+        + "<h3 style='color: #007BFF; font-size: 20px; margin-bottom: 20px;'>Hello " + updatedBooking.getName() + ",</h3>"
+        + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-bottom: 20px;'>Your booking has been confirmed. Below are the details of your booking:</p>"
+        + "<div style='margin-top: 20px;'>"
+        + "<ul style='list-style-type: none; padding: 0;'>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Booking ID:</strong> " + updatedBooking.getBookid() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Pickup Location:</strong> " + updatedBooking.getUserPickup() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Drop Location:</strong> " + updatedBooking.getUserDrop() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Trip Type:</strong> " + updatedBooking.getTripType() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Date:</strong> " + updatedBooking.getDate() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Time:</strong> " + updatedBooking.getTime() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Amount Paid:</strong> ₹" + updatedBooking.getAmount() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Cab Name:</strong> " + updatedBooking.getVendorCab().getCarName() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Vehicle No:</strong> " + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Name:</strong> " + updatedBooking.getVendorDriver().getDriverName() + "</li>"
+        + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Contact:</strong> " + updatedBooking.getVendorDriver().getContactNo() + "</li>"
+        + "</ul>"
+        + "</div>"
+        + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-top: 20px;'>Thank you for choosing us! We wish you a safe and pleasant journey.</p>"
+        + "</div>"
+        + "<div style='text-align: center; padding: 20px; background-color: #f1f1f1; color: #777777; font-size: 14px;'>"
+        + "<p style='margin: 0;'>If you have any questions, feel free to contact us at <a href='mailto:support@example.com' style='color: #007BFF; text-decoration: none;'>support@example.com</a>.</p>"
+        + "<img src='https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjc1OGk0ZGVqNHFseDRrM3FvOW0xYnVyenJkcmQ2OXNsODE0djUzZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPhUfA1h2U2Koko/giphy.gif' alt='Namaskar' style='width: 100px; height: auto; margin-top: 10px;'>"
+        + "</div>"
+        + "</div>"
+        + "</body>"
+        + "</html>";
+
+    boolean emailSent = emailService.sendEmail(message, subject, updatedBooking.getEmail());
+
+    if (emailSent) {
+        System.out.println("Booking confirmation email sent successfully.");
+    } else {
+        System.out.println("Failed to send booking confirmation email.");
+    }}
+
+    return ResponseEntity.ok(updatedBooking);
+
+}
+
+
+@GetMapping("/send-sms")
+public String sendSms(
+        @RequestParam String phoneNumber,
+        @RequestParam String carrier,
+        @RequestParam String message) { // Add the 'message' parameter
+    boolean isSent = smsService.sendSms(phoneNumber, carrier, message); // Pass all three parameters
+    if (isSent) {
+        return "SMS sent successfully!";
+    } else {
+        return "Failed to send SMS.";
+    }
+}
+}
+
