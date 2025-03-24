@@ -1289,6 +1289,21 @@
     </div>
 </div><!-- end modal-popup -->
 
+<script>
+    // Disable right-click context menu
+    document.addEventListener('contextmenu', function(event) {
+        event.preventDefault();
+    });
+  
+    // Disable Ctrl+U (View Page Source)
+    document.addEventListener('keydown', function(event) {
+        // Check if Ctrl key is pressed and the key is 'U'
+        if (event.ctrlKey && event.key === 'u') {
+            event.preventDefault();
+        }
+    });
+  </script>
+
 <!-- Template JS Files -->
 <script src="js/jquery-3.4.1.min.js"></script>
 <script src="js/jquery-ui.js"></script>

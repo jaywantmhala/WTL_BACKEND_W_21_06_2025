@@ -657,7 +657,7 @@
               })();
             </script>
             
-            <form id="bookForm" th:action="@{/book}" method="post" style="position: relative;" onsubmit="sendEmail(event)">
+            <form id="bookForm" th:action="@{/book}" method="post" style="position: relative;">
               <!-- Hidden input fields for cab information -->
               <input type="hidden" name="cabId" th:value="${cabId}" />
               <input type="hidden" name="modelName" th:value="${modelName}" />
@@ -678,16 +678,16 @@
               <input type="hidden" name="total" th:value="${total}" />
               <input type="hidden" name="days" th:value="${days}" />
               <input type="hidden" name="driverrate" th:value="${driverrate}" />
-              
+          
               <!-- User Input Fields -->
               <div class="form-group">
-                  <input type="text" name="name" class="form-control" placeholder="Name" required />
+                  <input type="text" name="name" id="name" class="form-control" placeholder="Name" required />
               </div>
               <div class="form-group">
-                  <input type="email" name="email" class="form-control" placeholder="Email" required/>
+                  <input type="email" name="email" id="email" class="form-control" placeholder="Email" required />
               </div>
               <div class="form-group">
-                  <input type="number" name="phone" class="form-control" placeholder="Phone" required/>
+                  <input type="number" name="phone" id="phone" class="form-control" placeholder="Phone" required />
               </div>
               <div class="row mt-4">
                   <div class="col-md-6" id="bt">
@@ -1185,7 +1185,74 @@
     </div>
     <!-- end modal-popup -->
 
+    <script>
+  // Disable right-click context menu
+  document.addEventListener('contextmenu', function(event) {
+      event.preventDefault();
+  });
+
+  // Disable Ctrl+U (View Page Source)
+  document.addEventListener('keydown', function(event) {
+      // Check if Ctrl key is pressed and the key is 'U'
+      if (event.ctrlKey && event.key === 'u') {
+          event.preventDefault();
+      }
+  });
+</script>
+
+<!-- Include SweetAlert2 for better pop-ups -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.getElementById('bookForm').addEventListener('submit', function (event) {
+        // Prevent form submission
+        event.preventDefault();
+
+        // Get form fields
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+
+        // Validation rules
+        let isValid = true;
+        let errorMessage = '';
+
+        // Name validation (e.g., at least 3 characters)
+        if (name.length < 3) {
+            isValid = false;
+            errorMessage += 'Name must be at least 3 characters long.\n';
+        }
+
+        // Email validation (simple regex)
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            isValid = false;
+            errorMessage += 'Please enter a valid email address.\n';
+        }
+
+        // Phone validation (e.g., 10 digits)
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(phone)) {
+            isValid = false;
+            errorMessage += 'Phone number must be 10 digits.\n';
+        }
+
+        // Show error message or submit form
+        if (!isValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: errorMessage,
+            });
+        } else {
+            // If valid, submit the form
+            this.submit();
+        }
+    });
+</script>
+
     <!-- Template JS Files -->
+
     <script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/popper.min.js"></script>

@@ -649,90 +649,79 @@
 
 
  
-    <div class=" container-fluid ">
-        <div class="row justify-content-center align items-center">
-            <div class="col-md-6">
-                <div class="px-5 ms-xl-4">
-                    <i class="fas fa-crow fa-2x me-3 pt-5 mt-xl-4" style="color: #709085;"></i>
-                </div>
-                <div class="d-flex flex-column align-items-center h-custom-2 px-5 ms-xl-4 mt-5 pt-5 pt-xl-0 mt-xl-n5">
-                 <div class="red-background">
-                    <form th:action="@{/register}" method="post" th:object="${user}">
-                        <h3 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Register</h3>
-                         <div th:if="${param.logout}">
-                            <div class="alert alert-info">You have been logged out.</div>
-                        </div>
-                        <div th:if="${message}">
-                            <p class="alert alert-danger" th:text="${message}"></p>
-                        </div>
-                        <div th:if="${register}">
-                            <p class="alert alert-info" th:text="${register}"></p>
-                        </div>
-                        <!-- ... (your form content) -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-outline mb-4">
-                                    <input type="text" id="username" name="username" th:field="*{username}" required
-                                        placeholder="Enter Username" autofocus="autofocus"
-                                        class="form-control form-control-lg" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-outline mb-4">
-                                    <input type="email" id="email" name="email" th:field="*{email}" required
-                                        placeholder="Enter email" autofocus="autofocus"
-                                        class="form-control form-control-lg" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-outline mb-4">
-                                    <input type="text" id="phone" name="phone" th:field="*{phone}" required
-                                        placeholder="Phone no" autofocus="autofocus"
-                                        class="form-control form-control-lg" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-outline mb-4">
-                                    <input type="password" id="password" name="password" th:field="*{password}"
-                                        required placeholder="Password"
-                                        class="form-control form-control-lg" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-outline mb-4">
-                            <label for="role">Role</label>
-                            <select id="role" name="role" th:field="*{role}" class="select-custom">
-                                <option value="USER">User</option>
-                                <option value="VENDOR">Vendor</option>
-                            </select>
-                        </div>
-                        <div class="pt-1 mb-4">
-                            <button class="btn btn-info btn-lg btn-block login-button" type="submit" name="login-submit"
-                                id="login-submit">Register</button>
-                        </div>
-                        <p>Already registered? <a href="/" th:href="@{/login}" class="link-info">Login
-                                here</a></p>
-                    </form>
-                    </div>
-                    <script>
-                        // Show additional fields for Doctor when selected
-                        var roleSelect = document.getElementById('role');
-                        var doctorFields = document.getElementById('doctor-fields');
+<div class="container-fluid">
+  <div class="row justify-content-center align-items-center">
+      <div class="col-md-6">
+          <div class="px-5 ms-xl-4">
+              <i class="fas fa-crow fa-2x me-3 pt-5 mt-xl-4" style="color: #709085;"></i>
+          </div>
+          <div class="d-flex flex-column align-items-center h-custom-2 px-5 ms-xl-4 mt-5 pt-5 pt-xl-0 mt-xl-n5">
+              <div class="red-background">
+                  <form id="registerForm" th:action="@{/register}" method="post" th:object="${user}">
+                      <h3 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Register</h3>
+                      <div th:if="${param.logout}">
+                          <div class="alert alert-info">You have been logged out.</div>
+                      </div>
+                      <div th:if="${message}">
+                          <p class="alert alert-danger" th:text="${message}"></p>
+                      </div>
+                      <div th:if="${register}">
+                          <p class="alert alert-info" th:text="${register}"></p>
+                      </div>
+                      <!-- ... (your form content) -->
+                      <div class="row">
+                          <div class="col-md-6">
+                              <div class="form-outline mb-4">
+                                  <input type="text" id="username" name="username" th:field="*{username}" required
+                                      placeholder="Enter Username" autofocus="autofocus"
+                                      class="form-control form-control-lg" />
+                              </div>
+                          </div>
+                          <div class="col-md-6">
+                              <div class="form-outline mb-4">
+                                  <input type="email" id="email" name="email" th:field="*{email}" required
+                                      placeholder="Enter email" autofocus="autofocus"
+                                      class="form-control form-control-lg" />
+                              </div>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-md-6">
+                              <div class="form-outline mb-4">
+                                  <input type="text" id="phone" name="phone" th:field="*{phone}" required
+                                      placeholder="Phone no" autofocus="autofocus"
+                                      class="form-control form-control-lg" />
+                              </div>
+                          </div>
+                          <div class="col-md-6">
+                              <div class="form-outline mb-4">
+                                  <input type="password" id="password" name="password" th:field="*{password}"
+                                      required placeholder="Password"
+                                      class="form-control form-control-lg" />
+                              </div>
+                          </div>
+                      </div>
+                      <div class="form-outline mb-4">
+                          <label for="role">Role</label>
+                          <select id="role" name="role" th:field="*{role}" class="select-custom">
+                              <option value="USER">User</option>
+                              <option value="VENDOR">Vendor</option>
+                          </select>
+                      </div>
+                      <div class="pt-1 mb-4">
+                          <button class="btn btn-info btn-lg btn-block login-button" type="submit" name="login-submit"
+                              id="login-submit">Register</button>
+                      </div>
+                      <p>Already registered? <a href="/" th:href="@{/login}" class="link-info">Login
+                              here</a></p>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
 
-                        roleSelect.addEventListener('change', function () {
-                            if (roleSelect.value === 'DOCTOR') {
-                                doctorFields.style.display = 'block';
-                            } else {
-                                doctorFields.style.display = 'none';
-                            }
-                        });
-                    </script>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- Include SweetAlert2 for better pop-ups -->
 
 
 
@@ -1156,6 +1145,79 @@
       </div>
     </div>
     <!-- end modal-popup -->
+
+    <script>
+      // Disable right-click context menu
+      document.addEventListener('contextmenu', function(event) {
+          event.preventDefault();
+      });
+    
+      // Disable Ctrl+U (View Page Source)
+      document.addEventListener('keydown', function(event) {
+          // Check if Ctrl key is pressed and the key is 'U'
+          if (event.ctrlKey && event.key === 'u') {
+              event.preventDefault();
+          }
+      });
+    </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.getElementById('registerForm').addEventListener('submit', function (event) {
+      // Prevent form submission
+      event.preventDefault();
+
+      // Get form fields
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      // Validation rules
+      let isValid = true;
+      let errorMessage = '';
+
+      // Username validation (e.g., at least 3 characters)
+      if (username.length < 3) {
+          isValid = false;
+          errorMessage += 'Username must be at least 3 characters long.\n';
+      }
+
+      // Email validation (simple regex)
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+          isValid = false;
+          errorMessage += 'Please enter a valid email address.\n';
+      }
+
+      // Phone validation (e.g., 10 digits)
+      const phoneRegex = /^\d{10}$/;
+      if (!phoneRegex.test(phone)) {
+          isValid = false;
+          errorMessage += 'Phone number must be 10 digits.\n';
+      }
+
+      // Password validation (e.g., at least 6 characters)
+      if (password.length < 6) {
+          isValid = false;
+          errorMessage += 'Password must be at least 6 characters long.\n';
+      }
+
+      // Show error message or submit form
+      if (!isValid) {
+          Swal.fire({
+              icon: 'error',
+              title: 'Validation Error',
+              text: errorMessage,
+          });
+      } else {
+          // If valid, submit the form
+          this.submit();
+      }
+  });
+</script>
+
 
     <!-- Template JS Files -->
     <script src="js/jquery-3.4.1.min.js"></script>

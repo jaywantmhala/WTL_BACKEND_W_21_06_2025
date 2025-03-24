@@ -3,6 +3,7 @@ package com.workshop.Entity;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,7 +47,7 @@ public class DriveAdmin {
 	
 	private String status;
 
-
+	@JsonIgnore
 	@OneToMany(mappedBy = "driveAdmin")
 	@JsonBackReference
 	private List<Booking> booking;

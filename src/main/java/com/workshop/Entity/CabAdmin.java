@@ -3,6 +3,7 @@ package com.workshop.Entity;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,7 +35,7 @@ public class CabAdmin{
     private String backImage; //image filename or path
     private String sideImage; //image filename or path
 
-
+@JsonIgnore
 	@OneToMany(mappedBy = "cabAdmin")
 	@JsonBackReference
 	private List<Booking> booking;

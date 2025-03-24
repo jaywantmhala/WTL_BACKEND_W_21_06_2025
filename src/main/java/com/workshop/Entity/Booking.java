@@ -95,13 +95,14 @@ public class Booking {
 	private Penalty penalty;
 
 
+
+	@JsonIgnore
 	@ManyToOne
-@JoinColumn
 @JsonManagedReference
 private CabAdmin cabAdmin;
 
+@JsonIgnore
 @ManyToOne
-@JoinColumn
 @JsonManagedReference
 private DriveAdmin driveAdmin;
 

@@ -106,7 +106,20 @@
     
   
 
-
+    <script>
+      // Disable right-click context menu
+      document.addEventListener('contextmenu', function(event) {
+          event.preventDefault();
+      });
+    
+      // Disable Ctrl+U (View Page Source)
+      document.addEventListener('keydown', function(event) {
+          // Check if Ctrl key is pressed and the key is 'U'
+          if (event.ctrlKey && event.key === 'u') {
+              event.preventDefault();
+          }
+      });
+    </script>
     <!-- Add the Bootstrap JS and Popper.js scripts if needed -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
