@@ -52,6 +52,10 @@ public class VendorDrivers {
 
 	private String driverOtherDetails;
 
+	private String role="DRIVER";
+
+	private String password;
+
 	@JsonBackReference
 	// @ManyToOne(fetch = FetchType.LAZY)
 	@ManyToOne
@@ -74,7 +78,7 @@ public class VendorDrivers {
 	public VendorDrivers(int vendorDriverId, String driverName, String contactNo, String altContactNo, String address,
 			String driverImage, String driverSelfie, String dLNo, String pvcNo, String dLnoImage, String pvcImage,
 			String driverDoc1Image, String driverDoc2Image, String driverDoc3Image, String emailId,
-			String driverOtherDetails, Vendor vendor, List<Booking> booking) {
+			String driverOtherDetails, Vendor vendor, List<Booking> booking, String role, String password) {
 		this.vendorDriverId = vendorDriverId;
 		this.driverName = driverName;
 		this.contactNo = contactNo;
@@ -93,6 +97,8 @@ public class VendorDrivers {
 		this.driverOtherDetails = driverOtherDetails;
 		this.vendor = vendor;
 		this.booking = booking;
+		this.role=role;
+this.password=password;
 	}
 
 	public int getVendorDriverId() {
@@ -238,5 +244,25 @@ public class VendorDrivers {
 	public void setBooking(List<Booking> booking) {
 		this.booking = booking;
 	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	
+
+	
 
 }

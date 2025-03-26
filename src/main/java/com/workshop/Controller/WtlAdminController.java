@@ -522,14 +522,14 @@ public class WtlAdminController {
 
     }
 
-    @GetMapping("/getData/{pickupLocation}/{dropLocation}")
+    @GetMapping("/oneWay/{pickupLocation}/{dropLocation}")
     public List<onewayTrip> getOneWayTripData(
             @PathVariable String pickupLocation,
             @PathVariable String dropLocation) {
         return tripSer.getOneWayTripData(pickupLocation, dropLocation);
     }
 
-    @GetMapping("/getData1/{pickupLocation}/{dropLocation}")
+    @GetMapping("/roundTrip/{pickupLocation}/{dropLocation}")
     public List<roundTrip> getRoundWayTripData(
             @PathVariable String pickupLocation,
             @PathVariable String dropLocation) {

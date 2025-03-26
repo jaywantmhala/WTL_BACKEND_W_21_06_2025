@@ -1,14 +1,24 @@
 package com.workshop.Service;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workshop.Entity.onewayTrip;
 import com.workshop.Entity.roundTrip;
 import com.workshop.Repo.OnewayTripRepo;
@@ -22,6 +32,9 @@ public class TripService {
 
 	@Autowired
 	private OnewayTripRepo repo;
+
+	private  String apiKey = "AIzaSyCelDo4I5cPQ72TfCTQW-arhPZ7ALNcp8w"; // Replace with your Google API key
+
 
 	@Autowired
 	RoundTripRepo roundrepo;
@@ -219,32 +232,128 @@ public class TripService {
 	// }
 	// }
 
-	public List<onewayTrip> getOneWayTripData(String pickupLocation, String dropLocation) {
-		if (pickupLocation == null || dropLocation == null) {
-			throw new IllegalArgumentException("Pickup and drop locations cannot be null");
-		}
+	// public List<onewayTrip> getOneWayTripData(String pickupLocation, String dropLocation) {
+	// 	if (pickupLocation == null || dropLocation == null) {
+	// 		throw new IllegalArgumentException("Pickup and drop locations cannot be null");
+	// 	}
 
-		// Extract city and state from the pickup location
-		String[] pickup = extractCityAndState(pickupLocation);
-		// Extract city and state from the drop location
-		String[] drop = extractCityAndState(dropLocation);
+	// 	// Extract city and state from the pickup location
+	// 	String[] pickup = extractCityAndState(pickupLocation);
+	// 	// Extract city and state from the drop location
+	// 	String[] drop = extractCityAndState(dropLocation);
 
-		// pickup[0] = source city, pickup[1] = source state
-		// drop[0] = destination city, drop[1] = destination state
-		String sourceCity = pickup[0];
-		String sourceState = pickup[1];
-		String destinationCity = drop[0];
-		String destinationState = drop[1];
+	// 	// pickup[0] = source city, pickup[1] = source state
+	// 	// drop[0] = destination city, drop[1] = destination state
+	// 	String sourceCity = pickup[0];
+	// 	String sourceState = pickup[1];
+	// 	String destinationCity = drop[0];
+	// 	String destinationState = drop[1];
 
-		// Debug prints
-		System.out.println("Source City: " + sourceCity);
-		System.out.println("Source State: " + sourceState);
-		System.out.println("Destination City: " + destinationCity);
-		System.out.println("Destination State: " + destinationState);
+	// 	// Debug prints
+	// 	System.out.println("Source City: " + sourceCity);
+	// 	System.out.println("Source State: " + sourceState);
+	// 	System.out.println("Destination City: " + destinationCity);
+	// 	System.out.println("Destination State: " + destinationState);
 
-		// Fetch matching trip details from the database
-		return getAllData(sourceCity, sourceState, destinationState, destinationCity);
-	}
+	// 	// Fetch matching trip details from the database
+	// 	return getAllData(sourceCity, sourceState, destinationState, destinationCity);
+	// }
+	
+public List<onewayTrip> getOneWayTripData(String pickupLocation, String dropLocation) {
+    if (pickupLocation == null || dropLocation == null) {
+        throw new IllegalArgumentException("Pickup and drop locations cannot be null");
+    }
+
+    // Extract city and state from the locations
+    String[] pickup = extractCityAndState(pickupLocation);
+    String[] drop = extractCityAndState(dropLocation);
+
+    String sourceCity = pickup[0];
+    String sourceState = pickup[1];
+    String destinationCity = drop[0];
+    String destinationState = drop[1];
+
+    // Calculate distance between locations
+    Map<String, Object> distanceResult = calculateDistanceBetweenLocations(pickupLocation, dropLocation);
+    
+    if (!(boolean)distanceResult.get("success")) {
+        throw new RuntimeException("Failed to calculate distance: " + distanceResult.get("message"));
+    }
+
+    String distanceText = (String)distanceResult.get("distanceText");
+    double distanceInKm = (double)distanceResult.get("distanceInKm");
+
+    System.out.println("Calculated Distance: " + distanceText + " (" + distanceInKm + " km)");
+
+    // Fetch matching trip details from database
+    List<onewayTrip> trips = getAllData(sourceCity, sourceState, destinationState, destinationCity);
+    
+    // Set both the formatted text and exact distance to each trip object
+    trips.forEach(trip -> {
+        trip.setDistance(distanceInKm);
+        // trip.setDistanceText(distanceText);
+    });
+    
+    return trips;
+}
+
+/**
+ * Calculates distance between locations using Google Maps API
+ * Returns a Map containing:
+ * - success: boolean
+ * - message: String (if error)
+ * - distanceText: String (human-readable)
+ * - distanceInKm: double
+ */
+private Map<String, Object> calculateDistanceBetweenLocations(String origin, String destination) {
+    Map<String, Object> result = new HashMap<>();
+    
+    try {
+        String apiUrl = "https://maps.googleapis.com/maps/api/distancematrix/json" +
+            "?origins=" + URLEncoder.encode(origin, StandardCharsets.UTF_8) +
+            "&destinations=" + URLEncoder.encode(destination, StandardCharsets.UTF_8) +
+            "&key=" + apiKey +
+            "&units=metric" +
+            "&mode=driving";
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(response.getBody());
+
+        // Check API response status
+        String apiStatus = root.path("status").asText();
+        if (!"OK".equals(apiStatus)) {
+            result.put("success", false);
+            result.put("message", "Google API error: " + apiStatus + 
+                ". Error message: " + root.path("error_message").asText(""));
+            return result;
+        }
+
+        JsonNode elements = root.path("rows").get(0).path("elements").get(0);
+        String elementStatus = elements.path("status").asText();
+        if (!"OK".equals(elementStatus)) {
+            result.put("success", false);
+            result.put("message", "Distance calculation failed: " + elementStatus);
+            return result;
+        }
+
+        // Get both the human-readable text and exact numeric value
+        String distanceText = elements.path("distance").path("text").asText();
+        double distanceInKm = elements.path("distance").path("value").asDouble() / 1000.0;
+        
+        result.put("success", true);
+        result.put("distanceText", distanceText);
+        result.put("distanceInKm", distanceInKm);
+        return result;
+
+    } catch (Exception e) {
+        result.put("success", false);
+        result.put("message", "Error calculating distance: " + e.getMessage());
+        return result;
+    }
+}
 
 	private String[] extractCityAndState(String location) {
 		String[] parts = location.split(",");
@@ -255,7 +364,6 @@ public class TripService {
 	}
 
 	public List<onewayTrip> getAllData(String sourceCity, String sourceState, String destinationState, String destinationCity) {
-		// Retrieve data from the repository
 		List<onewayTrip> trips = repo.findBySourceStateAndSourceCityAndDestinationStateAndDestinationCity(
 				sourceState, sourceCity, destinationState, destinationCity);
 	

@@ -669,7 +669,9 @@ public class BookingController {
 						26,    // Set default value for suvplus
 						"",
 						null
-						 ,null  // Set default value for status
+						 ,null
+						 ,0
+						  // Set default value for status
 					);
 			  
 			  

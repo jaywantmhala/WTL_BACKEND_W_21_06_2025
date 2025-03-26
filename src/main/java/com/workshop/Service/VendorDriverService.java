@@ -34,4 +34,5 @@ public class VendorDriverService {
 	public List<VendorDrivers> getOrder(Long vendorId) {
 	    return this.vendorDriverRepo.findByVendorId(vendorId);
 	}
+
 }

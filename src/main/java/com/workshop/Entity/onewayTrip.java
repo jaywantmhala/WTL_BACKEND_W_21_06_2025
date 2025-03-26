@@ -34,6 +34,8 @@ public class onewayTrip implements Trip, Serializable{
 	private LocalDate startDate;
     private LocalDate endDate;
 
+	private double distance;
+
 	public Long getId() {
 		return id;
 	}
@@ -140,9 +142,23 @@ public class onewayTrip implements Trip, Serializable{
 		this.endDate = endDate;
 	}
 
+
+	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(double distance) {
+		this.distance = distance;
+	}
+
 	public onewayTrip(Long id, String sourceState, String sourceCity, String destinationState,
 			String destinationCity, int hatchback, int sedan, int sedanpremium, int suv, int suvplus,
-			String status, LocalDate startDate, LocalDate endDate) {
+			String status, LocalDate startDate, LocalDate endDate, double distance) {
 		super();
 		this.id = id;
 		this.sourceState = sourceState;
@@ -157,6 +173,7 @@ public class onewayTrip implements Trip, Serializable{
 		this.status = status;
 		this.startDate=startDate;
 		this.endDate=endDate;
+		this.distance=distance;
 	}
 
 	public onewayTrip() {

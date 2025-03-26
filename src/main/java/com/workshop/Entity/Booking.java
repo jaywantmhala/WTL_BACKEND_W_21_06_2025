@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.workshop.CarRental.Entity.CarRentalUser;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -106,6 +107,15 @@ private CabAdmin cabAdmin;
 @JsonManagedReference
 private DriveAdmin driveAdmin;
 
+// @JsonIgnore
+// @ManyToOne
+// @JoinColumn(name = "user_id")
+// private User user;
+
+@ManyToOne
+@JoinColumn(name = "car_rental_user_id")
+private CarRentalUser carRentalUser;
+
 
 	
 
@@ -124,7 +134,7 @@ private DriveAdmin driveAdmin;
 			String bookid, String car, String baseAmount, Integer amount, Integer status, String driverBhata,
 			Integer nightCharges, Integer gst, Integer serviceCharge, String offer, Integer offerPartial,
 			String offerAmount, String txnId, String payment, LocalDate dateEnd, String timeEnd, String bookingType,
-			String description, Vendor vendor, VendorCabs vendorCab, VendorDrivers vendorDriver, Penalty penalty, CabAdmin cabAdmin, DriveAdmin driveAdmin, String carrier) {
+			String description, Vendor vendor, VendorCabs vendorCab, VendorDrivers vendorDriver, Penalty penalty, CabAdmin cabAdmin, DriveAdmin driveAdmin, String carrier, CarRentalUser carRentalUser) {
 		this.id = id;
 		this.fromLocation = fromLocation;
 		this.toLocation = toLocation;
@@ -167,6 +177,7 @@ private DriveAdmin driveAdmin;
 		this.penalty=penalty;
 		this.cabAdmin=cabAdmin;
 		this.driveAdmin=driveAdmin;
+		this.carRentalUser=carRentalUser;
 	}
 
 	public Booking() {
@@ -497,6 +508,14 @@ private DriveAdmin driveAdmin;
 		this.driveAdmin = driveAdmin;
 	}
 
+	public CarRentalUser getCarRentalUser() {
+		return carRentalUser;
+	}
+
+	public void setCarRentalUser(CarRentalUser carRentalUser) {
+		this.carRentalUser = carRentalUser;
+	}
+
 	@Override
 	public String toString() {
 		return "Booking [id=" + id + ", fromLocation=" + fromLocation + ", toLocation=" + toLocation + ", tripType="
@@ -542,5 +561,13 @@ private DriveAdmin driveAdmin;
 	public void setCarrier(String carrier) {
 		this.carrier = carrier;
 	}
+
+	// public User getUser() {
+	// 	return user;
+	// }
+
+	// public void setUser(User user) {
+	// 	this.user = user;
+	// }
 
 }

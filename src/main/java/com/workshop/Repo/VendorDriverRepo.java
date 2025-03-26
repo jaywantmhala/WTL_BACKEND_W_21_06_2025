@@ -12,4 +12,6 @@ import com.workshop.Entity.VendorDrivers;
 public interface VendorDriverRepo extends JpaRepository<VendorDrivers, Integer>{
     List<VendorDrivers> findByVendorId(Long vendorId);
 
+    VendorDrivers findByContactNo(String contactNo);
+
 }
