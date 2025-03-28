@@ -312,6 +312,10 @@ public class BookingService {
     }
 
 
+    // public Booking getBookingByVendorDriverId(int vendorDriverId){
+    //     Booking booking = this.repo.findBookingByVendorDriverId(vendorDriverId);
+    //     return booking;
+    // }
 
   
 }

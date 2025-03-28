@@ -5,6 +5,8 @@ import java.util.List;
 import com.workshop.Entity.Booking;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
@@ -12,15 +14,20 @@ import jakarta.persistence.OneToMany;
 public class CarRentalUser {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     private String username;
+
+    private String lastName;
 
     private String email;
 
     private String password;
 
     private String phone;
+
+    private String gender;
 
     private float latitude;
 
@@ -38,8 +45,8 @@ public class CarRentalUser {
     @OneToMany(mappedBy = "carRentalUser")
     private List<Booking> bookings;
 
-    public CarRentalUser(int id, String username, String email, String password, String phone, float latitude,
-            float longitude, String address, List<Booking> bookings, String role) {
+    public CarRentalUser(int id, String username, String lastName, String email, String password, String phone, float latitude,
+            float longitude, String address, List<Booking> bookings, String role, String gender) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -50,6 +57,8 @@ public class CarRentalUser {
         this.address = address;
         this.bookings = bookings;
         this.role=role;
+        this.lastName=lastName;
+        this.gender=gender;
     }
 
 
@@ -154,6 +163,28 @@ public class CarRentalUser {
         this.role = role;
     }
 
+
+    public String getLastName() {
+        return lastName;
+    }
+
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+
+    public String getGender() {
+        return gender;
+    }
+
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    
+    
     
 
 

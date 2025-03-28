@@ -33,4 +33,9 @@ public interface BookingRepo extends JpaRepository<Booking, Integer> {
 	// 		"WHERE b.id = :id")
 	// Optional<Booking> findByIdWithAssociations(@Param("id") int id);
 
+
+	// public Booking findBookingByVendorDriverId(int vendorDriverId);
+
+	// public Booking findBookingByCarRentalUserId(int id);
+
 }
