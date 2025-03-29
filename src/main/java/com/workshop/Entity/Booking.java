@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.workshop.CarRental.Entity.CarRentalUser;
 
@@ -83,8 +84,8 @@ public class Booking {
 	@ManyToOne
 	private VendorCabs vendorCab;
 
-	@JsonIgnore
-	@JsonBackReference
+	// @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "bookings"})
 	// @ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "vendor_driver_id")
 	@ManyToOne
@@ -113,6 +114,7 @@ private DriveAdmin driveAdmin;
 // private User user;
 
 @ManyToOne
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "bookings"})
 @JoinColumn(name = "car_rental_user_id")
 private CarRentalUser carRentalUser;
 

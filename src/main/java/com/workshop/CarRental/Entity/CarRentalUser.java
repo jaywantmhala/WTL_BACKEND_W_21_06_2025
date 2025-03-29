@@ -2,6 +2,9 @@ package com.workshop.CarRental.Entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.workshop.Entity.Booking;
 
 import jakarta.persistence.Entity;
@@ -41,7 +44,8 @@ public class CarRentalUser {
 
     // private String state;
 
-
+    // @JsonManagedReference
+    @JsonIgnore
     @OneToMany(mappedBy = "carRentalUser")
     private List<Booking> bookings;
 

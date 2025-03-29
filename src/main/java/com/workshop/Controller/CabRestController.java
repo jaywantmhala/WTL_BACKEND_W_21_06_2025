@@ -244,14 +244,39 @@ public class CabRestController {
             10, 11, 14, 14, 21, 
             ""
         );
+
+
     }
 
 
-    // @GetMapping("/booking/{vendorDriverId}")
-    // public Booking getBookingByVendorDriverId(@PathVariable int vendorDriverId){
-    //     return this.ser.getBookingByVendorDriverId(vendorDriverId);
-    // }
 
 
+    @GetMapping("/by-driver/{vendorDriverId}")
+    public ResponseEntity<List<Booking>> getBookingsByVendorDriver(
+            @PathVariable int vendorDriverId) {
+        
+        List<Booking> bookings = ser.getBookingsByVendorDriverId(vendorDriverId);
+        
+        if (bookings.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        
+        return ResponseEntity.ok(bookings);
+    }
+
+
+    @GetMapping("/by-user/{id}")
+    public ResponseEntity<List<Booking>> getBookingsByCarRental(
+            @PathVariable int id) {
+        
+        List<Booking> bookings = ser.getBookingByCarRentalUserId(id);
+        
+        if (bookings.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        
+        return ResponseEntity.ok(bookings);
+    }
 
 }
+

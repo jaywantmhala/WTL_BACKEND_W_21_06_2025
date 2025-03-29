@@ -312,10 +312,16 @@ public class BookingService {
     }
 
 
-    // public Booking getBookingByVendorDriverId(int vendorDriverId){
-    //     Booking booking = this.repo.findBookingByVendorDriverId(vendorDriverId);
-    //     return booking;
-    // }
+    public List<Booking> getBookingsByVendorDriverId(int vendorDriverId) {
+        // Choose one of these methods based on your needs:
+        return repo.findByVendorDriverVendorDriverId(vendorDriverId);
+        // return bookingRepository.findByVendorDriverIdWithUser(vendorDriverId);
+        // return bookingRepository.findByVendorDriverIdWithAllRelations(vendorDriverId);
+    }
 
+
+    public List<Booking> getBookingByCarRentalUserId(int id){
+        return repo.findByCarRentalUserId(id);
+    }
   
 }
