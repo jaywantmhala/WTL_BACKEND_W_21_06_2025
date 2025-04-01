@@ -14,4 +14,12 @@ public class CarRentalBookingService {
 private CarRentalRepository carRentalRepository;
 
 
+
+public CarRentalUser updateLocation(int id, double latitude, double longitude){
+    CarRentalUser carRentalUser = this.carRentalRepository.findById(id).orElse(null);
+    carRentalUser.setUserlatitude(latitude);
+    carRentalUser.setUserlongitude(longitude);
+    return this.carRentalRepository.save(carRentalUser);
+}
+
 }

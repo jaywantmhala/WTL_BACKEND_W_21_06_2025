@@ -38,13 +38,13 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
             
             if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                return new CarRentalLoginResponse("Invalid Password", null,null);
+                return new CarRentalLoginResponse("Invalid Password", null,null, 0);
             }
             
-            return new CarRentalLoginResponse("Login Successful", user.getUsername(), user.getRole());
+            return new CarRentalLoginResponse("Login Successful", user.getUsername(), user.getRole(), user.getId());
             
         } catch (Exception e) {
-            return new CarRentalLoginResponse("Login Failed",null,null);
+            return new CarRentalLoginResponse("Login Failed",null,null, 0);
         }
 
 

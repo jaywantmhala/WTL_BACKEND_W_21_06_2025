@@ -35,4 +35,14 @@ public class VendorDriverService {
 	    return this.vendorDriverRepo.findByVendorId(vendorId);
 	}
 
+	public VendorDrivers updateLocationDriver(int vendorDriverId, double latitude, double longitude) {
+		VendorDrivers vendorDrivers = this.vendorDriverRepo.findById(vendorDriverId)
+			.orElseThrow(() -> new RuntimeException("Driver not found with id: " + vendorDriverId));
+		
+		vendorDrivers.setDriverLatitude(latitude);
+		vendorDrivers.setDriverLongitude(longitude);
+		
+		return this.vendorDriverRepo.save(vendorDrivers);
+	}
+
 }

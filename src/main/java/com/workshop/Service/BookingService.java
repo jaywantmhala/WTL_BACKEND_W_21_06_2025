@@ -5,13 +5,21 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.stereotype.Service;
+// import org.springframework.web.client.RestTemplate;
 
+import com.workshop.CarRental.Entity.CarRentalUser;
+import com.workshop.CarRental.Repository.CarRentalRepository;
 import com.workshop.DTO.BookingDTO;
 import com.workshop.DTO.CancellationResult;
 import com.workshop.Entity.Booking;
@@ -57,6 +65,13 @@ public class BookingService {
 
     @Autowired
     private DriverAdminRepo driverAdminRepo;
+
+    @Autowired
+    private CarRentalRepository carRentalRepository;
+
+
+    private static final String API_KEY = "AIzaSyCelDo4I5cPQ72TfCTQW-arhPZ7ALNcp8w"; // Replace with a secure API key
+
 
     public void saveBooking(Booking booking) {
         repo.save(booking);
@@ -323,5 +338,36 @@ public class BookingService {
     public List<Booking> getBookingByCarRentalUserId(int id){
         return repo.findByCarRentalUserId(id);
     }
-  
+
+
+    //  for user current location
+
+
+    public CarRentalUser saveUserLocation(int id) {
+        String url = "https://www.googleapis.com/geolocation/v1/geolocate?key=" + API_KEY;
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("considerIp", true);
+
+        RestTemplate restTemplate = new RestTemplate();
+        String response = restTemplate.postForObject(url, requestBody, String.class);
+
+        if (response != null && !response.isEmpty()) {
+            JSONObject jsonResponse = new JSONObject(response);
+
+            if (jsonResponse.has("location")) {
+                JSONObject location = jsonResponse.getJSONObject("location");
+                double latitude = location.optDouble("lat", 0.0);
+                double longitude = location.optDouble("lng", 0.0);
+
+                CarRentalUser carRentalUser = carRentalRepository.findById(id).orElse(null);
+                if (carRentalUser != null) {
+                    carRentalUser.setUserlatitude(latitude);
+                    carRentalUser.setUserlongitude(longitude);
+                    return carRentalRepository.save(carRentalUser);
+                }
+            }
+        }
+
+        return null; // Return null if location is not found
+    } 
 }

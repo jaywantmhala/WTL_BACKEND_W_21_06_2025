@@ -32,9 +32,9 @@ public class CarRentalUser {
 
     private String gender;
 
-    private float latitude;
+    private double userlatitude;
 
-    private float longitude;
+    private double userlongitude;
 
     private String address;
 
@@ -47,17 +47,21 @@ public class CarRentalUser {
     // @JsonManagedReference
     @JsonIgnore
     @OneToMany(mappedBy = "carRentalUser")
+
+
+
     private List<Booking> bookings;
 
-    public CarRentalUser(int id, String username, String lastName, String email, String password, String phone, float latitude,
-            float longitude, String address, List<Booking> bookings, String role, String gender) {
+
+    public CarRentalUser(int id, String username, String lastName, String email, String password, String phone, double userlatitude,
+            double userlongitude, String address, List<Booking> bookings, String role, String gender) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.phone = phone;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.userlatitude = userlatitude;
+        this.userlongitude = userlongitude;
         this.address = address;
         this.bookings = bookings;
         this.role=role;
@@ -120,23 +124,23 @@ public class CarRentalUser {
     }
 
 
-    public float getLatitude() {
-        return latitude;
+   public double getUserlatitude() {
+        return userlatitude;
     }
 
 
-    public void setLatitude(float latitude) {
-        this.latitude = latitude;
+    public void setUserlatitude(double userlatitude) {
+        this.userlatitude = userlatitude;
     }
 
 
-    public float getLongitude() {
-        return longitude;
+    public double getUserlongitude() {
+        return userlongitude;
     }
 
 
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
+    public void setUserlongitude(double userlongitude) {
+        this.userlongitude = userlongitude;
     }
 
 

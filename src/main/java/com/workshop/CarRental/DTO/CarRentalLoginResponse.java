@@ -6,6 +6,8 @@ public class CarRentalLoginResponse {
     private String message;
 
 
+    private int id;
+
 
     private String username;
 
@@ -15,10 +17,11 @@ public class CarRentalLoginResponse {
         super();
     }
 
-    public CarRentalLoginResponse(String message,String username, String role) {
+    public CarRentalLoginResponse(String message,String username, String role, int id) {
         this.username = username;
         this.role = role;
         this.message=message;
+        this.id=id;
     }
 
     public String getUsername() {
@@ -43,6 +46,14 @@ public class CarRentalLoginResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     
