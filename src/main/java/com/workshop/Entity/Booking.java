@@ -77,8 +77,8 @@ public class Booking {
 	@ManyToOne
 	private Vendor vendor;
 
-	@JsonIgnore
-	@JsonBackReference
+	// @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "bookings"})
 	// @ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "vendor_cab_id")
 	@ManyToOne
@@ -90,6 +90,7 @@ public class Booking {
 	@JoinColumn(name = "vendor_driver_id")
 	@ManyToOne
 	private VendorDrivers vendorDriver;
+	
 
 
 	@OneToOne

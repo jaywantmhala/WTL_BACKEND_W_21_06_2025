@@ -3,6 +3,7 @@ package com.workshop.Entity;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -57,7 +58,8 @@ public class VendorCabs {
 	private Vendor vendor;
 
 	// One-to-many relationship with Booking
-	@JsonManagedReference
+	// @JsonManagedReference
+	@JsonIgnore
 	// @OneToMany(mappedBy = "vendorCab", cascade = CascadeType.ALL, fetch =
 	// FetchType.LAZY)
 	@OneToMany(mappedBy = "vendorCab")
