@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,6 +60,8 @@ import com.workshop.Service.StatesService;
 import com.workshop.Service.TripService;
 import com.workshop.Service.UserDetailServiceImpl;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 
 import com.workshop.Service.TripRateService;
@@ -72,6 +76,9 @@ public class WtlAdminController {
 
     @Autowired
     private TripService tripSer;
+
+     @Autowired
+    private JavaMailSender mailSender;
 
     @Autowired
     private SmsService smsService;
@@ -699,7 +706,44 @@ public String sendSms(
 }
 
 
+// send manual
 
+@PostMapping("/send-manual/{email:.+}")
+    public ResponseEntity<?> sendManualEmailWithPath(@PathVariable("email") String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is required");
+        }
+
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            helper.setFrom("jaywantmhala928@gmail.com"); // Use your sender email
+            helper.setTo(email);
+            helper.setSubject("Vendor Registration - Please Fill the Details");
+
+            // HTML formatted email content
+            String emailContent = "<html><body>" +
+                    "<p>Hi,</p>" +
+                    "<p>Please click on the following link to fill in the vendor registration details:</p>" +
+                    "<p><a href='http://192.168.231.233:3001/vendor-registration'  " +
+                    "style='color: #007bff; text-decoration: none; font-weight: bold;'>Complete Vendor Registration</a></p>"
+                    +
+                    "<p>Thank you.</p>" +
+                    "<p>Best Regards,<br>WTL Tourism Pvt. Ltd.</p>" +
+                    "</body></html>";
+
+            helper.setText(emailContent, true); // Enable HTML content
+            mailSender.send(mimeMessage); // Send email
+
+            return ResponseEntity.ok("Email sent successfully");
+        } catch (MessagingException ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to send email: " + ex.getMessage());
+        }
+
+}
 }
 
 

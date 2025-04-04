@@ -2,6 +2,7 @@ package com.workshop.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -370,4 +371,65 @@ public class BookingService {
 
         return null; // Return null if location is not found
     } 
+
+
+    // enter otp time trip start hone se pahle
+    public Booking updateDriverEnterOtpTimePreStarted(int id){
+        Booking booking = this.repo.findById(id).orElse(null);
+        
+        LocalDateTime now = LocalDateTime.now();
+    
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDateTime = now.format(formatter);
+
+        booking.setDriverEnterOtpTimePreStarted(formattedDateTime);
+        return this.repo.save(booking);
+    }
+
+    // driver enter otp trip end htoe time
+
+    public Booking updateDriverEnterOtpTimePostStarted(int id){
+
+        Booking booking = this.repo.findById(id).orElse(null);
+        
+        LocalDateTime now = LocalDateTime.now();
+    
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDateTime = now.format(formatter);
+        booking.setDriverEnterOtpTimePostTrip(formattedDateTime);
+        return this.repo.save(booking);
+
+    }
+
+
+    //  starting odd meter and enter time
+    public Booking enterOdooMeterStarted(int id, String meter){
+
+        Booking booking = this.repo.findById(id).orElse(null);
+        
+        LocalDateTime now = LocalDateTime.now();
+    
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDateTime = now.format(formatter);
+        booking.setOdoometerEnterTimeStarted(formattedDateTime);
+        booking.setOdoometerStarted(meter);
+        return this.repo.save(booking);
+ 
+
+    }
+
+
+    // ending odoometer  and enter time
+    public Booking enterOdoometerEnding(int id, String meter){
+        Booking booking = this.repo.findById(id).orElse(null);
+        
+        LocalDateTime now = LocalDateTime.now();
+    
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDateTime = now.format(formatter);
+        booking.setOdoometerEnterTimeEnding(formattedDateTime);
+
+        booking.setOdometerEnding(meter);
+        return this.repo.save(booking);
+    }
 }

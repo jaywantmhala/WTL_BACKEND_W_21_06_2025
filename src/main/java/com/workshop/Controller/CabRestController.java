@@ -835,6 +835,109 @@ public class CabRestController {
         }
     }
 
+    // for website
+
+    @PostMapping("/websiteBooking")
+    public ResponseEntity<Map<String, Object>> createWebsiteBooking(
+            @RequestParam String cabId,
+            @RequestParam String modelName,
+            @RequestParam String modelType,
+            @RequestParam String seats,
+            @RequestParam String fuelType,
+            @RequestParam String availability,
+            @RequestParam String price,
+            @RequestParam String pickupLocation,
+            @RequestParam String dropLocation,
+            @RequestParam String date,
+            @RequestParam(required = false) String returndate,
+            @RequestParam String time,
+            @RequestParam String tripType,
+            @RequestParam String distance,
+            @RequestParam String name,
+            @RequestParam String email,
+            @RequestParam String service,
+            @RequestParam String gst,
+            @RequestParam String total,
+            @RequestParam String days,
+            @RequestParam String driverrate,
+            @RequestParam String phone) {
+
+        try {
+            // Generate booking ID
+            String bookid = "WTL" + System.currentTimeMillis();
+            
+            // Debug logs to diagnose return date issues
+            System.out.println("Trip Type: " + tripType);
+            System.out.println("Return Date Parameter: '" + returndate + "'");
+            System.out.println("Is Round Trip? " + "roundTrip".equals(tripType));
+            
+            // Create booking object
+            Booking booking = new Booking();
+            booking.setFromLocation(pickupLocation);
+            booking.setToLocation(dropLocation);
+            booking.setTripType(tripType);
+            booking.setStartDate(LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
+            booking.setTime(time);
+            booking.setDistance(distance);
+            booking.setName(name);
+            booking.setEmail(email);
+            booking.setPhone(phone);
+            // We're not setting CarRentalUser here since this is for website users without login
+            booking.setUserDrop(dropLocation);
+            booking.setUserPickup(pickupLocation);
+            booking.setUserTripType(tripType);
+            booking.setBookingType("website");
+            booking.setDate(LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
+            booking.setCar(modelType);
+            booking.setAmount(Integer.parseInt(price));
+            booking.setGst(Integer.parseInt(gst));
+            booking.setServiceCharge(Integer.parseInt(service));
+
+            // Improved handling of return date for round trips
+            if ("roundTrip".equals(tripType) || "round-trip".equals(tripType)) {
+                try {
+                    if (returndate != null && !returndate.trim().isEmpty()) {
+                        LocalDate returnDate = LocalDate.parse(returndate, DateTimeFormatter.ISO_DATE);
+                        booking.setReturnDate(returnDate);
+                        System.out.println("Successfully set return date to: " + returnDate);
+                    } else {
+                        // If returndate is empty but trip is round trip, use the start date
+                        booking.setReturnDate(LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
+                        System.out.println("Round trip with no return date. Using start date as return date.");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error parsing return date: " + e.getMessage());
+                    // If date parsing fails, use the start date as a fallback
+                    booking.setReturnDate(LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
+                    System.out.println("Failed to parse return date. Using start date as fallback.");
+                }
+            } else {
+                System.out.println("One-way trip. No return date needed.");
+            }
+
+            // Set booking ID
+            booking.setBookingId(bookid);
+            booking.setBookid(bookid);
+
+            // Save booking
+            ser.saveBooking(booking);
+
+            // Send confirmation email - uncommented this line
+            sendConfirmationEmail(name, email, bookid, pickupLocation,
+                    dropLocation, tripType, date, time, total);
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "bookingId", bookid,
+                    "message", "Booking created successfully"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Booking creation failed: " + e.getMessage()));
+        }
+    }
+
     private void callExternalBookingApi(
             String date, String name, String email, String car,
             String distance, String phone, String userPickup,
@@ -897,19 +1000,82 @@ public class CabRestController {
             String tripType, String date, String time,
             String total) {
         String subject = "Booking Confirmation - " + bookingId;
-        String message = "<h3>Hello " + name + ",</h3>" +
-                "<p>Your booking has been confirmed.</p>" +
-                "<p><strong>Booking Details:</strong></p>" +
-                "<ul>" +
-                "<li><strong>Booking ID:</strong> " + bookingId + "</li>" +
-                "<li><strong>Pickup Location:</strong> " + pickupLocation + "</li>" +
-                "<li><strong>Drop Location:</strong> " + dropLocation + "</li>" +
-                "<li><strong>Trip Type:</strong> " + tripType + "</li>" +
-                "<li><strong>Date:</strong> " + date + "</li>" +
-                "<li><strong>Time:</strong> " + time + "</li>" +
-                "<li><strong>Amount Paid:</strong> ₹" + total + "</li>" +
-                "</ul>" +
-                "<p>Thank you for choosing us!</p>";
+        String message = "<!DOCTYPE html>\n" +
+        "<html>\n" +
+        "<head>\n" +
+        "    <meta charset=\"UTF-8\">\n" +
+        "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+        "    <title>Booking Confirmation</title>\n" +
+        "</head>\n" +
+        "<body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; color: #333; background-color: #f5f5f5;\">\n" +
+        "    <table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n" +
+        "        <tr>\n" +
+        "            <td style=\"padding: 20px 0; text-align: center; background-color: #1a1f2e;\">\n" +
+        "                <h1 style=\"color: #ffffff; margin: 0;\">WTL Cab Service</h1>\n" +
+        "            </td>\n" +
+        "        </tr>\n" +
+        "        <tr>\n" +
+        "            <td style=\"padding: 20px;\">\n" +
+        "                <table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);\">\n" +
+        "                    <tr>\n" +
+        "                        <td style=\"padding: 30px 30px 20px 30px;\">\n" +
+        "                            <h2 style=\"color: #1a1f2e; margin-top: 0;\">Booking Confirmation</h2>\n" +
+        "                            <p style=\"font-size: 16px; line-height: 24px; margin-bottom: 20px;\">Hello " + name + ",</p>\n" +
+        "                            <p style=\"font-size: 16px; line-height: 24px; margin-bottom: 25px;\">Your booking has been confirmed. Here are your booking details:</p>\n" +
+        "                            \n" +
+        "                            <table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse: separate; border-spacing: 0; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; margin-bottom: 25px;\">\n" +
+        "                                <tr style=\"background-color: #f8f9fa;\">\n" +
+        "                                    <th style=\"padding: 12px 15px; text-align: left; border-bottom: 1px solid #e0e0e0; width: 40%;\">Booking Details</th>\n" +
+        "                                    <th style=\"padding: 12px 15px; text-align: left; border-bottom: 1px solid #e0e0e0; width: 60%;\">Information</th>\n" +
+        "                                </tr>\n" +
+        "                                <tr>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0; font-weight: bold;\">Booking ID</td>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0;\">" + bookingId + "</td>\n" +
+        "                                </tr>\n" +
+        "                                <tr>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0; font-weight: bold;\">Pickup Location</td>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0;\">" + pickupLocation + "</td>\n" +
+        "                                </tr>\n" +
+        "                                <tr>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0; font-weight: bold;\">Drop Location</td>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0;\">" + dropLocation + "</td>\n" +
+        "                                </tr>\n" +
+        "                                <tr>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0; font-weight: bold;\">Trip Type</td>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0;\">" + tripType + "</td>\n" +
+        "                                </tr>\n" +
+        "                                <tr>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0; font-weight: bold;\">Date</td>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0;\">" + date + "</td>\n" +
+        "                                </tr>\n" +
+        "                                <tr>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0; font-weight: bold;\">Time</td>\n" +
+        "                                    <td style=\"padding: 12px 15px; border-bottom: 1px solid #e0e0e0;\">" + time + "</td>\n" +
+        "                                </tr>\n" +
+        "                                <tr>\n" +
+        "                                    <td style=\"padding: 12px 15px; font-weight: bold; background-color: #f8f9fa;\">Amount Paid</td>\n" +
+        "                                    <td style=\"padding: 12px 15px; font-weight: bold; color: #2e7d32; background-color: #f8f9fa;\">" + total + "</td>\n" +
+        "                                </tr>\n" +
+        "                            </table>\n" +
+        "                            \n" +
+        "                            <p style=\"font-size: 16px; line-height: 24px; margin-bottom: 20px;\">Thank you for choosing our service. We hope you have a comfortable journey!</p>\n" +
+        "                            \n" +
+        "                            <p style=\"font-size: 16px; line-height: 24px; margin-bottom: 0;\">Best regards,<br>WTL Cab Service Team</p>\n" +
+        "                        </td>\n" +
+        "                    </tr>\n" +
+        "                </table>\n" +
+        "            </td>\n" +
+        "        </tr>\n" +
+        "        <tr>\n" +
+        "            <td style=\"padding: 20px; text-align: center; font-size: 12px; color: #666;\">\n" +
+        "                <p>&copy; 2025 WTL Cab Service. All rights reserved.</p>\n" +
+        "                <p>If you have any questions, please contact our customer support at <a href=\"mailto:support@wtlcabs.com\" style=\"color: #1a1f2e;\">support@wtlcabs.com</a></p>\n" +
+        "            </td>\n" +
+        "        </tr>\n" +
+        "    </table>\n" +
+        "</body>\n" +
+        "</html>";
+
 
         emailService.sendEmail(message, subject, email);
     }
@@ -938,5 +1104,33 @@ public class CabRestController {
             latitude,
             longitude
         );
+    }
+
+
+
+    // otp trip start hone se pahle
+    @PutMapping("/enterOtpTimePre/{id}")
+    public Booking updateEnterOtpTimePreTrip(@PathVariable int id){
+        return this.ser.updateDriverEnterOtpTimePreStarted(id);
+    }
+
+    // otp trip end hote time
+
+    @PutMapping("/enterOtpTimePost/{id}")
+    public Booking udpateEnterOtpTimePostTrip(@PathVariable int id){
+        return this.ser.updateDriverEnterOtpTimePostStarted(id);
+    }
+
+    // starting odoometer time
+
+    @PutMapping("startingmeter/{id}")
+    public Booking startOdoometerStarting(@PathVariable int id, @RequestParam String meter){
+        return this.ser.enterOdooMeterStarted(id, meter);
+
+    }
+
+    @PutMapping("/endTimer/{id}")
+    public Booking endOdoometerEnding(@PathVariable int id, @RequestParam String meter){
+        return this.ser.enterOdoometerEnding(id, meter);
     }
 }

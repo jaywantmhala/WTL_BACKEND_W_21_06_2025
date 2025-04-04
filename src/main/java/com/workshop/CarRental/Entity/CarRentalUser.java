@@ -7,11 +7,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.workshop.Entity.Booking;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 
 @Entity
 public class CarRentalUser {
@@ -20,22 +22,38 @@ public class CarRentalUser {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
+     @Column(nullable = true)
     private String username;
 
+
+    @Transient
+    @Column(nullable = true)
     private String lastName;
 
+
+    @Column(nullable = true)
     private String email;
 
+
+    @Column(nullable = true)
     private String password;
 
+
+    @Column(nullable = true)
     private String phone;
 
+
+    @Column(nullable = true)
     private String gender;
 
-    private double userlatitude;
 
-    private double userlongitude;
+    @Column(nullable = false)
+private double userlatitude = 0.0;
 
+@Column(nullable = false)
+private double userlongitude = 0.0;
+
+    @Column(nullable = true)
     private String address;
 
     private String role="USER";

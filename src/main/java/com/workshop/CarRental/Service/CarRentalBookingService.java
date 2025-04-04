@@ -1,5 +1,7 @@
 package com.workshop.CarRental.Service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,19 @@ public CarRentalUser updateLocation(int id, double latitude, double longitude){
     carRentalUser.setUserlatitude(latitude);
     carRentalUser.setUserlongitude(longitude);
     return this.carRentalRepository.save(carRentalUser);
+}
+
+
+public boolean updatePassword(String email, String newPassword) {
+    Optional<CarRentalUser> optionalUser = carRentalRepository.findByEmail(email);
+    
+    if (optionalUser.isPresent()) {
+        CarRentalUser user = optionalUser.get();
+        user.setPassword(newPassword); // Update password
+        carRentalRepository.save(user); // Save changes
+        return true;
+    }
+    return false;
 }
 
 }

@@ -1,6 +1,7 @@
 package com.workshop.Entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -70,6 +71,24 @@ public class Booking {
 	private String description;
 	private String carrier;
 
+	private String driverEnterOtpTimePreStarted;
+
+	private String odoometerStarted;
+
+	private String odoometerEnterTimeStarted;
+
+	private String driverEnterOtpTimePostTrip;
+
+	private String odometerEnding;
+
+
+	private String odoometerEnterTimeEnding;
+
+
+
+
+	
+
 	@JsonIgnore
 	@JsonBackReference
 	// @ManyToOne(fetch = FetchType.LAZY)
@@ -131,13 +150,27 @@ private CarRentalUser carRentalUser;
     // private Penalty penalty;
 
 
+	
+
+
+			
+	
+	public Booking() {
+
+	}
+
+	
+
 	public Booking(int id, String fromLocation, String toLocation, String tripType, LocalDate startDate,
 			LocalDate returnDate, String time, String distance, String userId, String bookingId, String name,
 			String email, String phone, String userPickup, String userDrop, LocalDate date, String userTripType,
 			String bookid, String car, String baseAmount, Integer amount, Integer status, String driverBhata,
 			Integer nightCharges, Integer gst, Integer serviceCharge, String offer, Integer offerPartial,
 			String offerAmount, String txnId, String payment, LocalDate dateEnd, String timeEnd, String bookingType,
-			String description, Vendor vendor, VendorCabs vendorCab, VendorDrivers vendorDriver, Penalty penalty, CabAdmin cabAdmin, DriveAdmin driveAdmin, String carrier, CarRentalUser carRentalUser) {
+			String description, String carrier, String driverEnterOtpTimePreStarted, String odoometerStarted,
+			String odoometerEnterTimeStarted, String driverEnterOtpTimePostTrip, String odometerEnding,
+			String odoometerEnterTimeEnding, Vendor vendor, VendorCabs vendorCab, VendorDrivers vendorDriver,
+			Penalty penalty, CabAdmin cabAdmin, DriveAdmin driveAdmin, CarRentalUser carRentalUser) {
 		this.id = id;
 		this.fromLocation = fromLocation;
 		this.toLocation = toLocation;
@@ -169,23 +202,27 @@ private CarRentalUser carRentalUser;
 		this.offerAmount = offerAmount;
 		this.txnId = txnId;
 		this.payment = payment;
-		this.carrier=carrier;
 		this.dateEnd = dateEnd;
 		this.timeEnd = timeEnd;
 		this.bookingType = bookingType;
 		this.description = description;
+		this.carrier = carrier;
+		this.driverEnterOtpTimePreStarted = driverEnterOtpTimePreStarted;
+		this.odoometerStarted = odoometerStarted;
+		this.odoometerEnterTimeStarted = odoometerEnterTimeStarted;
+		this.driverEnterOtpTimePostTrip = driverEnterOtpTimePostTrip;
+		this.odometerEnding = odometerEnding;
+		this.odoometerEnterTimeEnding = odoometerEnterTimeEnding;
 		this.vendor = vendor;
 		this.vendorCab = vendorCab;
 		this.vendorDriver = vendorDriver;
-		this.penalty=penalty;
-		this.cabAdmin=cabAdmin;
-		this.driveAdmin=driveAdmin;
-		this.carRentalUser=carRentalUser;
+		this.penalty = penalty;
+		this.cabAdmin = cabAdmin;
+		this.driveAdmin = driveAdmin;
+		this.carRentalUser = carRentalUser;
 	}
 
-	public Booking() {
 
-	}
 
 	public int getId() {
 		return id;
@@ -565,6 +602,81 @@ private CarRentalUser carRentalUser;
 		this.carrier = carrier;
 	}
 
+
+
+	public String getDriverEnterOtpTimePreStarted() {
+		return driverEnterOtpTimePreStarted;
+	}
+
+
+
+	public void setDriverEnterOtpTimePreStarted(String driverEnterOtpTimePreStarted) {
+		this.driverEnterOtpTimePreStarted = driverEnterOtpTimePreStarted;
+	}
+
+
+
+	public String getOdoometerStarted() {
+		return odoometerStarted;
+	}
+
+
+
+	public void setOdoometerStarted(String odoometerStarted) {
+		this.odoometerStarted = odoometerStarted;
+	}
+
+
+
+	public String getOdoometerEnterTimeStarted() {
+		return odoometerEnterTimeStarted;
+	}
+
+
+
+
+
+	public void setOdoometerEnterTimeStarted(String odoometerEnterTimeStarted) {
+		this.odoometerEnterTimeStarted = odoometerEnterTimeStarted;
+	}
+
+
+
+	public String getDriverEnterOtpTimePostTrip() {
+		return driverEnterOtpTimePostTrip;
+	}
+
+
+
+	public void setDriverEnterOtpTimePostTrip(String driverEnterOtpTimePostTrip) {
+		this.driverEnterOtpTimePostTrip = driverEnterOtpTimePostTrip;
+	}
+
+
+
+	public String getOdometerEnding() {
+		return odometerEnding;
+	}
+
+
+
+	public void setOdometerEnding(String odometerEnding) {
+		this.odometerEnding = odometerEnding;
+	}
+
+
+
+	public String getOdoometerEnterTimeEnding() {
+		return odoometerEnterTimeEnding;
+	}
+
+
+
+	public void setOdoometerEnterTimeEnding(String odoometerEnterTimeEnding) {
+		this.odoometerEnterTimeEnding = odoometerEnterTimeEnding;
+	}
+
+	
 	// public User getUser() {
 	// 	return user;
 	// }
@@ -572,5 +684,8 @@ private CarRentalUser carRentalUser;
 	// public void setUser(User user) {
 	// 	this.user = user;
 	// }
+
+
+	
 
 }

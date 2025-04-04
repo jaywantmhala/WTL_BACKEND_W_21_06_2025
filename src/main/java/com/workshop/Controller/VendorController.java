@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,7 +13,12 @@ import com.workshop.DTO.VendorLoginRequest;
 import com.workshop.DTO.VendorLoginResponse;
 import com.workshop.Entity.Booking;
 import com.workshop.Entity.Vendor;
+import com.workshop.Service.EmailService;
 import com.workshop.Service.VendorService;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -30,6 +37,12 @@ public class VendorController {
 
     @Autowired
     private VendorService service;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Autowired
+    private EmailService emailService;
 
     // ✅ Add Vendor with File Upload
     @PostMapping("/add")
@@ -213,5 +226,52 @@ public class VendorController {
         Vendor updatedVendor = this.service.updatePassword(vendor, id);
         return ResponseEntity.ok(updatedVendor);
     }
+
+
+
+
+    @PostMapping("/send-manual/{email}")
+    public ResponseEntity<?> sendManualEmailWithPath(@PathVariable("email") String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is required");
+        }
+
+        try {
+            // MimeMessage mimeMessage = mailSender.createMimeMessage();
+            // MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            // helper.setFrom("jaywantmhala928@gmail.com"); // Use your sender email
+            // helper.setTo(email);
+            // helper.setSubject("Vendor Registration - Please Fill the Details");
+
+            // HTML formatted email content
+            String subject = "Vendor Registration Form - " + email;
+
+            String emailContent = "<html><body>" +
+                    "<p>Hi,</p>" +
+                    "<p>Please click on the following link to fill in the vendor registration details:</p>" +
+                    "<p><a href='http://192.168.231.233:3001/vendor-registration'  " +
+                    "style='color: #007bff; text-decoration: none; font-weight: bold;'>Complete Vendor Registration</a></p>"
+                    +
+                    "<p>Thank you.</p>" +
+                    "<p>Best Regards,<br>WTL Tourism Pvt. Ltd.</p>" +
+                    "</body></html>";
+
+                    boolean emailSent = emailService.sendEmail(emailContent, subject, email);
+
+                    if (emailSent) {
+                        System.out.println("Booking confirmation email sent successfully.");
+                    } else {
+                        System.out.println("Failed to send booking confirmation email.");
+                    }
+
+            return ResponseEntity.ok("Email sent successfully");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to send email: " + ex.getMessage());
+        }
+
+}
 
 }

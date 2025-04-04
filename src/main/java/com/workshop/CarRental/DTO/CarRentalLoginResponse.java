@@ -4,9 +4,8 @@ public class CarRentalLoginResponse {
     
 
     private String message;
-
-
     private int id;
+
 
 
     private String username;
@@ -17,7 +16,7 @@ public class CarRentalLoginResponse {
         super();
     }
 
-    public CarRentalLoginResponse(String message,String username, String role, int id) {
+    public CarRentalLoginResponse(String message,String username, String role,int id) {
         this.username = username;
         this.role = role;
         this.message=message;
@@ -55,6 +54,8 @@ public class CarRentalLoginResponse {
     public void setId(int id) {
         this.id = id;
     }
+
+    
 
     
     
