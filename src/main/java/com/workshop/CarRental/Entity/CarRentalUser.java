@@ -23,7 +23,7 @@ public class CarRentalUser {
     private int id;
 
      @Column(nullable = true)
-    private String username;
+    private String userName;
 
 
     @Transient
@@ -71,10 +71,10 @@ private double userlongitude = 0.0;
     private List<Booking> bookings;
 
 
-    public CarRentalUser(int id, String username, String lastName, String email, String password, String phone, double userlatitude,
+    public CarRentalUser(int id, String userName, String lastName, String email, String password, String phone, double userlatitude,
             double userlongitude, String address, List<Booking> bookings, String role, String gender) {
         this.id = id;
-        this.username = username;
+        this.userName = userName;
         this.email = email;
         this.password = password;
         this.phone = phone;
@@ -102,14 +102,7 @@ private double userlongitude = 0.0;
     }
 
 
-    public String getUsername() {
-        return username;
-    }
-
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    
 
 
     public String getEmail() {
@@ -207,6 +200,16 @@ private double userlongitude = 0.0;
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+
+    public String getUserName() {
+        return userName;
+    }
+
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     

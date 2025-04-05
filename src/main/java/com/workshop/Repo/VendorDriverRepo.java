@@ -14,4 +14,6 @@ public interface VendorDriverRepo extends JpaRepository<VendorDrivers, Integer>{
 
     VendorDrivers findByContactNo(String contactNo);
 
+    public boolean existsByContactNo(String contactNo);
+
 }

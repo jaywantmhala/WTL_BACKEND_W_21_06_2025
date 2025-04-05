@@ -17,6 +17,8 @@ import com.workshop.CarRental.DTO.CarRentalLoginRequest;
 import com.workshop.CarRental.DTO.CarRentalLoginResponse;
 import com.workshop.CarRental.DTO.DriverLoginRequest;
 import com.workshop.CarRental.DTO.DriverLoginResponse;
+import com.workshop.CarRental.DTO.UnifiedLoginRequest;
+import com.workshop.CarRental.DTO.UnifiedLoginResponse;
 import com.workshop.CarRental.Entity.CarRentalUser;
 import com.workshop.CarRental.Service.AuthService;
 import com.workshop.CarRental.Service.CarRentalBookingService;
@@ -75,6 +77,9 @@ public class AuthController {
                     .body(response);
         }
     }
+
+
+    
     
 
 
@@ -134,4 +139,73 @@ public class AuthController {
     }
 
 
+
+    // same
+    
+    @PostMapping("/login")
+    public ResponseEntity<UnifiedLoginResponse> login(@RequestBody UnifiedLoginRequest loginRequest) {
+        String mobile = loginRequest.getMobile();
+        String password = loginRequest.getPassword();
+    
+        UnifiedLoginResponse unifiedResponse = new UnifiedLoginResponse();
+    
+        // Try user authentication
+        CarRentalLoginRequest userRequest = new CarRentalLoginRequest();
+        userRequest.setMobile(mobile);
+        userRequest.setPassword(password);
+    
+        CarRentalLoginResponse userResponse = authService.authenticateUser(userRequest);
+    
+        if (userResponse != null && userResponse.getUsername() != null) {
+            unifiedResponse.setStatus("success");
+            unifiedResponse.setRole("USER");
+            unifiedResponse.setData(userResponse);
+            return ResponseEntity.ok().header("X-Auth-Status", "success").body(unifiedResponse);
+        }
+    
+        // Try driver authentication
+        DriverLoginRequest driverRequest = new DriverLoginRequest();
+        driverRequest.setContactNo(mobile);
+        driverRequest.setPassword(password);
+    
+        DriverLoginResponse driverResponse = authService.authenticateDriver(driverRequest);
+    
+        if (driverResponse != null && driverResponse.getDriverName() != null) {
+            unifiedResponse.setStatus("success");
+            unifiedResponse.setRole("DRIVER");
+            unifiedResponse.setData(driverResponse);
+            return ResponseEntity.ok().header("X-Auth-Status", "success").body(unifiedResponse);
+        }
+    
+        // If both fail
+        unifiedResponse.setStatus("failed");
+        unifiedResponse.setRole(null);
+        unifiedResponse.setData(null);
+    
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .header("X-Auth-Status", "failed")
+                .body(unifiedResponse);
+    }
+
+
+    @PostMapping("/login1")
+    public ResponseEntity<UnifiedLoginResponse> handleLogin( @RequestBody UnifiedLoginRequest loginRequest) {
+        UnifiedLoginResponse response = authService.combineLogin(loginRequest);
+        
+        return ResponseEntity.status(determineHttpStatus(response.getStatus()))
+                .body(response);
+    }
+
+    private HttpStatus determineHttpStatus(String serviceStatus) {
+        return switch (serviceStatus) {
+            case "success" -> HttpStatus.OK;
+            case "invalid_password" -> HttpStatus.UNAUTHORIZED;
+            case "not_found" -> HttpStatus.NOT_FOUND;
+            case "error" -> HttpStatus.INTERNAL_SERVER_ERROR;
+            default -> HttpStatus.BAD_REQUEST;
+        };
+    }
+    
+
+    
 }

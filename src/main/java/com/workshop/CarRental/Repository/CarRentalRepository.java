@@ -14,4 +14,6 @@ public interface CarRentalRepository extends JpaRepository<CarRentalUser, Intege
     public Optional<CarRentalUser> findByPhone(String phone);
 
     public Optional<CarRentalUser> findByEmail(String email);
+
+    public boolean existsByPhone(String phone);
 }
