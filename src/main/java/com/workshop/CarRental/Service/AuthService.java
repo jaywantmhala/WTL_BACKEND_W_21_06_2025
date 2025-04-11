@@ -16,6 +16,7 @@ import com.workshop.CarRental.DTO.UnifiedLoginResponse;
 import com.workshop.CarRental.Entity.CarRentalUser;
 import com.workshop.CarRental.Repository.CarRentalRepository;
 import com.workshop.DTO.LoginRequest;
+import com.workshop.Entity.User;
 import com.workshop.Entity.VendorDrivers;
 import com.workshop.Repo.VendorDriverRepo;
 
@@ -34,23 +35,34 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
 
-    public CarRentalLoginResponse authenticateUser(CarRentalLoginRequest loginRequest) {
-        try {
-            CarRentalUser user = ((Optional<CarRentalUser>) carRentalRepository.findByPhone(loginRequest.getMobile()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
-            
-            if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                return new CarRentalLoginResponse("Invalid Password", null,null, 0);
-            }
-            
-            return new CarRentalLoginResponse("Login Successful", user.getUserName(), user.getRole(), user.getId());
-            
-        } catch (Exception e) {
-            return new CarRentalLoginResponse("Login Failed",null,null, 0);
-        }
+    // public CarRentalLoginResponse authenticateUser(CarRentalLoginRequest loginRequest) {
+    //     try {
+    //         Optional<CarRentalUser> optionalUser = carRentalRepository.findByPhone(loginRequest.getMobile());
 
+    //         if (optionalUser.isEmpty()) {
+    //             return new CarRentalLoginResponse("User not found", null, null, 0);
+    //         }
 
-    }
+    //         CarRentalUser user = optionalUser.get();
+
+    //         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+    //             return new CarRentalLoginResponse("Invalid Password", null, null, 0);
+    //         }
+
+    //         return new CarRentalLoginResponse("Login Successful", user.getUserName(), user.getRole(), user.getId());
+
+    //     } catch (Exception e) {
+    //         return new CarRentalLoginResponse("Login Failed", null, null, 0);
+    //     }
+    // }
+
+    public CarRentalUser login(String mobile, String password) {
+		CarRentalUser user = carRentalRepository.findByPhone(mobile).get();
+		if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+			return user;
+		}
+		return null;
+	}
 
 
     public DriverLoginResponse authenticateDriver(DriverLoginRequest loginRequest) {

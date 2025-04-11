@@ -22,6 +22,8 @@ import com.workshop.CarRental.DTO.UnifiedLoginResponse;
 import com.workshop.CarRental.Entity.CarRentalUser;
 import com.workshop.CarRental.Service.AuthService;
 import com.workshop.CarRental.Service.CarRentalBookingService;
+import com.workshop.DTO.LoginRequest;
+import com.workshop.Entity.User;
 import com.workshop.Service.EmailService;
 
 @RestController
@@ -43,22 +45,21 @@ public class AuthController {
 
     }
 
-     @PostMapping("/userlogin")
-    public ResponseEntity<CarRentalLoginResponse> loginUser(
-             @RequestBody CarRentalLoginRequest loginRequest) {
-        
-        CarRentalLoginResponse response = authService.authenticateUser(loginRequest);
-        
-        if (response.getUsername() != null) {
-            return ResponseEntity.ok()
-                    .header("X-Auth-Status", "success")
-                    .body(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .header("X-Auth-Status", "failed")
-                    .body(response);
-        }
-    }
+    // @PostMapping("/userlogin")
+    // public ResponseEntity<CarRentalLoginResponse> loginUser(@RequestBody CarRentalLoginRequest loginRequest) {
+    //     CarRentalLoginResponse response = authService.authenticateUser(loginRequest);
+
+    //     if (response.getUsername() != null) {
+    //         return ResponseEntity.ok()
+    //                 .header("X-Auth-Status", "success")
+    //                 .body(response);
+    //     } else {
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+    //                 .header("X-Auth-Status", "failed")
+    //                 .body(response);
+    //     }
+    // }
+    
 
 
     @PostMapping("/driverlogin")
@@ -139,53 +140,64 @@ public class AuthController {
     }
 
 
+    @PostMapping("/carRentalLogin")
+    public ResponseEntity<?> login(@RequestBody CarRentalLoginRequest loginRequest) {
+        CarRentalUser user = authService.login(loginRequest.getMobile(), loginRequest.getPassword());
+        if (user != null) {
+            // user.setPassword(null);
+            return ResponseEntity.ok(user);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid username or password");
+    }
+
 
     // same
     
-    @PostMapping("/login")
-    public ResponseEntity<UnifiedLoginResponse> login(@RequestBody UnifiedLoginRequest loginRequest) {
-        String mobile = loginRequest.getMobile();
-        String password = loginRequest.getPassword();
+    // @PostMapping("/login")
+    // public ResponseEntity<UnifiedLoginResponse> login(@RequestBody UnifiedLoginRequest loginRequest) {
+    //     String mobile = loginRequest.getMobile();
+    //     String password = loginRequest.getPassword();
     
-        UnifiedLoginResponse unifiedResponse = new UnifiedLoginResponse();
+    //     UnifiedLoginResponse unifiedResponse = new UnifiedLoginResponse();
     
-        // Try user authentication
-        CarRentalLoginRequest userRequest = new CarRentalLoginRequest();
-        userRequest.setMobile(mobile);
-        userRequest.setPassword(password);
+    //     // Try user authentication
+    //     CarRentalLoginRequest userRequest = new CarRentalLoginRequest();
+    //     userRequest.setMobile(mobile);
+    //     userRequest.setPassword(password);
     
-        CarRentalLoginResponse userResponse = authService.authenticateUser(userRequest);
+    //     CarRentalLoginResponse userResponse = authService.authenticateUser(userRequest);
     
-        if (userResponse != null && userResponse.getUsername() != null) {
-            unifiedResponse.setStatus("success");
-            unifiedResponse.setRole("USER");
-            unifiedResponse.setData(userResponse);
-            return ResponseEntity.ok().header("X-Auth-Status", "success").body(unifiedResponse);
-        }
+    //     if (userResponse != null && userResponse.getUsername() != null) {
+    //         unifiedResponse.setStatus("success");
+    //         unifiedResponse.setRole("USER");
+    //         unifiedResponse.setData(userResponse);
+    //         return ResponseEntity.ok().header("X-Auth-Status", "success").body(unifiedResponse);
+    //     }
     
-        // Try driver authentication
-        DriverLoginRequest driverRequest = new DriverLoginRequest();
-        driverRequest.setContactNo(mobile);
-        driverRequest.setPassword(password);
+    //     // Try driver authentication
+    //     DriverLoginRequest driverRequest = new DriverLoginRequest();
+    //     driverRequest.setContactNo(mobile);
+    //     driverRequest.setPassword(password);
     
-        DriverLoginResponse driverResponse = authService.authenticateDriver(driverRequest);
+    //     DriverLoginResponse driverResponse = authService.authenticateDriver(driverRequest);
     
-        if (driverResponse != null && driverResponse.getDriverName() != null) {
-            unifiedResponse.setStatus("success");
-            unifiedResponse.setRole("DRIVER");
-            unifiedResponse.setData(driverResponse);
-            return ResponseEntity.ok().header("X-Auth-Status", "success").body(unifiedResponse);
-        }
+    //     if (driverResponse != null && driverResponse.getDriverName() != null) {
+    //         unifiedResponse.setStatus("success");
+    //         unifiedResponse.setRole("DRIVER");
+    //         unifiedResponse.setData(driverResponse);
+    //         return ResponseEntity.ok().header("X-Auth-Status", "success").body(unifiedResponse);
+    //     }
     
-        // If both fail
-        unifiedResponse.setStatus("failed");
-        unifiedResponse.setRole(null);
-        unifiedResponse.setData(null);
+    //     // If both fail
+    //     unifiedResponse.setStatus("failed");
+    //     unifiedResponse.setRole(null);
+    //     unifiedResponse.setData(null);
     
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .header("X-Auth-Status", "failed")
-                .body(unifiedResponse);
-    }
+    //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+    //             .header("X-Auth-Status", "failed")
+    //             .body(unifiedResponse);
+    // }
 
 
     @PostMapping("/login1")

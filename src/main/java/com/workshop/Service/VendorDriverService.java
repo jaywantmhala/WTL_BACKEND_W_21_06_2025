@@ -20,6 +20,7 @@ public class VendorDriverService {
 	
 	
 	public VendorDrivers addVendorsDriver(VendorDrivers vendorDrivers) {
+		vendorDrivers.setPassword("vendorDriver@123");
 		return this.vendorDriverRepo.save(vendorDrivers);
 	}
 	
@@ -43,6 +44,11 @@ public class VendorDriverService {
 		vendorDrivers.setDriverLongitude(longitude);
 		
 		return this.vendorDriverRepo.save(vendorDrivers);
+	}
+
+	public VendorDrivers findById(int vendorDriverId){
+		VendorDrivers v = this.vendorDriverRepo.findById(vendorDriverId).orElse(null);
+		return v;
 	}
 
 }

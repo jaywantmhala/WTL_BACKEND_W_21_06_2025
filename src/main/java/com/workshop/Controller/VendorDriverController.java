@@ -24,6 +24,7 @@ import com.workshop.Entity.Vendor;
 import com.workshop.Entity.VendorCabs;
 import com.workshop.Entity.VendorDrivers;
 import com.workshop.Repo.VendorRepository;
+import com.workshop.Service.EmailService;
 import com.workshop.Service.VendorDriverService;
 
 
@@ -35,6 +36,9 @@ public class VendorDriverController {
 	
 	@Autowired
 	private VendorRepository vendorRepository;
+
+    @Autowired
+    private EmailService emailService;
 	
 private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/vendorDriver/";
     
@@ -128,6 +132,51 @@ private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/
           v.setDriverDoc2Image(driverDoc2ImageName);
           v.setDriverDoc3Image(driverDoc3ImageName);
           v.setVendor(vendor);
+        //   String password = Math.random(Math.floor(100));
+        //    v.setPassword("vendorDriver@123");
+
+          String subject = "Driver Registration Successfully" + v.getDriverName();
+          String message = "<!DOCTYPE html>"
+          + "<html lang='en'>"
+          + "<head>"
+          + "<meta charset='UTF-8'>"
+          + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+          + "<title>Welcome WTL Tourism Pvt Ltd</title>"
+          + "</head>"
+          + "<body style='font-family: Arial, sans-serif; background-color: #f7f7f7; margin: 0; padding: 0;'>"
+          + "<div style='max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow: hidden;'>"
+          + "<div style='background-color: #007BFF; color: #ffffff; padding: 20px; text-align: center;'>"
+          + "<h1 style='margin: 0; font-size: 24px; font-weight: bold;'>Booking Confirmation</h1>"
+          + "</div>"
+          + "<div style='padding: 20px;'>"
+          + "<h3 style='color: #007BFF; font-size: 20px; margin-bottom: 20px;'>Hello " + v.getDriverName() + ",</h3>"
+          + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-bottom: 20px;'>Your registration has been confirmed. Below are the details of your personal information, Please kindly keep on your mind do not share this crediential to anyone:</p>"
+          + "<div style='margin-top: 20px;'>"
+          + "<ul style='list-style-type: none; padding: 0;'>"
+          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Contact No :</strong> " + v.getContactNo() + "</li>"
+          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Alternate Contact No :</strong> " + v.getAltContactNo() + "</li>"
+          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Address :</strong> " + v.getAddress() + "</li>"
+          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver License No :</strong> " + v.getdLNo() + "</li>"
+          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>PVC No :</strong> " + v.getPvcNo() + "</li>"
+          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Email Id:</strong> " + v.getEmailId() + "</li>"
+          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Your Password For Driver App:</strong>" + "vendorDriver@123" + "</li>"
+        //   + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Cab Name:</strong> " + updatedBooking.getVendorCab().getCarName() + "</li>"
+        //   + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Vehicle No:</strong> " + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
+        //   + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Name:</strong> " + updatedBooking.getVendorDriver().getDriverName() + "</li>"
+        //   + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Contact:</strong> " + updatedBooking.getVendorDriver().getContactNo() + "</li>"
+          + "</ul>"
+          + "</div>"
+          + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-top: 20px;'>If you have any query related to your registration, Please kindly contact to our WTL Tourism Pvt. Ltd</p>"
+          + "</div>"
+          + "<div style='text-align: center; padding: 20px; background-color: #f1f1f1; color: #777777; font-size: 14px;'>"
+          + "<p style='margin: 0;'>If you have any questions, feel free to contact us at <a href='wtltourism@gmail.com' style='color: #007BFF; text-decoration: none;'>support@example.com</a>.</p>"
+          + "<img src='https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjc1OGk0ZGVqNHFseDRrM3FvOW0xYnVyenJkcmQ2OXNsODE0djUzZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPhUfA1h2U2Koko/giphy.gif' alt='Namaskar' style='width: 100px; height: auto; margin-top: 10px;'>"
+          + "</div>"
+          + "</div>"
+          + "</body>"
+          + "</html>";
+          emailService.sendEmail(message, subject, v.getEmailId());
+
           
            
 

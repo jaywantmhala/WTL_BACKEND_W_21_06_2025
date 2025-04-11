@@ -1133,4 +1133,11 @@ public class CabRestController {
     public Booking endOdoometerEnding(@PathVariable int id, @RequestParam String meter){
         return this.ser.enterOdoometerEnding(id, meter);
     }
+
+    @PutMapping("/udpatePrice/{id}")
+    public Booking updatePrice(@PathVariable int id, @RequestParam int amount){
+        return this.ser.updatePrice(id, amount);
+    }
+
+
 }

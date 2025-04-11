@@ -3,7 +3,6 @@ package com.workshop.Service;
 import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.mail.Authenticator;
 
 import org.springframework.stereotype.Service;
 
@@ -12,7 +11,7 @@ public class EmailService {
 
     public boolean sendEmail(String message, String subject, String to) {
         boolean f = false;
-        String from = "jaywantmhala928@gmail.com"; // Replace with your email
+        String from = "contactwtltourism@gmail.com"; // Replace with your email
         String host = "smtp.gmail.com";
 
         // Set up properties for the mail session
@@ -26,10 +25,11 @@ public class EmailService {
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("jaywantmhala928@gmail.com", "mcjd ebsg arvj ftca"); // Replace with
+                return new PasswordAuthentication("contactwtltourism@gmail.com", "wgxt suje ufqw ahje"); // Replace with
                                                                                                        // actual app
-                                                                                                       // password
+                                                                                                // password
             }
+
         });
 
         session.setDebug(true);

@@ -432,4 +432,10 @@ public class BookingService {
         booking.setOdometerEnding(meter);
         return this.repo.save(booking);
     }
+
+    public Booking updatePrice(int id, int amount){
+        Booking b = this.repo.findById(id).orElse(null);
+        b.setAmount(amount);
+        return b;
+    }
 }

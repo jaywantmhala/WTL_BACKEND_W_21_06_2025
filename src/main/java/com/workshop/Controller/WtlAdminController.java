@@ -443,6 +443,7 @@ public class WtlAdminController {
 
         // Call the service method to assign vendor
         Booking updatedBooking = bookingService.assignVendorDriverToBooking(bookingId, vendorDriverId);
+         
 
         if (updatedBooking == null) {
             // If the booking or vendor was not found, return a 404 Not Found
@@ -452,7 +453,7 @@ public class WtlAdminController {
         if (updatedBooking.getVendor() == null || updatedBooking.getVendorCab() == null) {
             System.out.println("Vendor is not assigned");
         } else {
-            String subject = "Booking Confirmation - " + updatedBooking.getBookid();
+            String subject = "Booking Assign From Your Vendor  - " + updatedBooking.getBookid();
             String message = "<!DOCTYPE html>"
             + "<html lang='en'>"
             + "<head>"
