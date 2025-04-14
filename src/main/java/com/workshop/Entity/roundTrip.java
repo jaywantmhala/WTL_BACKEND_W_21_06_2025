@@ -1,6 +1,8 @@
 package com.workshop.Entity;
 
 
+import java.time.LocalDate;
+
 import com.workshop.Repo.Trip;
 
 import jakarta.persistence.Entity;
@@ -26,6 +28,9 @@ public class roundTrip implements Trip{
 	    private int suv;
 	    private int suvplus;
 	    private String status;
+
+		private LocalDate startDate;
+    private LocalDate endDate;
 		public Long getId() {
 			return id;
 		}
@@ -92,8 +97,22 @@ public class roundTrip implements Trip{
 		public void setStatus(String status) {
 			this.status = status;
 		}
+
+		
+		public LocalDate getStartDate() {
+			return startDate;
+		}
+		public void setStartDate(LocalDate startDate) {
+			this.startDate = startDate;
+		}
+		public LocalDate getEndDate() {
+			return endDate;
+		}
+		public void setEndDate(LocalDate endDate) {
+			this.endDate = endDate;
+		}
 		public roundTrip(Long id, String sourceState, String sourceCity, String destinationState,
-				String destinationCity, int hatchback, int sedan, int sedanpremium, int suv, int suvplus, String  status) {
+				String destinationCity, int hatchback, int sedan, int sedanpremium, int suv, int suvplus, String  status, LocalDate startDate, LocalDate endDate) {
 			super();
 			this.id = id;
 			this.sourceState = sourceState;
@@ -106,6 +125,8 @@ public class roundTrip implements Trip{
 			this.suv = suv;
 			this.suvplus = suvplus;
 			this.status = status;
+			this.startDate=startDate;
+			this.endDate=endDate;
 		}
 		public roundTrip() {
 			super();

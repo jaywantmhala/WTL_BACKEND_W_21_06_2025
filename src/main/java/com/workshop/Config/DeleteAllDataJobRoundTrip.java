@@ -1,6 +1,8 @@
 package com.workshop.Config;
 
 import com.workshop.Repo.OnewayTripRepo;
+import com.workshop.Repo.RoundTripRepo;
+
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,10 +10,10 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 
 @Component
-public class DeleteAllDataJob implements Job {
+public class DeleteAllDataJobRoundTrip implements Job {
 
     @Autowired
-    private OnewayTripRepo pricingRepository;
+    private RoundTripRepo pricingRepository;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

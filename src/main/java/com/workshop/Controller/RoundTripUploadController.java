@@ -12,12 +12,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.workshop.Repo.OnewayTripRepo;
+import com.workshop.Repo.RoundTripRepo;
 import com.workshop.Service.ExceFileStorageService;
 import com.workshop.Service.QuartzSchedulingService;
 
 @RestController
-@RequestMapping("/upload/excel")
-public class UploadController {
+@RequestMapping("/upload/roundTrip/excel")
+public class RoundTripUploadController {
 
     @Autowired
     private QuartzSchedulingService schedulingService;
@@ -26,7 +27,7 @@ public class UploadController {
     private ExceFileStorageService fileStorageService;
 
     @Autowired
-        private OnewayTripRepo pricingRepository;
+        private RoundTripRepo pricingRepository;
 
 
     @PostMapping
@@ -39,24 +40,25 @@ public class UploadController {
         LocalDate end = LocalDate.parse(endDate);
 
         // Delete old jobs + file before scheduling new one
-        schedulingService.deleteExistingJobsAndFile();
+        schedulingService.deleteRoundTripExistingJobsAndFile();
 
         String filePath = fileStorageService.saveFile(file);
 
-        schedulingService.scheduleSaveJob(start, filePath);
-        schedulingService.scheduleDeleteJob(end, filePath); // Pass filePath for cleanup
+        schedulingService.scheduleRoundTripSaveJob(start, filePath);
+        schedulingService.scheduleRoundTripDeleteJob(end, filePath); // Pass filePath for cleanup
 
         return ResponseEntity.ok("Excel uploaded and scheduled successfully. Old job and file replaced.");
     }
 
     @GetMapping("/jobs")
     public ResponseEntity<List<Map<String, String>>> getJobs() throws SchedulerException {
-        return ResponseEntity.ok(schedulingService.getScheduledJobs());
+        return ResponseEntity.ok(schedulingService.getRoundScheduledJobs());
     }
 
     @DeleteMapping("/delete")
 public ResponseEntity<String> deleteJobAndFile() throws SchedulerException, IOException {
-    boolean deleted = schedulingService.deleteExistingJobsAndFile();
+    boolean deleted = schedulingService.deleteRoundTripExistingJobsAndFile();
+
 
     // Manually clear DB now
     pricingRepository.deleteAll();

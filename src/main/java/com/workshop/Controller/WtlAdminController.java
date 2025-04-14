@@ -337,13 +337,16 @@ public class WtlAdminController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{bookingId}/assignVendor/{vendorId}")
+    @PutMapping("/{bookingId}/assignVendor/{vendorId}/{email}")
     public ResponseEntity<Booking> assignVendorToBooking(
             @PathVariable int bookingId,
             @PathVariable Long vendorId) {
 
+                
+
         // Call the service method to assign vendor
         Booking updatedBooking = bookingService.assignVendorToBooking(bookingId, vendorId);
+
 
         if (updatedBooking == null) {
             // If the booking or vendor was not found, return a 404 Not Found
@@ -531,10 +534,10 @@ public class WtlAdminController {
     }
 
     @GetMapping("/oneWay/{pickupLocation}/{dropLocation}")
-    public List<onewayTrip> getOneWayTripData(
+    public List<onewayTrip> getoneWayTripData(
             @PathVariable String pickupLocation,
             @PathVariable String dropLocation) {
-        return tripSer.getOneWayTripData(pickupLocation, dropLocation);
+        return tripSer.getoneWayTripData(pickupLocation, dropLocation);
     }
 
     @GetMapping("/roundTrip/{pickupLocation}/{dropLocation}")
@@ -542,6 +545,73 @@ public class WtlAdminController {
             @PathVariable String pickupLocation,
             @PathVariable String dropLocation) {
         return tripSer.getRoundWayTripData(pickupLocation, dropLocation);
+    }
+
+
+    @PostMapping("/rounprice")
+    public ResponseEntity<roundTrip> createRoundWayTripPrice(
+            @RequestParam String sourceState,
+            @RequestParam String destinationState,
+            @RequestParam String sourceCity,
+            @RequestParam String destinationCity,
+            @RequestParam int hatchbackPrice,
+            @RequestParam int sedanPrice,
+            @RequestParam int sedanPremiumPrice,
+            @RequestParam int suvPrice,
+            @RequestParam int suvPlusPrice,
+            @RequestParam(required = false, defaultValue = "s") String status) {
+
+        // Call the service method which contains your provided code.
+        roundTrip savedTrip = tripSer.postRoundTripprice(
+                sourceState,
+                destinationState,
+                sourceCity,
+                destinationCity,
+                hatchbackPrice,
+                sedanPrice,
+                sedanPremiumPrice,
+                suvPrice,
+                suvPlusPrice,
+                status);
+
+        // Return the saved one-way trip pricing object along with HTTP 200 OK status.
+        return ResponseEntity.ok(savedTrip);
+    }
+
+    @GetMapping("/oneWay2/{pickupLocation}/{dropLocation}")
+    public List<onewayTrip> getoneWayTripData2(
+            @PathVariable String pickupLocation,
+            @PathVariable String dropLocation) {
+        return tripSer.getoneWayTripData(pickupLocation, dropLocation);
+    }
+
+
+    @PostMapping("/oneprice")
+    public ResponseEntity<onewayTrip> createOneWayTripPrice(
+            @RequestParam String sourceState,
+            @RequestParam String destinationState,
+            @RequestParam String sourceCity,
+            @RequestParam String destinationCity,
+            @RequestParam int hatchbackPrice,
+            @RequestParam int sedanPrice,
+            @RequestParam int sedanPremiumPrice,
+            @RequestParam int suvPrice,
+            @RequestParam int suvPlusPrice,
+            @RequestParam(required = false, defaultValue = "s") String status) {
+
+        onewayTrip savedTrip = tripSer.postOneWayTripprice(
+                sourceState,
+                destinationState,
+                sourceCity,
+                destinationCity,
+                hatchbackPrice,
+                sedanPrice,
+                sedanPremiumPrice,
+                suvPrice,
+                suvPlusPrice,
+                status);
+
+        return ResponseEntity.ok(savedTrip);
     }
 
 

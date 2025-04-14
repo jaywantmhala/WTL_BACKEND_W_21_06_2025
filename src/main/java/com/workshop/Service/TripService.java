@@ -419,6 +419,43 @@ private Map<String, Object> calculateDistanceBetweenLocations(String origin, Str
 				destinationCity);
 	}
 
+	public List<onewayTrip> getAllData2(String sourceCity, String sourceState,
+			String destinationState,
+			String destinationCity) {
+		// Note: The repository method expects parameters in the order: sourceState,
+		// sourceCity, destinationState, destinationCity
+		return repo.findBySourceStateAndDestinationStateAndSourceCityAndDestinationCity(
+				sourceState, destinationState, sourceCity, destinationCity);
+	}
+
+	public List<onewayTrip> getoneWayTripData(String pickupLocation, String dropLocation) {
+		if (pickupLocation == null || dropLocation == null) {
+			throw new IllegalArgumentException("Pickup and drop locations cannot be null");
+		}
+
+		// Extract city and state from the pickup location
+		String[] pickup = extractCityAndState(pickupLocation);
+		// Extract city and state from the drop location
+		String[] drop = extractCityAndState(dropLocation);
+
+		// pickup[0] = source city, pickup[1] = source state
+		// drop[0] = destination city, drop[1] = destination state
+		String sourceCity = pickup[0];
+		String sourceState = pickup[1];
+		String destinationCity = drop[0];
+		String destinationState = drop[1];
+
+		// Debug prints
+		System.out.println("Source City: " + sourceCity);
+		System.out.println("Source State: " + sourceState);
+		System.out.println("Destination City: " + destinationCity);
+		System.out.println("Destination State: " + destinationState);
+
+		// Fetch matching trip details from the database
+		return getAllData2(sourceCity, sourceState, destinationState,
+				destinationCity);
+	}
+
 	// private String[] extractCityAndState(String location) {
 	// String[] parts = location.split(",");
 	// if (parts.length >= 2) {
@@ -435,5 +472,44 @@ private Map<String, Object> calculateDistanceBetweenLocations(String origin, Str
 		return roundrepo.findBySourceStateAndDestinationStateAndSourceCityAndDestinationCity(
 				sourceState, destinationState, sourceCity, destinationCity);
 	}
+
+	public onewayTrip postOneWayTripprice(String sourceState, String destinationState, String sourceCity,
+	String destinationCity, int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice,
+	int suvPlusPrice, String status){
+
+		onewayTrip o = new onewayTrip();
+		o.setSourceState(sourceState);
+		o.setDestinationState(destinationState);
+		o.setSourceCity(sourceCity);
+		o.setDestinationCity(destinationCity);
+		o.setHatchback(hatchbackPrice);
+		o.setSedan(sedanPrice);
+		o.setSedanpremium(sedanPremiumPrice);
+		o.setSuv(suvPrice);
+		o.setSuvplus(suvPlusPrice);
+		o.setStatus("s");
+
+		return this.repo.save(o);
+	}
+
+	public roundTrip postRoundTripprice(String sourceState, String destinationState, String sourceCity,
+	String destinationCity, int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice,
+	int suvPlusPrice, String status){
+
+		roundTrip o = new roundTrip();
+		o.setSourceState(sourceState);
+		o.setDestinationState(destinationState);
+		o.setSourceCity(sourceCity);
+		o.setDestinationCity(destinationCity);
+		o.setHatchback(hatchbackPrice);
+		o.setSedan(sedanPrice);
+		o.setSedanpremium(sedanPremiumPrice);
+		o.setSuv(suvPrice);
+		o.setSuvplus(suvPlusPrice);
+		o.setStatus("s");
+
+		return this.roundrepo.save(o);
+	}
+
 
 }

@@ -726,7 +726,9 @@ public class BookingController {
 						14,    // Set default value for sedanpremium
 						14,    // Set default value for suv
 						21,    // Set default value for suvplus
-						""    // Set default value for status
+						"",
+						null,
+						null   // Set default value for status
 					);
 			  
 			  

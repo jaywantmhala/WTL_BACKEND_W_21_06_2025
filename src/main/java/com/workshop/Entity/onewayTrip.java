@@ -14,7 +14,7 @@ import jakarta.persistence.Id;
 
 public class onewayTrip implements Trip, Serializable{
 
-	private static final long serialVersionUID = 1L; // Add a serialVersionUID
+	private static final long serialVersionUID = 1L; 
 
 	
 	@Id

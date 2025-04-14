@@ -95,6 +95,8 @@ public class VendorController {
             vendor.setPanPhoto(panPhotoName);
             vendor.setVendorOtherDetails(vendorOtherDetails);
 
+            
+
             return ResponseEntity.ok(service.saveVendor(vendor));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -250,7 +252,7 @@ public class VendorController {
             String emailContent = "<html><body>" +
                     "<p>Hi,</p>" +
                     "<p>Please click on the following link to fill in the vendor registration details:</p>" +
-                    "<p><a href='http://192.168.231.233:3001/vendor-registration'  " +
+                    "<p><a href='https://admin.worldtriplink.in/vendor-registration'  " +
                     "style='color: #007bff; text-decoration: none; font-weight: bold;'>Complete Vendor Registration</a></p>"
                     +
                     "<p>Thank you.</p>" +

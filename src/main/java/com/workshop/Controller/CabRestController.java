@@ -555,7 +555,7 @@ public class CabRestController {
 
                 10, 11, 14, 14, 21,
 
-                ""
+                "",null,null
 
         );
 
@@ -687,7 +687,6 @@ public class CabRestController {
         return ResponseEntity.ok(bookings);
     }
 
-    // for invoice
 
     @PostMapping("/invoice1")
     public Map<String, Object> bookCab(
@@ -774,7 +773,7 @@ public class CabRestController {
             @RequestParam String days,
             @RequestParam String driverrate,
             @RequestParam String phone,
-            @RequestParam int userId) {
+            @RequestParam(required = false) int userId) {
 
         try {
             // Create booking object
@@ -797,9 +796,11 @@ public class CabRestController {
             booking.setBookingType("website");
             booking.setDate(LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
             booking.setCar(modelType);
-            booking.setAmount(Integer.parseInt(price));
+            booking.setBaseAmount(price);
+            booking.setAmount(Integer.parseInt(total));
             booking.setGst(Integer.parseInt(gst));
             booking.setServiceCharge(Integer.parseInt(service));
+            // booking.setT
 
             if ("roundTrip".equals(tripType) && returndate != null) {
                 booking.setReturnDate(LocalDate.parse(returndate, DateTimeFormatter.ISO_DATE));

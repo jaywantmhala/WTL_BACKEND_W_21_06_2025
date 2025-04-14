@@ -1,9 +1,18 @@
 package com.workshop.Config;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Iterator;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.quartz.Job;
@@ -12,24 +21,14 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.workshop.Entity.onewayTrip;
-import com.workshop.Repo.OnewayTripRepo;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.workshop.Entity.roundTrip;
+import com.workshop.Repo.RoundTripRepo;
 
 @Component
-public class SaveAllDataJob implements Job {
+public class SaveAllDataJobRoundTrip implements Job {
 
     @Autowired
-    private OnewayTripRepo repository;
+    private RoundTripRepo repository;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -38,7 +37,7 @@ public class SaveAllDataJob implements Job {
 
         // Parse the Excel file and save data to the database
         try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
-            List<onewayTrip> trips = parseExcelFile(is, LocalDate.now(), LocalDate.now()); 
+            List<roundTrip> trips = parseExcelFile(is, LocalDate.now(), LocalDate.now()); 
             repository.saveAll(trips);
             System.out.println("Saved all data to onewayTrip table on start date.");
         } catch (IOException e) {
@@ -47,12 +46,12 @@ public class SaveAllDataJob implements Job {
     }
 
 
-    private List<onewayTrip> parseExcelFile(InputStream is, LocalDate startDate, LocalDate endDate) throws IOException {
+    private List<roundTrip> parseExcelFile(InputStream is, LocalDate startDate, LocalDate endDate) throws IOException {
         Workbook workbook = new XSSFWorkbook(is);
         Sheet sheet = workbook.getSheetAt(0);
         Iterator<Row> rows = sheet.iterator();
 
-        List<onewayTrip> trips = new ArrayList<>();
+        List<roundTrip> trips = new ArrayList<>();
 
         int rowNumber = 0;
         while (rows.hasNext()) {
@@ -66,7 +65,7 @@ public class SaveAllDataJob implements Job {
 
             Iterator<Cell> cellsInRow = currentRow.iterator();
 
-            onewayTrip trip = new onewayTrip();
+            roundTrip trip = new roundTrip();
 
             int cellIdx = 0;
             while (cellsInRow.hasNext()) {
@@ -151,3 +150,4 @@ public class SaveAllDataJob implements Job {
     }
 
 }
+
