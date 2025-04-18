@@ -152,20 +152,10 @@ public class VendorController {
 
     // ✅ Utility: Save File
     private String saveFile(MultipartFile file) throws IOException {
-        if (file == null || file.isEmpty()) {
-            return null; // ✅ Return null if no file is uploaded
-        }
-
+        if (file == null || file.isEmpty()) return null;
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
         Path filePath = Paths.get(UPLOAD_DIR, fileName);
-
-        try (var inputStream = file.getInputStream()) {
-            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("✅ File saved: " + filePath);
-        } catch (IOException e) {
-            System.err.println("❌ File saving failed: " + e.getMessage());
-            throw e;
-        }
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         return fileName;
     }
 

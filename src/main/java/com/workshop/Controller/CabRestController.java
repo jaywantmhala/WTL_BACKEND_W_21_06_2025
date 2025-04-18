@@ -773,12 +773,14 @@ public class CabRestController {
             @RequestParam String days,
             @RequestParam String driverrate,
             @RequestParam String phone,
-            @RequestParam(required = false) int userId) {
+            @RequestParam(required = false) Integer userId
+            
+            ) {
 
         try {
             // Create booking object
 
-            CarRentalUser carRentalUser = this.carRentalRepository.findById(userId).orElse(null);
+            // CarRentalUser carRentalUser = this.carRentalRepository.findById(userId).orElse(null);
             Booking booking = new Booking();
             booking.setFromLocation(pickupLocation);
             booking.setToLocation(dropLocation);
@@ -789,7 +791,7 @@ public class CabRestController {
             booking.setName(name);
             booking.setEmail(email);
             booking.setPhone(phone);
-            booking.setCarRentalUser(carRentalUser);
+            // booking.setCarRentalUser(carRentalUser);
             booking.setUserDrop(dropLocation);
             booking.setUserPickup(pickupLocation);
             booking.setUserTripType(tripType);
@@ -804,6 +806,11 @@ public class CabRestController {
 
             if ("roundTrip".equals(tripType) && returndate != null) {
                 booking.setReturnDate(LocalDate.parse(returndate, DateTimeFormatter.ISO_DATE));
+            }
+
+            if (userId != null) {
+                CarRentalUser carRentalUser = this.carRentalRepository.findById(userId).orElse(null);
+                booking.setCarRentalUser(carRentalUser); 
             }
 
             // Generate booking ID

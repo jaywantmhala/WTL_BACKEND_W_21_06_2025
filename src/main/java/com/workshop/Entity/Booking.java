@@ -133,10 +133,17 @@ private DriveAdmin driveAdmin;
 // @JoinColumn(name = "user_id")
 // private User user;
 
-@ManyToOne
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "bookings"})
-@JoinColumn(name = "car_rental_user_id")
-private CarRentalUser carRentalUser;
+// @ManyToOne
+    // @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "bookings"})
+// @JoinColumn(name = "car_rental_user_id")
+// private CarRentalUser carRentalUser;
+@JsonIgnore
+
+@ManyToOne(fetch = FetchType.LAZY, optional = true)
+@JsonManagedReference
+
+    @JoinColumn(name = "car_rental_user_id", nullable = true)
+    private CarRentalUser carRentalUser;
 
 
 	

@@ -512,4 +512,14 @@ private Map<String, Object> calculateDistanceBetweenLocations(String origin, Str
 	}
 
 
+	public List<onewayTrip> getAllTransportRates(){
+		return this.repo.findAll();
+	}
+
+	public List<roundTrip> getAllRoundTripTransportRates(){
+		return this.roundrepo.findAll();
+	}
+
+	
+
 }
