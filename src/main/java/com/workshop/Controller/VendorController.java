@@ -14,6 +14,7 @@ import com.workshop.DTO.VendorLoginResponse;
 import com.workshop.Entity.Booking;
 import com.workshop.Entity.Vendor;
 import com.workshop.Service.EmailService;
+import com.workshop.Service.PasswordUpdateRequest;
 import com.workshop.Service.VendorService;
 
 import jakarta.mail.MessagingException;
@@ -213,11 +214,11 @@ public class VendorController {
     // }
 
 
-    @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Vendor> update(@RequestBody Vendor vendor, @PathVariable Long id) {
-        Vendor updatedVendor = this.service.updatePassword(vendor, id);
-        return ResponseEntity.ok(updatedVendor);
-    }
+    // @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    // public ResponseEntity<Vendor> update(@RequestBody Vendor vendor, @PathVariable Long id) {
+    //     Vendor updatedVendor = this.service.updatePassword(vendor, id);
+    //     return ResponseEntity.ok(updatedVendor);
+    // }
 
 
 
@@ -265,5 +266,72 @@ public class VendorController {
         }
 
 }
+
+
+
+
+@PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Vendor> updatePassword(@RequestBody PasswordUpdateRequest request, @PathVariable Long id) {
+        Vendor updated = service.updatePassword(request.getPassword(), id);
+        return ResponseEntity.ok(updated);
+    } 
+
+
+
+
+
+    // ----------------------------------------
+    // Update arbitrary fields & files (multipart)
+    // ----------------------------------------
+    @PutMapping(value = "/update-fields/vendor/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateVendorFields(
+            @PathVariable Long id,
+            @RequestParam(value = "vendorCompanyName", required = false) String vendorCompanyName,
+            @RequestParam(value = "contactNo", required = false) String contactNo,
+            @RequestParam(value = "alternateMobileNo", required = false) String alternateMobileNo,
+            @RequestParam(value = "city", required = false) String city,
+            @RequestParam(value = "vendorEmail", required = false) String vendorEmail,
+            @RequestParam(value = "bankName", required = false) String bankName,
+            @RequestParam(value = "bankAccountNo", required = false) String bankAccountNo,
+            @RequestParam(value = "ifscCode", required = false) String ifscCode,
+            @RequestParam(value = "aadharNo", required = false) String aadharNo,
+            @RequestParam(value = "panNo", required = false) String panNo,
+            @RequestParam(value = "udyogAadharNo", required = false) String udyogAadharNo,
+            @RequestPart(value = "govtApprovalCertificate", required = false) MultipartFile govtApprovalCertificate,
+            @RequestPart(value = "vendorDocs", required = false) MultipartFile vendorDocs,
+            @RequestPart(value = "vendorImage", required = false) MultipartFile vendorImage,
+            @RequestPart(value = "aadharPhoto", required = false) MultipartFile aadharPhoto,
+            @RequestPart(value = "panPhoto", required = false) MultipartFile panPhoto,
+            @RequestParam(value = "vendorOtherDetails", required = false) String vendorOtherDetails) {
+        try {
+            Vendor existing = service.getVendorById(id);
+            if (existing == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vendor not found");
+            }
+            Vendor updated = service.updateVendorFields(
+                    existing,
+                    vendorCompanyName,
+                    contactNo,
+                    alternateMobileNo,
+                    city,
+                    vendorEmail,
+                    bankName,
+                    bankAccountNo,
+                    ifscCode,
+                    aadharNo,
+                    panNo,
+                    udyogAadharNo,
+                    govtApprovalCertificate,
+                    vendorDocs,
+                    vendorImage,
+                    aadharPhoto,
+                    panPhoto,
+                    vendorOtherDetails);
+            return ResponseEntity.ok(generateVendorResponse(updated));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("File upload error: " + e.getMessage());
+        }
+    }
 
 }
