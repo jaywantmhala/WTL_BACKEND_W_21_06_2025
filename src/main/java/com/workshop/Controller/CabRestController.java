@@ -553,7 +553,7 @@ public class CabRestController {
 
                 null, "", "", "", "",
 
-                10, 11, 14, 14, 21,
+                11, 12, 13, 14, 20,
 
                 "",null,null
 
