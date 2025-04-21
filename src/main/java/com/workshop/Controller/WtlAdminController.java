@@ -338,7 +338,7 @@ public class WtlAdminController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{bookingId}/assignVendor/{vendorId}/{email}")
+    @PutMapping("/{bookingId}/assignVendor/{vendorId}")
     public ResponseEntity<Booking> assignVendorToBooking(
             @PathVariable int bookingId,
             @PathVariable Long vendorId) {
@@ -520,7 +520,7 @@ public class WtlAdminController {
                 .body("Invalid username or password");
     }
 
-    @PostMapping("/customBooking/b")
+    @PostMapping("/customBooking")
     public Booking createCustomBooking(@RequestBody Booking b) {
         return this.bookingService.createCustomBooking(b);
     }

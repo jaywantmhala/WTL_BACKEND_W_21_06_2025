@@ -317,139 +317,90 @@ public class CabRestController {
     // }
 
     @PostMapping("/cab1")
-
-    public ResponseEntity<Map<String, Object>> processForm(
-
-            @RequestParam("tripType") String tripType,
-
-            @RequestParam("pickupLocation") String pickupLocation,
-
-            @RequestParam("dropLocation") String dropLocation,
-
-            @RequestParam("date") String date,
-
-            @RequestParam(value = "Returndate", required = false) String returndate,
-
-            @RequestParam("time") String time,
-
-            @RequestParam(value = "distance", required = false) String distance
-
-    ) {
-
-        Map<String, Object> response = new HashMap<>();
-
-        try {
-
-            // Calculate distance using Google Maps API if not provided or equals "0"
-
-            int calculatedDistance = 0;
-
-            if (distance == null || distance.isEmpty() || distance.equals("0")) {
-
-                calculatedDistance = getDistanceFromGoogleMaps(pickupLocation, dropLocation);
-
-            } else {
-
-                // Use provided distance after cleaning
-
-                String numericString = distance.replaceAll("[^0-9.]", "");
-
-                calculatedDistance = (int) Double.parseDouble(numericString);
-
-            }
-
-            // Rest of your existing processing logic
-
-            List<Trip> tripinfo = new ArrayList<>();
-
-            int days = 0;
-
-            String cityName = extractCityName(userService.getLongNameByCity(dropLocation, apiKey), dropLocation);
-
-            String cityName1 = extractCityName(userService.getLongNameByCity(pickupLocation, apiKey), pickupLocation);
-
-            // Handle Bengaluru/Bangalore naming inconsistency
-
-            cityName = cityName.equals("Bengaluru") ? "Bangalore" : cityName;
-
-            cityName1 = cityName1.equals("Bengaluru") ? "Bangalore" : cityName1;
-
-            if ("oneWay".equals(tripType)) {
-
-                tripinfo = tripSer.getonewayTrip(cityName, cityName1);
-
-                if (tripinfo.isEmpty()) {
-
-                    tripinfo.add(createDefaultOneWayTrip());
-
-                }
-
-            } else if ("roundTrip".equals(tripType)) {
-
-                LocalDate localDate1 = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
-
-                LocalDate localDate2 = LocalDate.parse(returndate, DateTimeFormatter.ISO_DATE);
-
-                days = (int) ChronoUnit.DAYS.between(localDate1, localDate2) + 1;
-
-                // For round trips, double the calculated distance (one way → round trip)
-
-                // Only if we've calculated it dynamically from Google Maps
-
-                if (distance == null || distance.isEmpty() || distance.equals("0") || distance.equals("-1")) {
-
-                    
-                    calculatedDistance = calculatedDistance * days; // Double for round trip
-
-                    
-
-                }
-
-                tripinfo = tripSer.getRoundTrip(cityName, cityName1);
-
-                if (tripinfo.isEmpty()) {
-
-                    tripinfo.add(createDefaultRoundTrip());
-
-                }
-
-            }
-
-            List<CabInfo> cabs = cabser.getAll();
-
-            response.put("tripType", tripType);
-
-            response.put("pickupLocation", pickupLocation);
-
-            response.put("dropLocation", dropLocation);
-
-            response.put("date", date);
-
-            response.put("returndate", returndate);
-
-            response.put("time", time);
-
-            response.put("distance", calculatedDistance);
-
-            response.put("cabinfo", cabs);
-
-            response.put("price", 10);
-
-            response.put("tripinfo", tripinfo);
-
-            response.put("days", days);
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-
-            response.put("error", "Failed to process request: " + e.getMessage());
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-
+public ResponseEntity<Map<String, Object>> processForm(
+        @RequestParam("tripType") String tripType,
+        @RequestParam("pickupLocation") String pickupLocation,
+        @RequestParam("dropLocation") String dropLocation,
+        @RequestParam("date") String date,
+        @RequestParam(value = "Returndate", required = false) String returndate,
+        @RequestParam("time") String time,
+        @RequestParam(value = "distance", required = false) String distance
+) {
+    Map<String, Object> response = new HashMap<>();
+
+    try {
+        int calculatedDistance = 0;
+
+        if (distance == null || distance.isEmpty() || distance.equals("0")) {
+            calculatedDistance = getDistanceFromGoogleMaps(pickupLocation, dropLocation);
+        } else {
+            String numericString = distance.replaceAll("[^0-9.]", "");
+            calculatedDistance = (int) Double.parseDouble(numericString);
         }
 
+        List<Trip> tripinfo = new ArrayList<>();
+        int days = 0;
+
+        String cityName = extractCityName(userService.getLongNameByCity(dropLocation, apiKey), dropLocation);
+        String cityName1 = extractCityName(userService.getLongNameByCity(pickupLocation, apiKey), pickupLocation);
+
+        cityName = cityName.equals("Bengaluru") ? "Bangalore" : cityName;
+        cityName1 = cityName1.equals("Bengaluru") ? "Bangalore" : cityName1;
+
+        if ("oneWay".equalsIgnoreCase(tripType)) {
+            // 🔁 Get data from your updated one-way logic
+            List<onewayTrip> oneWayTrips = tripSer.getoneWayTripData(pickupLocation, dropLocation);
+
+            if (oneWayTrips.isEmpty()) {
+                oneWayTrips.add(createDefaultOneWayTrip());
+            }
+
+            // ✅ Convert each onewayTrip to Trip and add to tripinfo
+            for (onewayTrip o : oneWayTrips) {
+                tripinfo.add(o); // Directly add since onewayTrip extends Trip
+            }
+
+        } else if ("roundTrip".equalsIgnoreCase(tripType)) {
+            LocalDate localDate1 = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
+            LocalDate localDate2 = LocalDate.parse(returndate, DateTimeFormatter.ISO_DATE);
+
+            days = (int) ChronoUnit.DAYS.between(localDate1, localDate2) + 1;
+
+            if (distance == null || distance.isEmpty() || distance.equals("0") || distance.equals("-1")) {
+                calculatedDistance = calculatedDistance * days;
+            }
+
+            tripinfo = tripSer.getRoundTrip(cityName, cityName1);
+
+            if (tripinfo.isEmpty()) {
+                tripinfo.add(createDefaultRoundTrip());
+            }
+        }
+
+        List<CabInfo> cabs = cabser.getAll();
+
+        response.put("tripType", tripType);
+        response.put("pickupLocation", pickupLocation);
+        response.put("dropLocation", dropLocation);
+        response.put("date", date);
+        response.put("returndate", returndate);
+        response.put("time", time);
+        response.put("distance", calculatedDistance);
+        response.put("cabinfo", cabs);
+        response.put("price", 10);
+        response.put("tripinfo", tripinfo);
+        response.put("days", days);
+
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        response.put("error", "Failed to process request: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+}
+
+
+
 
     private int getDistanceFromGoogleMaps(String origin, String destination) throws Exception {
 
@@ -553,7 +504,7 @@ public class CabRestController {
 
                 null, "", "", "", "",
 
-                11, 12, 13, 14, 20,
+                11, 12, 13, 14, 26,
 
                 "",null,null
 
