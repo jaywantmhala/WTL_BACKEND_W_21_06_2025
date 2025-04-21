@@ -816,6 +816,16 @@ public String sendSms(
         }
 
 }
+
+
+@PostMapping("/validate")
+public Map<String, Object> bookingValidated(
+        @RequestParam String name,
+        @RequestParam String phone,
+        @RequestParam String email) {
+    return bookingService.bookingValidated(name, phone, email);
+}
+
 }
 
 

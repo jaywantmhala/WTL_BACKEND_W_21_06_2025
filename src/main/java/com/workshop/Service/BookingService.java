@@ -438,4 +438,32 @@ public class BookingService {
         b.setAmount(amount);
         return b;
     }
+
+
+
+
+    public Map<String, Object> bookingValidated(String name, String phone, String email) {
+        // Create new Booking object
+        Booking booking = new Booking();
+        booking.setName(name);
+        booking.setPhone(phone);
+        booking.setEmail(email);
+
+        // Generate and set booking ID
+        String bookid = "WTL" + System.currentTimeMillis();
+        booking.setBookingId(bookid);
+        booking.setBookid(bookid);
+
+        // Save booking to database
+        Booking savedBooking = repo.save(booking);
+
+        // Prepare response
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("message", "Booking saved successfully");
+        response.put("booking", savedBooking);
+
+        return response;
+    }
+    
 }
