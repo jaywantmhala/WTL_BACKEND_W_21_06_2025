@@ -23,7 +23,6 @@ import com.workshop.Service.B2BService;
 
 @RestController
 @RequestMapping("/b2b")
-// @CrossOrigin(origins = "http://localhost:3000") // Uncomment if needed
 public class B2BController {
 
     // Upload folder inside static
@@ -242,7 +241,7 @@ public class B2BController {
      */
     private String buildFullUrl(String fileName) {
         if (fileName != null) {
-            return "http://localhost:8080/uploads/" + fileName;
+            return "https://api.worldtriplink.com/uploads/" + fileName;
         }
         return null;
     }

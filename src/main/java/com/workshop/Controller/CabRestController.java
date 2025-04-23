@@ -57,6 +57,7 @@ import com.workshop.Entity.States;
 import com.workshop.Entity.Tripprice;
 import com.workshop.Entity.User;
 import com.workshop.Entity.VendorDrivers;
+import com.workshop.Entity.Visitors;
 import com.workshop.Entity.onewayTrip;
 import com.workshop.Entity.roundTrip;
 import com.workshop.Repo.StateRepository;
@@ -70,6 +71,7 @@ import com.workshop.Service.StatesService;
 import com.workshop.Service.TripService;
 import com.workshop.Service.UserDetailServiceImpl;
 import com.workshop.Service.VendorDriverService;
+import com.workshop.Service.VisitorService;
 import com.workshop.Service.TripRateService;
 
 @RestController
@@ -87,6 +89,9 @@ public class CabRestController {
 
     @Autowired
     private TripRateService tripRateService;
+
+    @Autowired
+    private VisitorService visitorService;
 
     @Autowired
     private StatesService statesService;
@@ -1098,6 +1103,24 @@ public ResponseEntity<Map<String, Object>> processForm(
         return this.ser.updatePrice(id, amount);
     }
 
+
+    @PostMapping("/createFirstPage")
+    public Visitors visitorFirstPage(@RequestBody Visitors visitors){
+return this.visitorService.createFirstPage(visitors);
+    }
+
+
+    @PutMapping("/{id}/secondPage")
+    public Visitors createSecondPage(@PathVariable int id, @RequestBody Visitors visitors){
+    
+        return this.visitorService.createSecondPage(id, visitors);
+    }
+
+
+    @GetMapping("/getAllVisitor")
+    public List<Visitors> getAllVisitor(){
+        return this.visitorService.getAllVisitor();
+    }
 
     
 
