@@ -1,6 +1,5 @@
 package com.workshop.CarRental.Service;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -13,9 +12,10 @@ import java.util.Random;
 
 @Service
 public class WebTripService {
-    
+
     private final SimpMessagingTemplate messagingTemplate;
     private final Map<String, String> bookingOtps = new HashMap<>();
+    private final Map<String, String> finalOtps = new HashMap<>();
     
     @Autowired
     public WebTripService(SimpMessagingTemplate messagingTemplate) {
@@ -35,8 +35,9 @@ public class WebTripService {
         // Create response with OTP for user
         TripStatusMessage userResponse = new TripStatusMessage();
         userResponse.setBookingId(message.getBookingId());
-        userResponse.setAction("OTP_GENERATED");
+        userResponse.setAction("OTP_SENT");
         userResponse.setOtp(otp);
+        userResponse.setType("OTP_SENT");
         
         // Send OTP to user's device
         messagingTemplate.convertAndSend(
@@ -47,13 +48,36 @@ public class WebTripService {
         // Create notification for driver (without OTP)
         TripStatusMessage driverResponse = new TripStatusMessage();
         driverResponse.setBookingId(message.getBookingId());
-        driverResponse.setAction("OTP_GENERATED");
+        driverResponse.setAction("OTP_SENT");
+        driverResponse.setType("OTP_SENT");
         
         // Notify driver that OTP was sent
         messagingTemplate.convertAndSend(
             "/topic/booking/" + message.getBookingId() + "/driver-notifications", 
             driverResponse
         );
+    }
+    
+    /**
+     * Handles final OTP generation or storage for trip end verification
+     */
+    public void sendFinalOtp(TripStatusMessage message) {
+        if ("REQUEST_FINAL_OTP".equals(message.getAction())) {
+            // This is a request from driver to generate final OTP for the user
+            TripStatusMessage userResponse = new TripStatusMessage();
+            userResponse.setBookingId(message.getBookingId());
+            userResponse.setAction("REQUEST_FINAL_OTP");
+            userResponse.setType("REQUEST_FINAL_OTP");
+            
+            // Send request to user to display final OTP
+            messagingTemplate.convertAndSend(
+                "/topic/booking/" + message.getBookingId() + "/user-notifications", 
+                userResponse
+            );
+        } else if ("STORE_FINAL_OTP".equals(message.getAction())) {
+            // This is the final OTP generated on user side, store it for verification
+            finalOtps.put(message.getBookingId(), message.getOtp());
+        }
     }
     
     /**
@@ -66,6 +90,7 @@ public class WebTripService {
         TripStatusMessage response = new TripStatusMessage();
         response.setBookingId(message.getBookingId());
         response.setAction(isValid ? "OTP_VERIFIED" : "OTP_INVALID");
+        response.setType(isValid ? "OTP_VERIFIED" : "OTP_INVALID");
         
         // Notify both user and driver about verification result
         messagingTemplate.convertAndSend(
@@ -94,6 +119,7 @@ public class WebTripService {
         TripStatusMessage response = new TripStatusMessage();
         response.setBookingId(message.getBookingId());
         response.setAction("TRIP_STARTED");
+        response.setType("TRIP_STARTED");
         response.setStartOdometer(message.getStartOdometer());
         response.setDestination(message.getDestination());
         response.setDestinationLatitude(message.getDestinationLatitude());
@@ -112,20 +138,36 @@ public class WebTripService {
     }
     
     /**
-     * Records end odometer and completes the trip, calculating final trip details
+     * Records end odometer and completes the trip after verifying final OTP
      */
     public void endTrip(TripStatusMessage message) {
-        // In a real implementation, save the end odometer reading to the database
-        // Calculate final trip distance, fare, etc.
-        // Update the trip status in your system
+        // First verify the final OTP
+        String storedFinalOtp = finalOtps.get(message.getBookingId());
+        boolean isValid = storedFinalOtp != null && storedFinalOtp.equals(message.getOtp());
         
+        if (!isValid) {
+            // Invalid final OTP
+            TripStatusMessage response = new TripStatusMessage();
+            response.setBookingId(message.getBookingId());
+            response.setAction("FINAL_OTP_INVALID");
+            response.setType("FINAL_OTP_INVALID");
+            
+            messagingTemplate.convertAndSend(
+                "/topic/booking/" + message.getBookingId() + "/driver-notifications", 
+                response
+            );
+            return;
+        }
+        
+        // Final OTP is valid, complete the trip
         double startOdo = message.getStartOdometer() != null ? message.getStartOdometer() : 0;
         double endOdo = message.getEndOdometer() != null ? message.getEndOdometer() : 0;
         double distance = endOdo - startOdo;
         
         TripStatusMessage response = new TripStatusMessage();
         response.setBookingId(message.getBookingId());
-        response.setAction("TRIP_COMPLETED");
+        response.setAction("TRIP_ENDED");
+        response.setType("TRIP_ENDED");
         response.setStartOdometer(startOdo);
         response.setEndOdometer(endOdo);
         
@@ -139,14 +181,17 @@ public class WebTripService {
             "/topic/booking/" + message.getBookingId() + "/driver-notifications", 
             response
         );
+        
+        // Clean up stored OTPs
+        finalOtps.remove(message.getBookingId());
     }
     
     /**
-     * Generates a 4-digit OTP
+     * Generates a 6-digit OTP (upgraded from 4-digit)
      */
     private String generateOtp() {
         Random random = new Random();
-        int otp = 1000 + random.nextInt(9000); // 4-digit number between 1000 and 9999
+        int otp = 100000 + random.nextInt(900000); 
         return String.valueOf(otp);
     }
 } 

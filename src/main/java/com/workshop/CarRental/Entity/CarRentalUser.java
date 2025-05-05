@@ -1,5 +1,6 @@
 package com.workshop.CarRental.Entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.workshop.Entity.Booking;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -69,6 +71,9 @@ private double userlongitude = 0.0;
 
 
     private List<Booking> bookings;
+
+
+   
 
 
     public CarRentalUser(int id, String userName, String lastName, String email, String password, String phone, double userlatitude,

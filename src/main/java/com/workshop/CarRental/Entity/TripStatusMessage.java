@@ -1,9 +1,9 @@
 package com.workshop.CarRental.Entity;
 
-
 public class TripStatusMessage {
     private String bookingId;
     private String action; // "SEND_OTP", "VERIFY_OTP", "START_TRIP", "END_TRIP"
+    private String type; // Used for client-side processing
     private String otp;
     private Double startOdometer;
     private Double endOdometer;
@@ -27,6 +27,14 @@ public class TripStatusMessage {
     
     public void setAction(String action) {
         this.action = action;
+    }
+    
+    public String getType() {
+        return type;
+    }
+    
+    public void setType(String type) {
+        this.type = type;
     }
     
     public String getOtp() {
