@@ -1,6 +1,5 @@
 package com.workshop.CarRental.Entity;
 
-
 import java.time.LocalDateTime;
 
 public class LocationMessage {

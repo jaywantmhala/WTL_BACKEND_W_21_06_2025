@@ -3,6 +3,7 @@ package com.workshop.CarRental.Controller;
 
 
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -25,46 +26,33 @@ public class LiveTrackingController {
         this.tripService = tripService;
     }
 
-    /**
-     * Handles driver location updates
-     */
+    
     @MessageMapping("/driver-location")
     public void updateDriverLocation(@Payload LocationMessage locationMessage) {
-        // Save driver location to database
         locationService.saveDriverLocation(
                 locationMessage.getDriverId(),
                 locationMessage.getLatitude(),
                 locationMessage.getLongitude()
         );
         
-        // Broadcast to relevant user
         locationService.updateDriverLocation(locationMessage);
     }
 
-    /**
-     * Handles user location updates
-     */
+    
     @MessageMapping("/user-location")
     public void updateUserLocation(@Payload LocationMessage locationMessage) {
-        // Save user location to database
         locationService.saveUserLocation(
                 locationMessage.getUserId(),
                 locationMessage.getLatitude(),
                 locationMessage.getLongitude()
         );
         
-        // Broadcast to relevant driver
         locationService.updateUserLocation(locationMessage);
     }
 
-    /**
-     * Handles OTP sending request
-     * - Initial OTP verification
-     * - Final OTP verification at trip end
-     */
+    
     @MessageMapping("/send-otp")
     public void sendOtp(@Payload TripStatusMessage message) {
-        // Check the action to determine if it's initial or final OTP
         if ("REQUEST_FINAL_OTP".equals(message.getAction()) || "STORE_FINAL_OTP".equals(message.getAction())) {
             tripService.sendFinalOtp(message);
         } else {

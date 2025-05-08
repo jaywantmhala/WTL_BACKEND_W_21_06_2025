@@ -5,15 +5,19 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.workshop.CarRental.Entity.CarRentalUser;
 import com.workshop.CarRental.Repository.CarRentalRepository;
+import com.workshop.Entity.User;
 
 @Service
 public class CarRentalBookingService {
 
 @Autowired
 private CarRentalRepository carRentalRepository;
+
+
 
 
 
@@ -35,6 +39,10 @@ public boolean updatePassword(String email, String newPassword) {
         return true;
     }
     return false;
+}
+
+public CarRentalUser getUserById(int id){
+    return this.carRentalRepository.findById(id).get();
 }
 
 }

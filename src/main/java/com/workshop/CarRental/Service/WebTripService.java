@@ -12,7 +12,7 @@ import java.util.Random;
 
 @Service
 public class WebTripService {
-
+    
     private final SimpMessagingTemplate messagingTemplate;
     private final Map<String, String> bookingOtps = new HashMap<>();
     private final Map<String, String> finalOtps = new HashMap<>();
@@ -74,6 +74,8 @@ public class WebTripService {
                 "/topic/booking/" + message.getBookingId() + "/user-notifications", 
                 userResponse
             );
+
+
         } else if ("STORE_FINAL_OTP".equals(message.getAction())) {
             // This is the final OTP generated on user side, store it for verification
             finalOtps.put(message.getBookingId(), message.getOtp());
@@ -137,16 +139,12 @@ public class WebTripService {
         );
     }
     
-    /**
-     * Records end odometer and completes the trip after verifying final OTP
-     */
+    
     public void endTrip(TripStatusMessage message) {
-        // First verify the final OTP
         String storedFinalOtp = finalOtps.get(message.getBookingId());
         boolean isValid = storedFinalOtp != null && storedFinalOtp.equals(message.getOtp());
         
         if (!isValid) {
-            // Invalid final OTP
             TripStatusMessage response = new TripStatusMessage();
             response.setBookingId(message.getBookingId());
             response.setAction("FINAL_OTP_INVALID");
@@ -159,7 +157,6 @@ public class WebTripService {
             return;
         }
         
-        // Final OTP is valid, complete the trip
         double startOdo = message.getStartOdometer() != null ? message.getStartOdometer() : 0;
         double endOdo = message.getEndOdometer() != null ? message.getEndOdometer() : 0;
         double distance = endOdo - startOdo;
@@ -171,7 +168,6 @@ public class WebTripService {
         response.setStartOdometer(startOdo);
         response.setEndOdometer(endOdo);
         
-        // Notify both user and driver that trip has ended
         messagingTemplate.convertAndSend(
             "/topic/booking/" + message.getBookingId() + "/user-notifications", 
             response
@@ -182,13 +178,10 @@ public class WebTripService {
             response
         );
         
-        // Clean up stored OTPs
         finalOtps.remove(message.getBookingId());
     }
     
-    /**
-     * Generates a 6-digit OTP (upgraded from 4-digit)
-     */
+    
     private String generateOtp() {
         Random random = new Random();
         int otp = 100000 + random.nextInt(900000); 

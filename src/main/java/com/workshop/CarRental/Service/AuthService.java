@@ -93,54 +93,58 @@ public class AuthService {
 
 
     public UnifiedLoginResponse combineLogin(UnifiedLoginRequest loginRequest) {
-    String mobile = loginRequest.getMobile();
-    String password = loginRequest.getPassword();
-    UnifiedLoginResponse response = new UnifiedLoginResponse();
-
-    try {
-        // Check CarRentalUser first
-        Optional<CarRentalUser> userOpt = carRentalRepository.findByPhone(mobile);
-        if (userOpt.isPresent()) {
-            CarRentalUser user = userOpt.get();
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                response.setStatus("success");
-                response.setRole(user.getRole());
-                response.setUserId(user.getId());
-              response.setUsername(user.getUserName());
+        String mobile = loginRequest.getMobile();
+        String password = loginRequest.getPassword();
+        UnifiedLoginResponse response = new UnifiedLoginResponse();
+    
+        try {
+            // Check CarRentalUser
+            Optional<CarRentalUser> userOpt = carRentalRepository.findByPhone(mobile);
+            if (userOpt.isPresent()) {
+                CarRentalUser user = userOpt.get();
+                if (passwordEncoder.matches(password, user.getPassword())) {
+                    response.setStatus("success");
+                    response.setRole(user.getRole());
+                    response.setUserId(user.getId());
+                    response.setUsername(user.getUserName());
+                    return response;
+                }
+                response.setStatus("invalid_password");
+                response.setMessage("Wrong password for user account");
                 return response;
             }
-            response.setStatus("invalid_password");
-            response.setMessage("Wrong password for user account");
-            return response;
-        }
-
-        // Check VendorDrivers if user not found
-        VendorDrivers driver = vendorDriverRepo.findByContactNo(mobile);
-        if (driver != null) {
-            if (password.equals(driver.getPassword())) { // Note: Should implement hashing
-                response.setStatus("success");
-                response.setRole(driver.getRole());
-                response.setUserId(driver.getVendorDriverId());
-                response.setUsername(driver.getDriverName());
+    
+            // Check VendorDrivers
+            VendorDrivers driver = vendorDriverRepo.findByContactNo(mobile);
+            if (driver != null) {
+                String licenseNo = driver.getdLNo();
+                String last6 = driver.getdLNo().substring(driver.getdLNo().length() - 6);
+    
+                if (password.equals(last6)) {
+                    response.setStatus("success");
+                    response.setRole(driver.getRole());
+                    response.setUserId(driver.getVendorDriverId());
+                    response.setUsername(driver.getDriverName());
+                    return response;
+                }
+    
+                response.setStatus("invalid_password");
+                response.setMessage("Wrong password for driver account");
                 return response;
             }
-            response.setStatus("invalid_password");
-            response.setMessage("Wrong password for driver account");
+    
+            // If neither found
+            response.setStatus("not_found");
+            response.setMessage("No account found with this mobile number");
+            return response;
+    
+        } catch (Exception e) {
+            response.setStatus("error");
+            response.setMessage("Login failed: " + e.getMessage());
             return response;
         }
-
-        // If neither found
-        response.setStatus("not_found");
-        response.setMessage("No account found with this mobile number");
-        return response;
-
-    } catch (Exception e) {
-        response.setStatus("error");
-        response.setMessage("Login failed: " + e.getMessage());
-        return response;
     }
-}
-
+    
 
     
 

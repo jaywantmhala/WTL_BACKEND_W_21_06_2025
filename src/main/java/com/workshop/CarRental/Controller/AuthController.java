@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +30,7 @@ import com.workshop.Entity.User;
 import com.workshop.Service.EmailService;
 
 @RestController
-@CrossOrigin("*")
+// @CrossOrigin("*")
 @RequestMapping("/auth")
 public class AuthController {
 
@@ -45,6 +47,11 @@ public class AuthController {
     public CarRentalUser createCarRentalUser(@RequestBody CarRentalUser carRentalUser){
         return this.authService.registerUser(carRentalUser);
 
+    }
+
+    @GetMapping("/getById")
+    public CarRentalUser getByUserId(@PathVariable int id){
+        return this.carRentalBookingService.getUserById(id);
     }
 
     // @PostMapping("/userlogin")
