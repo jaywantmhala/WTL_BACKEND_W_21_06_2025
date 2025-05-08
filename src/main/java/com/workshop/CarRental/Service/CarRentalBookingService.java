@@ -45,4 +45,19 @@ public CarRentalUser getUserById(int id){
     return this.carRentalRepository.findById(id).get();
 }
 
+public CarRentalUser getProfile(int id){
+    return this.carRentalRepository.findById(id).get();
+}
+
+public CarRentalUser updateProfileById(int id, CarRentalUser carRentalUser) {
+    CarRentalUser existingUser = this.carRentalRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
+    existingUser.setUserName(carRentalUser.getUserName());
+    existingUser.setEmail(carRentalUser.getEmail());
+    existingUser.setPhone(carRentalUser.getPhone());
+    existingUser.setAddress(carRentalUser.getAddress());
+    return this.carRentalRepository.save(existingUser);
+}
+
+
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -225,6 +226,16 @@ public class AuthController {
             case "error" -> HttpStatus.INTERNAL_SERVER_ERROR;
             default -> HttpStatus.BAD_REQUEST;
         };
+    }
+
+    @GetMapping("/getProfile/{id}")
+    public CarRentalUser getProfile(@PathVariable int id){
+return this.carRentalBookingService.getProfile(id);
+    }
+
+    @PutMapping("/update-profile/{id}")
+    public CarRentalUser updateProfile(@PathVariable int id, @RequestBody CarRentalUser carRentalUser){
+return this.carRentalBookingService.updateProfileById(id, carRentalUser);
     }
     
 
