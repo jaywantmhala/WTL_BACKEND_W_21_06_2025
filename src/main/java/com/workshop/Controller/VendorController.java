@@ -13,6 +13,7 @@ import com.workshop.DTO.VendorLoginRequest;
 import com.workshop.DTO.VendorLoginResponse;
 import com.workshop.Entity.Booking;
 import com.workshop.Entity.Vendor;
+import com.workshop.Service.CloudinaryService;
 import com.workshop.Service.EmailService;
 import com.workshop.Service.PasswordUpdateRequest;
 import com.workshop.Service.VendorService;
@@ -34,7 +35,7 @@ import java.util.Optional;
 // @CrossOrigin(origins = "http://localhost:3000") // ✅ Allow frontend access
 public class VendorController {
 
-    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+    // private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
 
     @Autowired
     private VendorService service;
@@ -44,6 +45,9 @@ public class VendorController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     // ✅ Add Vendor with File Upload
     @PostMapping("/add")
@@ -67,15 +71,23 @@ public class VendorController {
             @RequestParam(value = "vendorOtherDetails", required = false) String vendorOtherDetails) {
         try {
             // ✅ Ensure Upload Directory Exists
-            ensureUploadDirExists();
+            // ensureUploadDirExists();
 
-            // ✅ Save Files
-            String govtApprovalCertName = saveFile(govtApprovalCertificate);
-            String vendorDocsName = saveFile(vendorDocs);
-            String vendorImageName = saveFile(vendorImage);
-            String aadharPhotoName = saveFile(aadharPhoto);
-            String panPhotoName = saveFile(panPhoto);
-
+            String govtApprovalCertName = (govtApprovalCertificate != null && !govtApprovalCertificate.isEmpty())
+            ? cloudinaryService.upload(govtApprovalCertificate) : null;
+        
+        String vendorDocsName = (vendorDocs != null && !vendorDocs.isEmpty())
+            ? cloudinaryService.upload(vendorDocs) : null;
+        
+        String vendorImageName = (vendorImage != null && !vendorImage.isEmpty())
+            ? cloudinaryService.upload(vendorImage) : null;
+        
+        String aadharPhotoName = (aadharPhoto != null && !aadharPhoto.isEmpty())
+            ? cloudinaryService.upload(aadharPhoto) : null;
+        
+        String panPhotoName = (panPhoto != null && !panPhoto.isEmpty())
+            ? cloudinaryService.upload(panPhoto) : null;
+        
             // ✅ Create Vendor Object
             Vendor vendor = new Vendor();
             vendor.setVendorCompanyName(vendorCompanyName);
@@ -144,21 +156,21 @@ public class VendorController {
     }
 
     // ✅ Utility: Ensure Upload Directory Exists
-    private void ensureUploadDirExists() {
-        File uploadDir = new File(UPLOAD_DIR);
-        if (!uploadDir.exists() && uploadDir.mkdirs()) {
-            System.out.println("✅ Upload directory created: " + UPLOAD_DIR);
-        }
-    }
+    // private void ensureUploadDirExists() {
+    //     File uploadDir = new File(UPLOAD_DIR);
+    //     if (!uploadDir.exists() && uploadDir.mkdirs()) {
+    //         System.out.println("✅ Upload directory created: " + UPLOAD_DIR);
+    //     }
+    // }
 
     // ✅ Utility: Save File
-    private String saveFile(MultipartFile file) throws IOException {
-        if (file == null || file.isEmpty()) return null;
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(UPLOAD_DIR, fileName);
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        return fileName;
-    }
+    // private String saveFile(MultipartFile file) throws IOException {
+    //     if (file == null || file.isEmpty()) return null;
+    //     String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+    //     Path filePath = Paths.get(UPLOAD_DIR, fileName);
+    //     Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+    //     return fileName;
+    // }
 
     // ✅ Utility: Format Vendor Response
     private Map<String, Object> generateVendorResponse(Vendor vendor) {

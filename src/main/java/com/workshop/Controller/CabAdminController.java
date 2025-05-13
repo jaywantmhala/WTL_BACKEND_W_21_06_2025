@@ -40,10 +40,8 @@ public class CabAdminController {
             @RequestParam("vehicleRcNo") String vehicleRcNo,
             @RequestParam("carOtherDetails") String carOtherDetails,
             @RequestParam("status") String status,
-//            @RequestParam("vehicleName") String vehicleName,
+            // @RequestParam("vehicleName") String vehicleName,
 
-            
-            
             @RequestParam("vehicleRcImg") MultipartFile vehicleRcImg,
             @RequestParam("insurance") MultipartFile insurance,
             @RequestParam("permit") MultipartFile permit,
@@ -53,23 +51,24 @@ public class CabAdminController {
             @RequestParam("backImage") MultipartFile backImage,
             @RequestParam("sideImage") MultipartFile sideImage
 
-            ) {
+    ) {
 
         CabAdmin cabAdmin = new CabAdmin();
         cabAdmin.setVehicleNameAndRegNo(vehicleNameAndRegNo);
         cabAdmin.setVehicleRcNo(vehicleRcNo);
         cabAdmin.setCarOtherDetails(carOtherDetails);
         cabAdmin.setStatus(status);
-//        cabAdmin.setVehicleName(vehicleName);
+        // cabAdmin.setVehicleName(vehicleName);
 
         try {
             // Prepare an array of images to pass to the service
             MultipartFile[] images = new MultipartFile[] {
-            		vehicleRcImg, insurance, permit, 
-            		fitnessCert, frontImage, backImage, sideImage,cabImage
+                    vehicleRcImg, insurance, permit,
+                    fitnessCert, frontImage, backImage, sideImage, cabImage
             };
 
-            CabAdmin cabAdminSaved = cabAdminService.saveCabAdmin(cabAdmin, vehicleRcImg, insurance, permit, fitnessCert, cabImage, frontImage, backImage, sideImage);
+            CabAdmin cabAdminSaved = cabAdminService.saveCabAdmin(cabAdmin, vehicleRcImg, insurance, permit,
+                    fitnessCert, cabImage, frontImage, backImage, sideImage);
             return ResponseEntity.ok(cabAdminSaved);
         } catch (IOException e) {
             return ResponseEntity.status(500).body(null);
@@ -90,20 +89,19 @@ public class CabAdminController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     @PutMapping("/{id}/status")
-	public ResponseEntity<CabAdmin> changeStatus( @PathVariable Long id, @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<CabAdmin> changeStatus(@PathVariable Long id, @RequestBody Map<String, String> requestBody) {
 
-	   
-	    String status = requestBody.get("status");
+        String status = requestBody.get("status");
 
-	    try {
-	    	CabAdmin updatedOrder = cabAdminService.udpateStatus(id, status);
-	        return ResponseEntity.ok(updatedOrder);
-	    } catch (NoSuchElementException e) {
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-	    }
-	}
+        try {
+            CabAdmin updatedOrder = cabAdminService.udpateStatus(id, status);
+            return ResponseEntity.ok(updatedOrder);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 
     @GetMapping("/cab/{status}")
     public ResponseEntity<?> getCabsByStatus(@PathVariable String status) {
@@ -115,5 +113,4 @@ public class CabAdminController {
         return ResponseEntity.ok(cabs); // Return the list of cabs with HTTP 200 OK
     }
 
-    
 }

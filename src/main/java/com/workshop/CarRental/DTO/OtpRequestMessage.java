@@ -4,7 +4,7 @@ public class OtpRequestMessage {
     private int bookingId;
     private int driverId;
 
-    public OtpRequestMessage() {
+    public OtpRequestMessage() { 
     }
 
     public OtpRequestMessage(int bookingId, int driverId) {

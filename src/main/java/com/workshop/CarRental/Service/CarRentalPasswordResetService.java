@@ -47,7 +47,7 @@ public class CarRentalPasswordResetService {
         if (emailSent) {
             System.out.println("OTP sent successfully!");
         } else {
-            throw new RuntimeException("Failed to send OTP email");
+            throw new RuntimeException("Failed to send OTP email");      
         }
     }
 

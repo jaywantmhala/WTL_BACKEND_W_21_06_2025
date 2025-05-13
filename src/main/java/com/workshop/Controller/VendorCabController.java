@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.workshop.Entity.Vendor;
 import com.workshop.Entity.VendorCabs;
 import com.workshop.Repo.VendorRepository;
+import com.workshop.Service.CloudinaryService;
 import com.workshop.Service.VendorCabService;
 import com.workshop.Service.VendorService;
 
@@ -38,34 +39,37 @@ public class VendorCabController {
 	
 	@Autowired
 	private VendorService vendorService;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 	
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/vendorCab/";
     
-    private void ensureUploadDirExists() {
-        File uploadDir = new File(UPLOAD_DIR);
-        if (!uploadDir.exists() && uploadDir.mkdirs()) {
-            System.out.println("✅ Upload directory created: " + UPLOAD_DIR);
-        }
-    }
+    // private void ensureUploadDirExists() {
+    //     File uploadDir = new File(UPLOAD_DIR);
+    //     if (!uploadDir.exists() && uploadDir.mkdirs()) {
+    //         System.out.println("✅ Upload directory created: " + UPLOAD_DIR);
+    //     }
+    // }
 
-    // ✅ Utility: Save File
-    private String saveFile(MultipartFile file) throws IOException {
-        if (file == null || file.isEmpty()) {
-            return null; // ✅ Return null if no file is uploaded
-        }
+    // // ✅ Utility: Save File
+    // private String saveFile(MultipartFile file) throws IOException {
+    //     if (file == null || file.isEmpty()) {
+    //         return null; // ✅ Return null if no file is uploaded
+    //     }
 
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(UPLOAD_DIR, fileName);
+    //     String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+    //     Path filePath = Paths.get(UPLOAD_DIR, fileName);
 
-        try (var inputStream = file.getInputStream()) {
-            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("✅ File saved: " + filePath);
-        } catch (IOException e) {
-            System.err.println("❌ File saving failed: " + e.getMessage());
-            throw e;
-        }
-        return fileName;
-    }
+    //     try (var inputStream = file.getInputStream()) {
+    //         Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+    //         System.out.println("✅ File saved: " + filePath);
+    //     } catch (IOException e) {
+    //         System.err.println("❌ File saving failed: " + e.getMessage());
+    //         throw e;
+    //     }
+    //     return fileName;
+    // }
     
     @PostMapping("/addVendorCab/{id}")
     public ResponseEntity<?> addVendor(
@@ -88,20 +92,39 @@ public class VendorCabController {
         @PathVariable Long id  // Vendor ID passed from the URL
     ) {
         try {
-            // ✅ Ensure Upload Directory Exists
-            ensureUploadDirExists();
+            // // ✅ Ensure Upload Directory Exists
+            // ensureUploadDirExists();
 
-            // ✅ Save Files
-            String rCImageName = saveFile(rCImage);
-            String vehicleNoImageName = saveFile(vehicleNoImage);
-            String insuranceImageName = saveFile(insuranceImage);
-            String permitImageName = saveFile(permitImage);
-            String authorizationImageName = saveFile(authorizationImage);
-            String cabNoPlateImageName = saveFile(cabNoPlateImage);
-            String cabImageName = saveFile(cabImage);
-            String cabFrontImageName = saveFile(cabFrontImage);
-            String cabBackImageName = saveFile(cabBackImage);
-            String cabSideImageName = saveFile(cabSideImage);
+            String rCImageName = (rCImage != null && !rCImage.isEmpty()) 
+            ? cloudinaryService.upload(rCImage) : null;
+        
+        String vehicleNoImageName = (vehicleNoImage != null && !vehicleNoImage.isEmpty()) 
+            ? cloudinaryService.upload(vehicleNoImage) : null;
+        
+        String insuranceImageName = (insuranceImage != null && !insuranceImage.isEmpty()) 
+            ? cloudinaryService.upload(insuranceImage) : null;
+        
+        String permitImageName = (permitImage != null && !permitImage.isEmpty()) 
+            ? cloudinaryService.upload(permitImage) : null;
+        
+        String authorizationImageName = (authorizationImage != null && !authorizationImage.isEmpty()) 
+            ? cloudinaryService.upload(authorizationImage) : null;
+        
+        String cabNoPlateImageName = (cabNoPlateImage != null && !cabNoPlateImage.isEmpty()) 
+            ? cloudinaryService.upload(cabNoPlateImage) : null;
+        
+        String cabImageName = (cabImage != null && !cabImage.isEmpty()) 
+            ? cloudinaryService.upload(cabImage) : null;
+        
+        String cabFrontImageName = (cabFrontImage != null && !cabFrontImage.isEmpty()) 
+            ? cloudinaryService.upload(cabFrontImage) : null;
+        
+        String cabBackImageName = (cabBackImage != null && !cabBackImage.isEmpty()) 
+            ? cloudinaryService.upload(cabBackImage) : null;
+        
+        String cabSideImageName = (cabSideImage != null && !cabSideImage.isEmpty()) 
+            ? cloudinaryService.upload(cabSideImage) : null;
+        
 
             // ✅ Fetch Vendor by ID
             Vendor vendor = vendorRepository.findById(id)

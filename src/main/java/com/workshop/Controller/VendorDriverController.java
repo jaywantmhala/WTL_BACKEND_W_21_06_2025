@@ -24,6 +24,7 @@ import com.workshop.Entity.Vendor;
 import com.workshop.Entity.VendorCabs;
 import com.workshop.Entity.VendorDrivers;
 import com.workshop.Repo.VendorRepository;
+import com.workshop.Service.CloudinaryService;
 import com.workshop.Service.EmailService;
 import com.workshop.Service.VendorDriverService;
 
@@ -39,6 +40,10 @@ public class VendorDriverController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
 	
 private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/vendorDriver/";
     
@@ -87,7 +92,6 @@ private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/
         @RequestPart(value = "pvcImage", required = false) MultipartFile pvcImage,
         @RequestPart(value = "driverDoc1Image", required = false) MultipartFile driverDoc1Image,
         @RequestPart(value = "driverDoc2Image", required = false) MultipartFile driverDoc2Image,
-
         @RequestPart(value = "driverDoc3Image", required = false) MultipartFile driverDoc3Image,
         
         @PathVariable Long id
@@ -98,16 +102,16 @@ private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/
     ) {
         try {
             // ✅ Ensure Upload Directory Exists
-            ensureUploadDirExists();
+            // ensureUploadDirExists();
 
-            // ✅ Save Files
-            String driverImageName = saveFile(driverImage);
-            String driverSelfieName = saveFile(driverSelfie);
-            String dLnoImageName = saveFile(dLnoImage);
-            String pvcImageName = saveFile(pvcImage);
-            String driverDoc1ImageName = saveFile(driverDoc1Image);
-            String driverDoc2ImageName = saveFile(driverDoc2Image);
-            String driverDoc3ImageName = saveFile(driverDoc3Image);
+            String driverImageUrl = cloudinaryService.upload(driverImage);
+            String driverSelfieUrl = cloudinaryService.upload(driverSelfie);
+            String dLnoImageUrl = cloudinaryService.upload(dLnoImage);
+            String pvcImageUrl = cloudinaryService.upload(pvcImage);
+            String driverDoc1ImageUrl = cloudinaryService.upload(driverDoc1Image);
+            String driverDoc2ImageUrl = cloudinaryService.upload(driverDoc2Image);
+            String driverDoc3ImageUrl = cloudinaryService.upload(driverDoc3Image);
+
             
             Vendor vendor = vendorRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Vendor not found with id " + id));
@@ -121,16 +125,16 @@ private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/
           v.setContactNo(contactNo);
           v.setAltContactNo(altContactNo);
           v.setAddress(address);
-          v.setDriverImage(driverImageName);
-          v.setDriverSelfie(driverSelfieName);
+          v.setDriverImage(driverImageUrl);
+          v.setDriverSelfie(driverSelfieUrl);
           v.setdLNo(dLNo);
           v.setPvcNo(pvcNo);
-          v.setdLnoImage(dLnoImageName);
+          v.setdLnoImage(dLnoImageUrl);
           v.setEmailId(emailId);
-          v.setPvcImage(pvcImageName);
-          v.setDriverDoc1Image(driverDoc1ImageName);
-          v.setDriverDoc2Image(driverDoc2ImageName);
-          v.setDriverDoc3Image(driverDoc3ImageName);
+          v.setPvcImage(pvcImageUrl);
+          v.setDriverDoc1Image(driverDoc1ImageUrl);
+          v.setDriverDoc2Image(driverDoc2ImageUrl);
+          v.setDriverDoc3Image(driverDoc3ImageUrl);
           v.setVendor(vendor);
         //   String password = Math.random(Math.floor(100));
         //    v.setPassword("vendorDriver@123");

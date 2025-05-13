@@ -28,6 +28,9 @@ public class CabAdminService {
 	
 	@Autowired
 	private CabAdminRepo cabAdminRepo;
+    
+    @Autowired
+    private CloudinaryService cloudinaryService;
 	
 	// Directory where the images will be stored
     private static final String IMAGE_DIR = "src/main/resources/static/images/cabAdminImg/";
@@ -48,14 +51,30 @@ public class CabAdminService {
                                       ) throws IOException {
 
         // Save images and set their file names
-    	cabAdmin.setVehicleRcImg(saveImage(vehicleRcImg, "vehicleRcImg"));
-    	cabAdmin.setInsurance(saveImage(insurance, "insurance"));
-    	cabAdmin.setPermit(saveImage(permit, "permit"));
-    	cabAdmin.setFitnessCert(saveImage(fitnessCert, "fitnessCert"));
-    	cabAdmin.setCabImage(saveImage(cabImage, "cabImage"));
-    	cabAdmin.setFrontImage(saveImage(frontImage, "frontImage"));
-    	cabAdmin.setBackImage(saveImage(backImage, "backImage"));
-    	cabAdmin.setBackImage(saveImage(sideImage, "sideImage"));
+        cabAdmin.setVehicleRcImg(vehicleRcImg != null && !vehicleRcImg.isEmpty()
+        ? cloudinaryService.upload(vehicleRcImg) : null);
+    
+    cabAdmin.setInsurance(insurance != null && !insurance.isEmpty()
+        ? cloudinaryService.upload(insurance) : null);
+    
+    cabAdmin.setPermit(permit != null && !permit.isEmpty()
+        ? cloudinaryService.upload(permit) : null);
+    
+    cabAdmin.setFitnessCert(fitnessCert != null && !fitnessCert.isEmpty()
+        ? cloudinaryService.upload(fitnessCert) : null);
+    
+    cabAdmin.setCabImage(cabImage != null && !cabImage.isEmpty()
+        ? cloudinaryService.upload(cabImage) : null);
+    
+    cabAdmin.setFrontImage(frontImage != null && !frontImage.isEmpty()
+        ? cloudinaryService.upload(frontImage) : null);
+    
+    cabAdmin.setBackImage(backImage != null && !backImage.isEmpty()
+        ? cloudinaryService.upload(backImage) : null);
+    
+    cabAdmin.setSideImage(sideImage != null && !sideImage.isEmpty()
+        ? cloudinaryService.upload(sideImage) : null);
+    
 
     	
 
@@ -80,31 +99,31 @@ public class CabAdminService {
 //    	driverAdminRepo.deleteById(id);
 //    }
 
-    // Helper method to save the image and return the file name
-    private String saveImage(MultipartFile image, String imageType) throws IOException {
-        if (image != null && !image.isEmpty()) {
-            // Create directory if not exists
-            File directory = new File(IMAGE_DIR);
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
+    // // Helper method to save the image and return the file name
+    // private String saveImage(MultipartFile image, String imageType) throws IOException {
+    //     if (image != null && !image.isEmpty()) {
+    //         // Create directory if not exists
+    //         File directory = new File(IMAGE_DIR);
+    //         if (!directory.exists()) {
+    //             directory.mkdirs();
+    //         }
 
-            // Get the file name, adding a timestamp to avoid collisions
-            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-            Path destinationPath = Path.of(directory.getAbsolutePath(), fileName);
+    //         // Get the file name, adding a timestamp to avoid collisions
+    //         String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+    //         Path destinationPath = Path.of(directory.getAbsolutePath(), fileName);
 
-            // Save the image to the file system
-            Files.copy(image.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+    //         // Save the image to the file system
+    //         Files.copy(image.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Log file name
-            System.out.println(imageType + " saved with file name: " + fileName);
+    //         // Log file name
+    //         System.out.println(imageType + " saved with file name: " + fileName);
 
-            return fileName;  // Return the saved file name
-        }
+    //         return fileName;  // Return the saved file name
+    //     }
 
-        // Return a default image if no file is provided
-        return "default.jpg";
-    }
+    //     // Return a default image if no file is provided
+    //     return "default.jpg";
+    // }
     
     public CabAdmin udpateStatus(Long id, String status) {
     	CabAdmin cab = this.cabAdminRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Cart not found"));

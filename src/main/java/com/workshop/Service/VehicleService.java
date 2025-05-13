@@ -28,6 +28,9 @@ public class VehicleService {
     @Autowired
     private VehicleRepository vehicleRepository;
 
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
     // Create or Update vehicle with multiple images
     public OutSourceCarCab saveVehicle(OutSourceCarCab vehicle,
                                        MultipartFile insurance,
@@ -38,14 +41,48 @@ public class VehicleService {
                                        MultipartFile backImage,
                                        MultipartFile sideImage) throws IOException {
 
-        // Save images and set their file names
-        vehicle.setInsurance(saveImage(insurance, "insurance"));
-        vehicle.setPermit(saveImage(permit, "permit"));
-        vehicle.setAuthorization(saveImage(authorization, "authorization"));
-        vehicle.setCarImage(saveImage(carImage, "carImage"));
-        vehicle.setFrontImage(saveImage(frontImage, "frontImage"));
-        vehicle.setBackImage(saveImage(backImage, "backImage"));
-        vehicle.setSideImage(saveImage(sideImage, "sideImage"));
+                                        vehicle.setInsurance(
+                                            insurance != null && !insurance.isEmpty() 
+                                                ? cloudinaryService.upload(insurance) 
+                                                : null
+                                        );
+                                        
+                                        vehicle.setPermit(
+                                            permit != null && !permit.isEmpty() 
+                                                ? cloudinaryService.upload(permit) 
+                                                : null
+                                        );
+                                        
+                                        vehicle.setAuthorization(
+                                            authorization != null && !authorization.isEmpty() 
+                                                ? cloudinaryService.upload(authorization) 
+                                                : null
+                                        );
+                                        
+                                        vehicle.setCarImage(
+                                            carImage != null && !carImage.isEmpty() 
+                                                ? cloudinaryService.upload(carImage) 
+                                                : null
+                                        );
+                                        
+                                        vehicle.setFrontImage(
+                                            frontImage != null && !frontImage.isEmpty() 
+                                                ? cloudinaryService.upload(frontImage) 
+                                                : null
+                                        );
+                                        
+                                        vehicle.setBackImage(
+                                            backImage != null && !backImage.isEmpty() 
+                                                ? cloudinaryService.upload(backImage) 
+                                                : null
+                                        );
+                                        
+                                        vehicle.setSideImage(
+                                            sideImage != null && !sideImage.isEmpty() 
+                                                ? cloudinaryService.upload(sideImage) 
+                                                : null
+                                        );
+                                        
 
         // Debugging: print the vehicle object to verify its state before saving
         System.out.println("Vehicle object to save: " + vehicle);

@@ -49,7 +49,7 @@ public class DriverAdminController {
 
 
 	            
-	            @RequestParam("DriverImgSelfie") MultipartFile DriverImgSelfie,
+	            @RequestParam(value = "DriverImgSelfie", required = false) MultipartFile DriverImgSelfie,
 	            @RequestParam("Aadhar") MultipartFile Aadhar,
 	            @RequestParam("DrLicenceNum") MultipartFile DrLicenceNum,
 	            @RequestParam("PvcNo") MultipartFile PvcNo

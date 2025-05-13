@@ -20,6 +20,8 @@ import com.workshop.DTO.B2BLoginRequest;
 import com.workshop.DTO.B2BLoginResponse;
 import com.workshop.Entity.B2B;
 import com.workshop.Service.B2BService;
+import com.workshop.Service.CloudinaryService;
+import com.workshop.*;
 
 @RestController
 @RequestMapping("/b2b")
@@ -30,6 +32,9 @@ public class B2BController {
 
     @Autowired
     private B2BService service;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     /**
      * POST /b2b/add
@@ -60,14 +65,20 @@ public class B2BController {
     // return ResponseEntity.ok(saved);
     ) {
         try {
-            // Ensure upload directory exists
-            ensureUploadDirExists();
 
             // Save files using their original names
-            String logoFileName = saveFile(companyLogo);
-            String certFileName = saveFile(govtApprovalCertificate);
-            String docsFileName = saveFile(companyDocs);
-            String panFileName = saveFile(panDocs);
+            String logoFileName = (companyLogo != null && !companyLogo.isEmpty())
+                    ? cloudinaryService.upload(companyLogo)
+                    : null;
+            String certFileName = (govtApprovalCertificate != null && !govtApprovalCertificate.isEmpty())
+                    ? cloudinaryService.upload(govtApprovalCertificate)
+                    : null;
+            String docsFileName = (companyDocs != null && !companyDocs.isEmpty())
+                    ? cloudinaryService.upload(companyDocs)
+                    : null;
+            String panFileName = (panDocs != null && !panDocs.isEmpty())
+                    ? cloudinaryService.upload(panDocs)
+                    : null;
 
             System.out.println("Saved Company Logo: " + logoFileName);
             System.out.println("Saved Govt Approval Certificate: " + certFileName);
@@ -192,23 +203,23 @@ public class B2BController {
     /**
      * Save file with original filename
      */
-    private String saveFile(MultipartFile file) throws IOException {
-        if (file == null || file.isEmpty()) {
-            System.out.println("No file provided for upload.");
-            return null;
-        }
-        String fileName = file.getOriginalFilename();
-        Path filePath = Paths.get(UPLOAD_DIR, fileName);
+    // private String saveFile(MultipartFile file) throws IOException {
+    // if (file == null || file.isEmpty()) {
+    // System.out.println("No file provided for upload.");
+    // return null;
+    // }
+    // String fileName = file.getOriginalFilename();
+    // Path filePath = Paths.get(UPLOAD_DIR, fileName);
 
-        try (var inputStream = file.getInputStream()) {
-            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("✅ File saved: " + filePath.toAbsolutePath());
-        } catch (IOException e) {
-            System.err.println("❌ File saving failed: " + e.getMessage());
-            throw e;
-        }
-        return fileName;
-    }
+    // try (var inputStream = file.getInputStream()) {
+    // Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+    // System.out.println("✅ File saved: " + filePath.toAbsolutePath());
+    // } catch (IOException e) {
+    // System.err.println("❌ File saving failed: " + e.getMessage());
+    // throw e;
+    // }
+    // return fileName;
+    // }
 
     /**
      * Build JSON response with full image URLs
@@ -241,7 +252,7 @@ public class B2BController {
      */
     private String buildFullUrl(String fileName) {
         if (fileName != null) {
-            return "https://api.worldtriplink.com/uploads/" + fileName;
+            return "http://localhost:8282/uploads/" + fileName;
         }
         return null;
     }

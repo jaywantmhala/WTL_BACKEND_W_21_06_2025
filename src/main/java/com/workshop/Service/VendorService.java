@@ -26,6 +26,9 @@ public class VendorService {
     private final VendorRepository repository;
 
     @Autowired
+    private CloudinaryService cloudinaryService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public VendorService(VendorRepository repository) {
@@ -174,24 +177,33 @@ public class VendorService {
         if (vendorOtherDetails != null)
             existing.setVendorOtherDetails(vendorOtherDetails);
 
-        // 2) Ensure upload directory exists
-        ensureUploadDirExists();
+        // // 2) Ensure upload directory exists
+        // ensureUploadDirExists();
 
         // 3) Replace each file if a new one was provided
         if (govtApprovalCertificate != null && !govtApprovalCertificate.isEmpty()) {
-            existing.setGovtApprovalCertificate(saveFile(govtApprovalCertificate));
+            String uploadedUrl = cloudinaryService.upload(govtApprovalCertificate);
+            existing.setGovtApprovalCertificate(uploadedUrl);
         }
+    
         if (vendorDocs != null && !vendorDocs.isEmpty()) {
-            existing.setVendorDocs(saveFile(vendorDocs));
+            String uploadedUrl = cloudinaryService.upload(vendorDocs);
+            existing.setVendorDocs(uploadedUrl);
         }
+    
         if (vendorImage != null && !vendorImage.isEmpty()) {
-            existing.setVendorImage(saveFile(vendorImage));
+            String uploadedUrl = cloudinaryService.upload(vendorImage);
+            existing.setVendorImage(uploadedUrl);
         }
+    
         if (aadharPhoto != null && !aadharPhoto.isEmpty()) {
-            existing.setAadharPhoto(saveFile(aadharPhoto));
+            String uploadedUrl = cloudinaryService.upload(aadharPhoto);
+            existing.setAadharPhoto(uploadedUrl);
         }
+    
         if (panPhoto != null && !panPhoto.isEmpty()) {
-            existing.setPanPhoto(saveFile(panPhoto));
+            String uploadedUrl = cloudinaryService.upload(panPhoto);
+            existing.setPanPhoto(uploadedUrl);
         }
 
         // 4) Persist and return the updated entity

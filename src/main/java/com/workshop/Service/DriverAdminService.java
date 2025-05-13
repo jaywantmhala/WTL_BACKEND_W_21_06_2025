@@ -26,6 +26,9 @@ public class DriverAdminService {
 	
 	@Autowired
 	private DriverAdminRepo driverAdminRepo;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 	
 	// Directory where the images will be stored
     private static final String IMAGE_DIR = "src/main/resources/static/images/driverAdminImg/";
@@ -40,11 +43,30 @@ public class DriverAdminService {
                                        MultipartFile PvcNo
                                       ) throws IOException {
 
-        // Save images and set their file names
-    	driveAdmin.setDriverImgSelfie(saveImage(DriverImgSelfie, "DriverImgSelfie"));
-    	driveAdmin.setAadhar(saveImage(Aadhar, "Aadhar"));
-    	driveAdmin.setDrLicenceNum(saveImage(DrLicenceNum, "DrLicenceNum"));
-    	driveAdmin.setPvcNo(saveImage(PvcNo, "PvcNo"));
+                                        driveAdmin.setDriverImgSelfie(
+                                            DriverImgSelfie != null && !DriverImgSelfie.isEmpty() 
+                                                ? cloudinaryService.upload(DriverImgSelfie) 
+                                                : null
+                                        );
+                                        
+                                        driveAdmin.setAadhar(
+                                            Aadhar != null && !Aadhar.isEmpty() 
+                                                ? cloudinaryService.upload(Aadhar) 
+                                                : null
+                                        );
+                                        
+                                        driveAdmin.setDrLicenceNum(
+                                            DrLicenceNum != null && !DrLicenceNum.isEmpty() 
+                                                ? cloudinaryService.upload(DrLicenceNum) 
+                                                : null
+                                        );
+                                        
+                                        driveAdmin.setPvcNo(
+                                            PvcNo != null && !PvcNo.isEmpty() 
+                                                ? cloudinaryService.upload(PvcNo) 
+                                                : null
+                                        );
+                                        
     	
     	
 
