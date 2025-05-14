@@ -29,13 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
 @RestController
 @RequestMapping("/vendors")
 // @CrossOrigin(origins = "http://localhost:3000") // ✅ Allow frontend access
 public class VendorController {
 
-    // private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+    // private static final String UPLOAD_DIR = System.getProperty("user.dir") +
+    // "/src/main/resources/static/uploads/";
 
     @Autowired
     private VendorService service;
@@ -74,20 +74,25 @@ public class VendorController {
             // ensureUploadDirExists();
 
             String govtApprovalCertName = (govtApprovalCertificate != null && !govtApprovalCertificate.isEmpty())
-            ? cloudinaryService.upload(govtApprovalCertificate) : null;
-        
-        String vendorDocsName = (vendorDocs != null && !vendorDocs.isEmpty())
-            ? cloudinaryService.upload(vendorDocs) : null;
-        
-        String vendorImageName = (vendorImage != null && !vendorImage.isEmpty())
-            ? cloudinaryService.upload(vendorImage) : null;
-        
-        String aadharPhotoName = (aadharPhoto != null && !aadharPhoto.isEmpty())
-            ? cloudinaryService.upload(aadharPhoto) : null;
-        
-        String panPhotoName = (panPhoto != null && !panPhoto.isEmpty())
-            ? cloudinaryService.upload(panPhoto) : null;
-        
+                    ? cloudinaryService.upload(govtApprovalCertificate)
+                    : null;
+
+            String vendorDocsName = (vendorDocs != null && !vendorDocs.isEmpty())
+                    ? cloudinaryService.upload(vendorDocs)
+                    : null;
+
+            String vendorImageName = (vendorImage != null && !vendorImage.isEmpty())
+                    ? cloudinaryService.upload(vendorImage)
+                    : null;
+
+            String aadharPhotoName = (aadharPhoto != null && !aadharPhoto.isEmpty())
+                    ? cloudinaryService.upload(aadharPhoto)
+                    : null;
+
+            String panPhotoName = (panPhoto != null && !panPhoto.isEmpty())
+                    ? cloudinaryService.upload(panPhoto)
+                    : null;
+
             // ✅ Create Vendor Object
             Vendor vendor = new Vendor();
             vendor.setVendorCompanyName(vendorCompanyName);
@@ -107,8 +112,6 @@ public class VendorController {
             vendor.setAadharPhoto(aadharPhotoName);
             vendor.setPanPhoto(panPhotoName);
             vendor.setVendorOtherDetails(vendorOtherDetails);
-
-            
 
             return ResponseEntity.ok(service.saveVendor(vendor));
         } catch (Exception e) {
@@ -147,29 +150,31 @@ public class VendorController {
     // ✅ Get Vendor by Email
     @GetMapping("/email/{email}")
     public ResponseEntity<?> getVendorByEmail(@PathVariable String email) {
-    Vendor vendor = service.getVendorByEmail(email);
-    if (vendor == null) {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error",
-    "Vendor not found"));
-    }
-    return ResponseEntity.ok(generateVendorResponse(vendor));
+        Vendor vendor = service.getVendorByEmail(email);
+        if (vendor == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error",
+                    "Vendor not found"));
+        }
+        return ResponseEntity.ok(generateVendorResponse(vendor));
     }
 
     // ✅ Utility: Ensure Upload Directory Exists
     // private void ensureUploadDirExists() {
-    //     File uploadDir = new File(UPLOAD_DIR);
-    //     if (!uploadDir.exists() && uploadDir.mkdirs()) {
-    //         System.out.println("✅ Upload directory created: " + UPLOAD_DIR);
-    //     }
+    // File uploadDir = new File(UPLOAD_DIR);
+    // if (!uploadDir.exists() && uploadDir.mkdirs()) {
+    // System.out.println("✅ Upload directory created: " + UPLOAD_DIR);
+    // }
     // }
 
     // ✅ Utility: Save File
     // private String saveFile(MultipartFile file) throws IOException {
-    //     if (file == null || file.isEmpty()) return null;
-    //     String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-    //     Path filePath = Paths.get(UPLOAD_DIR, fileName);
-    //     Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-    //     return fileName;
+    // if (file == null || file.isEmpty()) return null;
+    // String fileName = System.currentTimeMillis() + "_" +
+    // file.getOriginalFilename();
+    // Path filePath = Paths.get(UPLOAD_DIR, fileName);
+    // Files.copy(file.getInputStream(), filePath,
+    // StandardCopyOption.REPLACE_EXISTING);
+    // return fileName;
     // }
 
     // ✅ Utility: Format Vendor Response
@@ -225,15 +230,13 @@ public class VendorController {
     // return ResponseEntity.ok(bookings); // Returns 200 with the list of bookings
     // }
 
-
-    // @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    // public ResponseEntity<Vendor> update(@RequestBody Vendor vendor, @PathVariable Long id) {
-    //     Vendor updatedVendor = this.service.updatePassword(vendor, id);
-    //     return ResponseEntity.ok(updatedVendor);
+    // @PutMapping(value = "/update/{id}", consumes =
+    // MediaType.APPLICATION_JSON_VALUE)
+    // public ResponseEntity<Vendor> update(@RequestBody Vendor vendor,
+    // @PathVariable Long id) {
+    // Vendor updatedVendor = this.service.updatePassword(vendor, id);
+    // return ResponseEntity.ok(updatedVendor);
     // }
-
-
-
 
     @PostMapping("/send-manual/{email}")
     public ResponseEntity<?> sendManualEmailWithPath(@PathVariable("email") String email) {
@@ -255,20 +258,20 @@ public class VendorController {
             String emailContent = "<html><body>" +
                     "<p>Hi,</p>" +
                     "<p>Please click on the following link to fill in the vendor registration details:</p>" +
-                    "<p><a href='https://admin.worldtriplink.in/vendor-registration'  " +
+                    "<p><a href='http://localhost:8282/vendor-registration'  " +
                     "style='color: #007bff; text-decoration: none; font-weight: bold;'>Complete Vendor Registration</a></p>"
                     +
                     "<p>Thank you.</p>" +
                     "<p>Best Regards,<br>WTL Tourism Pvt. Ltd.</p>" +
                     "</body></html>";
 
-                    boolean emailSent = emailService.sendEmail(emailContent, subject, email);
+            boolean emailSent = emailService.sendEmail(emailContent, subject, email);
 
-                    if (emailSent) {
-                        System.out.println("Booking confirmation email sent successfully.");
-                    } else {
-                        System.out.println("Failed to send booking confirmation email.");
-                    }
+            if (emailSent) {
+                System.out.println("Booking confirmation email sent successfully.");
+            } else {
+                System.out.println("Failed to send booking confirmation email.");
+            }
 
             return ResponseEntity.ok("Email sent successfully");
         } catch (Exception ex) {
@@ -277,20 +280,13 @@ public class VendorController {
                     .body("Failed to send email: " + ex.getMessage());
         }
 
-}
+    }
 
-
-
-
-@PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Vendor> updatePassword(@RequestBody PasswordUpdateRequest request, @PathVariable Long id) {
         Vendor updated = service.updatePassword(request.getPassword(), id);
         return ResponseEntity.ok(updated);
-    } 
-
-
-
-
+    }
 
     // ----------------------------------------
     // Update arbitrary fields & files (multipart)
