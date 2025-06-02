@@ -28,7 +28,7 @@ public class DiscountController {
         return this.discountService.createDiscount(discount);
     }
 
-    @GetMapping("/geAllCouponcCode")
+    @GetMapping("/getAll")
     public List<Discount> getAllCouponCode(){
         return this.discountService.getAllCouponCode();
     }
