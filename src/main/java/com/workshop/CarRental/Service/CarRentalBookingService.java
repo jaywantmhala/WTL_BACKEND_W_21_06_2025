@@ -59,5 +59,9 @@ public CarRentalUser updateProfileById(int id, CarRentalUser carRentalUser) {
     return this.carRentalRepository.save(existingUser);
 }
 
+public CarRentalUser getCarRentalUserById(int id){
+    return this.carRentalRepository.findById(id).get();
+}
+
 
 }

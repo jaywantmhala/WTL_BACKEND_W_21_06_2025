@@ -45,7 +45,8 @@ public class LocationService {
     
     /**
      * Updates the database with the driver's location
-     */
+     */  
+                                          
     public void saveDriverLocation(Long driverId, double latitude, double longitude) {
         // Code to update driver's location in the database
         // This would make a call to your existing API:
@@ -64,6 +65,7 @@ public class LocationService {
     /**
      * Calculates distance between two points using Haversine formula
      */
+
     public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371; // Radius of the earth in km
         

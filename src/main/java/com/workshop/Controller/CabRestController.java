@@ -111,6 +111,8 @@ public class CabRestController {
     @Autowired
     private CarRentalRepository carRentalRepository;
 
+
+
     @Autowired
     private CarRentalBookingService carRentalBookingService;
 
@@ -723,6 +725,8 @@ public ResponseEntity<Map<String, Object>> processForm(
             @RequestParam String distance,
             @RequestParam String name,
             @RequestParam String email,
+
+
             @RequestParam String service,
             @RequestParam String gst,
             @RequestParam String total,
@@ -959,6 +963,9 @@ public ResponseEntity<Map<String, Object>> processForm(
         }
     }
 
+    
+    
+
     private void sendConfirmationEmail(String name, String email, String bookingId,
             String pickupLocation, String dropLocation,
             String tripType, String date, String time,
@@ -1033,7 +1040,7 @@ public ResponseEntity<Map<String, Object>> processForm(
         "        <tr>\n" +
         "            <td style=\"padding: 20px; text-align: center; font-size: 12px; color: #666;\">\n" +
         "                <p>&copy; 2025 WTL Cab Service. All rights reserved.</p>\n" +
-        "                <p>If you have any questions, please contact our customer support at <a href=\"mailto:support@wtlcabs.com\" style=\"color: #1a1f2e;\">support@wtlcabs.com</a></p>\n" +
+        "                <p>If you have any questions, please contact our customer support at <a href=\"mailto:support@wtlcabs.com\" style=\"color:rgb(14, 59, 195);\">support@wtlcabs.com</a></p>\n" +
         "            </td>\n" +
         "        </tr>\n" +
         "    </table>\n" +
@@ -1043,6 +1050,7 @@ public ResponseEntity<Map<String, Object>> processForm(
 
         emailService.sendEmail(message, subject, email);
     }
+
 
     @PostMapping("/get-user-location/{id}")
     public CarRentalUser saveUserLocation(@PathVariable int id) {
@@ -1097,6 +1105,8 @@ public ResponseEntity<Map<String, Object>> processForm(
     public Booking endOdoometerEnding(@PathVariable int id, @RequestParam String meter){
         return this.ser.enterOdoometerEnding(id, meter);
     }
+
+
 
     @PutMapping("/udpatePrice/{id}")
     public Booking updatePrice(@PathVariable int id, @RequestParam int amount){

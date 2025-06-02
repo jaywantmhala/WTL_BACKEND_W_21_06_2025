@@ -17,6 +17,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 
+
+
+
 @Entity
 public class CarRentalUser {
 

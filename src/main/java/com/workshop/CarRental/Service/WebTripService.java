@@ -22,36 +22,32 @@ public class WebTripService {
         this.messagingTemplate = messagingTemplate;
     }
     
-    /**
-     * Generates and sends OTP to user for trip verification
-     */
+    
+    
     public void sendOtp(TripStatusMessage message) {
-        // Generate a random 4-digit OTP
+        // Generate a random 4-digit OTP    //  Generates and sends OTP to user for trip verification
+
         String otp = generateOtp();
         
-        // Store OTP for verification
         bookingOtps.put(message.getBookingId(), otp);
         
-        // Create response with OTP for user
         TripStatusMessage userResponse = new TripStatusMessage();
         userResponse.setBookingId(message.getBookingId());
         userResponse.setAction("OTP_SENT");
         userResponse.setOtp(otp);
         userResponse.setType("OTP_SENT");
         
-        // Send OTP to user's device
         messagingTemplate.convertAndSend(
             "/topic/booking/" + message.getBookingId() + "/user-notifications", 
             userResponse
         );
         
-        // Create notification for driver (without OTP)
         TripStatusMessage driverResponse = new TripStatusMessage();
         driverResponse.setBookingId(message.getBookingId());
         driverResponse.setAction("OTP_SENT");
         driverResponse.setType("OTP_SENT");
         
-        // Notify driver that OTP was sent
+        
         messagingTemplate.convertAndSend(
             "/topic/booking/" + message.getBookingId() + "/driver-notifications", 
             driverResponse
@@ -84,6 +80,7 @@ public class WebTripService {
     
     /**
      * Verifies OTP entered by driver
+     * 
      */
     public void verifyOtp(TripStatusMessage message) {
         String storedOtp = bookingOtps.get(message.getBookingId());
@@ -187,4 +184,5 @@ public class WebTripService {
         int otp = 100000 + random.nextInt(900000); 
         return String.valueOf(otp);
     }
+
 } 

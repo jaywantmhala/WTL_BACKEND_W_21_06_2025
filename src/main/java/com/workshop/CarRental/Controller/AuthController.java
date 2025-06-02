@@ -232,10 +232,16 @@ public class AuthController {
     public CarRentalUser getProfile(@PathVariable int id){
 return this.carRentalBookingService.getProfile(id);
     }
+    
 
     @PutMapping("/update-profile/{id}")
     public CarRentalUser updateProfile(@PathVariable int id, @RequestBody CarRentalUser carRentalUser){
 return this.carRentalBookingService.updateProfileById(id, carRentalUser);
+    }
+
+     @GetMapping("/getCarRentalUserById/{id}")
+    public CarRentalUser getUserById(@PathVariable int id){
+        return this.carRentalBookingService.getCarRentalUserById(id);
     }
     
 
