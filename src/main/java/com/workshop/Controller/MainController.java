@@ -28,6 +28,7 @@ public class MainController {
 		return "user";
 	}
 
+
 	@GetMapping("/contact")
 	public String contact() {
 		return "contact1";
@@ -37,6 +38,7 @@ public class MainController {
 	public String about() {
 		return "about";
 	}
+	
 
 	@GetMapping("/services")
 	public String services() {
@@ -243,6 +245,8 @@ public class MainController {
 	// 	return "Corporate5";
 	// }
 
+	
+
 	// @GetMapping("/Corporate6")
 	// public String Indor1() {
 	// 	return "Corporate6";
@@ -273,8 +277,8 @@ public class MainController {
 	public String Pune1() {
 		return "Corporate-Cab-Service-Pune";
 	}
-
-
+	
+	
 	@GetMapping("/Corporate-Cab-Services-Telangana")
 	public String Telangana1() {
 		return "Corporate-Cab-Services-Telangana";

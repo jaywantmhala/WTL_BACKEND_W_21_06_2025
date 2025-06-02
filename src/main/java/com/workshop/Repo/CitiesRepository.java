@@ -7,6 +7,10 @@ import java.util.List;
 
 @Repository
 public interface CitiesRepository extends JpaRepository<Cities, Long> {
-    List<Cities> findByStateId(Long stateId); // Fetch cities by state ID
-}
+    List<Cities> findByStateId(Long stateId);
 
+    Cities findByNameIgnoreCase(String name);
+
+    List<Cities> findByNameContainingIgnoreCase(String name);
+
+}

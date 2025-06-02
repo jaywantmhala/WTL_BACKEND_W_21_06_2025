@@ -26,7 +26,24 @@ public class CitiesService {
         return citiesRepository.findByStateId(stateId);
     }
 
-    
+
+    public Cities findByName(String name) {
+        try {
+            return citiesRepository.findByNameIgnoreCase(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<Cities> findBySimilarName(String name) {
+        try {
+            return citiesRepository.findByNameContainingIgnoreCase(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     
 }
 
