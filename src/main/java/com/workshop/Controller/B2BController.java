@@ -117,9 +117,7 @@ public class B2BController {
         }
     }
 
-    /**
-     * GET /b2b/all
-     */
+    
     @GetMapping("/all")
     public ResponseEntity<List<B2B>> getAllB2B() {
         List<B2B> list = service.getAllB2B();
@@ -127,9 +125,7 @@ public class B2BController {
         return ResponseEntity.ok(list);
     }
 
-    /**
-     * GET /b2b/{id}
-     */
+   
     @GetMapping("/{id}")
     public ResponseEntity<?> getB2BById(@PathVariable Long id) {
         B2B b2b = service.getB2BById(id);
@@ -141,9 +137,7 @@ public class B2BController {
         return ResponseEntity.ok(generateB2BResponse(b2b));
     }
 
-    /**
-     * DELETE /b2b/delete/{id}
-     */
+  
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteB2B(@PathVariable Long id) {
         String message = service.deleteB2B(id);
@@ -155,9 +149,7 @@ public class B2BController {
         }
     }
 
-    /**
-     * GET /b2b/email/{businessGmail}
-     */
+    
     @GetMapping("/email/{businessGmail}")
     public ResponseEntity<?> getB2BByEmail(@PathVariable String businessGmail) {
         B2B b2b = service.getB2BByEmail(businessGmail);
@@ -168,9 +160,7 @@ public class B2BController {
         return ResponseEntity.ok(generateB2BResponse(b2b));
     }
 
-    /**
-     * POST /b2b/login
-     */
+   
     @PostMapping("/login")
     public ResponseEntity<?> b2bLogin(@RequestBody B2BLoginRequest loginRequest) {
         try {
@@ -184,13 +174,7 @@ public class B2BController {
         }
     }
 
-    // ------------------------------------------------------------
-    // Utility Methods
-    // ------------------------------------------------------------
-
-    /**
-     * Ensure upload directory exists
-     */
+   
     private void ensureUploadDirExists() {
         File uploadDir = new File(UPLOAD_DIR);
         if (!uploadDir.exists() && uploadDir.mkdirs()) {
@@ -247,9 +231,7 @@ public class B2BController {
         return response;
     }
 
-    /**
-     * Build an HTTP URL for each file name
-     */
+   
     private String buildFullUrl(String fileName) {
         if (fileName != null) {
             return "http://localhost:8282/uploads/" + fileName;
