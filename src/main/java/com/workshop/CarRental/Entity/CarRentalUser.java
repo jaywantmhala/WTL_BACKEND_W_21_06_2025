@@ -31,7 +31,6 @@ public class CarRentalUser {
     private String userName;
 
 
-    @Transient
     @Column(nullable = true)
     private String lastName;
 

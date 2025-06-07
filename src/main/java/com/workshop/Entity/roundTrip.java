@@ -1,3 +1,4 @@
+
 package com.workshop.Entity;
 
 
@@ -27,6 +28,7 @@ public class roundTrip implements Trip{
 	    private int sedanpremium;
 	    private int suv;
 	    private int suvplus;
+		private int ertiga;
 	    private String status;
 
 		private LocalDate startDate;
@@ -111,8 +113,10 @@ public class roundTrip implements Trip{
 		public void setEndDate(LocalDate endDate) {
 			this.endDate = endDate;
 		}
+
+		
 		public roundTrip(Long id, String sourceState, String sourceCity, String destinationState,
-				String destinationCity, int hatchback, int sedan, int sedanpremium, int suv, int suvplus, String  status, LocalDate startDate, LocalDate endDate) {
+				String destinationCity, int hatchback, int sedan, int sedanpremium, int suv, int suvplus, int ertiga, String  status, LocalDate startDate, LocalDate endDate) {
 			super();
 			this.id = id;
 			this.sourceState = sourceState;
@@ -138,6 +142,12 @@ public class roundTrip implements Trip{
 					+ ", destinationState=" + destinationState + ", destinationCity=" + destinationCity + ", hatchback="
 					+ hatchback + ", sedan=" + sedan + ", sedanpremium=" + sedanpremium + ", suv=" + suv + ", suvplus="
 					+ suvplus + ", status=" + status + "]";
+		}
+		public int getErtiga() {
+			return ertiga;
+		}
+		public void setErtiga(int ertiga) {
+			this.ertiga = ertiga;
 		}
 		
 	    

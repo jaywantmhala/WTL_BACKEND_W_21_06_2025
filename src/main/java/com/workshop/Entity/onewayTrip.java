@@ -33,6 +33,7 @@ public class onewayTrip implements Trip, Serializable{
 	private String status;
 	private LocalDate startDate;
     private LocalDate endDate;
+	private int ertiga;
 
 	private double distance;
 
@@ -156,9 +157,11 @@ public class onewayTrip implements Trip, Serializable{
 		this.distance = distance;
 	}
 
+
+	
 	public onewayTrip(Long id, String sourceState, String sourceCity, String destinationState,
 			String destinationCity, int hatchback, int sedan, int sedanpremium, int suv, int suvplus,
-			String status, LocalDate startDate, LocalDate endDate, double distance) {
+			String status, LocalDate startDate, LocalDate endDate, double distance, int ertiga) {
 		super();
 		this.id = id;
 		this.sourceState = sourceState;
@@ -174,6 +177,7 @@ public class onewayTrip implements Trip, Serializable{
 		this.startDate=startDate;
 		this.endDate=endDate;
 		this.distance=distance;
+		this.ertiga=ertiga;
 	}
 
 	public onewayTrip() {
@@ -187,6 +191,14 @@ public class onewayTrip implements Trip, Serializable{
 				+ ", destinationState=" + destinationState + ", destinationCity=" + destinationCity + ", hatchback="
 				+ hatchback + ", sedan=" + sedan + ", sedanpremium=" + sedanpremium + ", suv=" + suv + ", suvplus="
 				+ suvplus + ", status=" + status + "]";
+	}
+
+	public int getErtiga() {
+		return ertiga;
+	}
+
+	public void setErtiga(int ertiga) {
+		this.ertiga = ertiga;
 	}
 
 }

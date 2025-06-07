@@ -239,6 +239,8 @@ return this.carRentalBookingService.getProfile(id);
 return this.carRentalBookingService.updateProfileById(id, carRentalUser);
     }
 
+    
+
      @GetMapping("/getCarRentalUserById/{id}")
     public CarRentalUser getUserById(@PathVariable int id){
         return this.carRentalBookingService.getCarRentalUserById(id);

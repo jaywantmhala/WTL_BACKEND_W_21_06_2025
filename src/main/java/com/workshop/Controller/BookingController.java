@@ -517,19 +517,25 @@ public class BookingController {
 		System.out.println("Booked ");
 
 		String subject = "Booking Confirmation - " + bookid;
-		String message = "<h3>Hello " + name + ",</h3>" +
-				"<p>Your booking has been confirmed.</p>" +
-				"<p><strong>Booking Details:</strong></p>" +
-				"<ul>" +
-				"<li><strong>Booking ID:</strong> " + bookid + "</li>" +
-				"<li><strong>Pickup Location:</strong> " + pickupLocation + "</li>" +
-				"<li><strong>Drop Location:</strong> " + dropLocation + "</li>" +
-				"<li><strong>Trip Type:</strong> " + tripType + "</li>" +
-				"<li><strong>Date:</strong> " + date + "</li>" +
-				"<li><strong>Time:</strong> " + time + "</li>" +
-				"<li><strong>Amount Paid:</strong> ₹" + total + "</li>" +
-				"</ul>" +
-				"<p>Thank you for choosing us!</p>";
+        String message = "<h3>Hello " + name + ",</h3>" +
+                "<p>Your booking has been confirmed.</p>" +
+                "<p><strong>Booking Details:</strong></p>" +
+                "<ul>" +
+                "<li><strong>Booking ID:</strong> " + bookid + "</li>" +
+                "<li><strong>Pickup Location:</strong> " + pickupLocation + "</li>" +
+                "<li><strong>Drop Location:</strong> " + dropLocation + "</li>" +
+                "<li><strong>Trip Type:</strong> " + tripType + "</li>" +
+                "<li><strong>Date:</strong> " + date + "</li>" +
+                "<li><strong>Time:</strong> " + time + "</li>" +
+                "<li><strong>Amount Paid:</strong> ₹" + total + "</li>" +
+                "</ul>" +
+                "<p>Thank you for choosing us!</p>" +
+"<p><strong>Terms and Conditions:</strong></p>" +
+"<ul>" +
+"<li>Toll charges, parking fees, and other taxes are not included and will be charged as applicable.</li>" +
+"<li>Prices may be extended in case of route changes, additional stops, or waiting time.</li>" +
+"<li>Please refer to our website or contact support for detailed terms and conditions.</li>" +
+"</ul>";
 
 		boolean emailSent = emailService.sendEmail(message, subject, email);
 
@@ -662,15 +668,15 @@ public class BookingController {
 						"",   // Set default value for sourceCity
 						"",   // Set default value for destinationState
 						"",   // Set default value for destinationCity
-						12,    // Set default value for hatchback
-						15,    // Set default value for sedan
-						18,    // Set default value for sedanpremium
-						21,    // Set default value for suv
+						14,    // Set default value for hatchback
+						16,    // Set default value for sedan
+						20,    // Set default value for sedanpremium
+						27,    // Set default value for suv
 						26,    // Set default value for suvplus
 						"",
 						null
 						 ,null
-						 ,0
+						 ,0,19
 						  // Set default value for status
 					);
 			  
@@ -721,15 +727,17 @@ public class BookingController {
 						"",   // Set default value for sourceCity
 						"",   // Set default value for destinationState
 						"",   // Set default value for destinationCity
-						10,    // Set default value for hatchback
-						11,    // Set default value for sedan
-						14,    // Set default value for sedanpremium
-						14,    // Set default value for suv
-						21,    // Set default value for suvplus
+						14,    // Set default value for hatchback
+						16,    // Set default value for sedan
+						20,    // Set default value for sedanpremium
+						27,    // Set default value for suv
+						26, 
+						19,   // Set default value for suvplus
 						"",
 						null,
 						null   // Set default value for status
 					);
+					
 			  
 			  
 			 
@@ -754,7 +762,6 @@ public class BookingController {
 		model.addAttribute("date", date);
 		model.addAttribute("returndate", returndate);
 		System.out.println("returndate "+returndate);
-
 		model.addAttribute("time", time);
 		model.addAttribute("distance", Distance);
 		model.addAttribute("cabinfo", c);
@@ -955,6 +962,8 @@ public class BookingController {
 
 	@Autowired
 	private CabInfoService cabInfoService;
+
+	
 
 	// @GetMapping("/invoice")
 	// public ResponseEntity<List<CabInfo>> getAllCabs() {
