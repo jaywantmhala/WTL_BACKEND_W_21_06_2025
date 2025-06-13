@@ -11,7 +11,7 @@ public class EmailService {
 
     public boolean sendEmail(String message, String subject, String to) {
         boolean f = false;
-        String from = "contactwtltourism@gmail.com"; // Replace with your email
+        String from = "parshuramdairyfarm@gmail.com"; // Replace with your email
         String host = "smtp.gmail.com";
 
         // Set up properties for the mail session
@@ -25,9 +25,9 @@ public class EmailService {
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("contactwtltourism@gmail.com", "wgxt suje ufqw ahje"); // Replace with
+                return new PasswordAuthentication("contactwtltourism@gmail.com", "vweq fehl equa ydwf"); // Replace with
                                                                                                        // actual app
-                                                                                                // password
+                                                                                                //f password
             }
 
         });

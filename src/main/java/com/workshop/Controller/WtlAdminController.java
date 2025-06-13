@@ -1,6 +1,7 @@
 
 package com.workshop.Controller;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +50,7 @@ import com.workshop.Entity.Tripprice;
 import com.workshop.Entity.User;
 import com.workshop.Entity.onewayTrip;
 import com.workshop.Entity.roundTrip;
+import com.workshop.Repo.BookingRepo;
 import com.workshop.Repo.StateRepository;
 import com.workshop.Repo.Trip;
 import com.workshop.Service.BookingService;
@@ -534,9 +537,118 @@ public class WtlAdminController {
                 .body("Invalid username or password");
     }
 
-    @PostMapping("/customBooking")
-    public Booking createCustomBooking(@RequestBody Booking b) {
-        return this.bookingService.createCustomBooking(b);
+    @Autowired
+    private BookingRepo bookingRepo;
+
+    // @PostMapping("/customBooking")
+    // public Booking createCustomBooking(@RequestBody Booking b) {
+    //     return this.bookingService.createCustomBooking(b);
+    // }
+
+   @PostMapping("/create")
+public String createBooking(
+        @RequestParam(required = false) String fromLocation,
+        @RequestParam(required = false) String toLocation,
+        @RequestParam(required = false) String tripType,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate,
+        @RequestParam(required = false) String time,
+        @RequestParam(required = false) String distance,
+        @RequestParam(required = false) String userId,
+        @RequestParam(required = false) String bookingId,
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String email,
+        @RequestParam(required = false) String phone,
+        @RequestParam(required = false) String userPickup,
+        @RequestParam(required = false) String userDrop,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+        @RequestParam(required = false) String userTripType,
+        @RequestParam(required = false) String car,
+        @RequestParam(required = false) String baseAmount,
+        @RequestParam(required = false) Integer amount,
+        @RequestParam(required = false) Integer status,
+        @RequestParam(required = false) String driverBhata,
+        @RequestParam(required = false) Integer nightCharges,
+        @RequestParam(required = false) Integer gst,
+        @RequestParam(required = false) Integer serviceCharge,
+        @RequestParam(required = false) String offer,
+        @RequestParam(required = false) Integer offerPartial,
+        @RequestParam(required = false) String offerAmount,
+        @RequestParam(required = false) String txnId,
+        @RequestParam(required = false) String payment,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateEnd,
+        @RequestParam(required = false) String timeEnd,
+        @RequestParam(required = false) int collection,
+        @RequestParam(required = false) String bookingType,
+        @RequestParam(required = false) String description,
+        @RequestParam(required = false) String carrier,
+        @RequestParam(required = false) String driverEnterOtpTimePreStarted,
+        @RequestParam(required = false) String odoometerStarted,
+        @RequestParam(required = false) String odoometerEnterTimeStarted,
+        @RequestParam(required = false) String driverEnterOtpTimePostTrip,
+        @RequestParam(required = false) String odometerEnding,
+        @RequestParam(required = false) String odoometerEnterTimeEnding
+) {
+    Booking booking = new Booking();
+
+    // Generate unique booking ID
+    String bookids = "CSTM_WTL" + System.currentTimeMillis();
+    booking.setBookid(bookids); // use generated ID
+
+    booking.setBookingId(bookids);
+    booking.setFromLocation(userPickup);
+    booking.setToLocation(userDrop);
+    booking.setTripType(tripType);
+    booking.setStartDate(startDate);
+    booking.setReturnDate(returnDate);
+    booking.setTime(time);
+    booking.setDistance(distance);
+    booking.setUserId(userId);
+    booking.setName(name);
+    booking.setEmail(email);
+    booking.setPhone(phone);
+
+    // Use the actual user pickup/drop input values
+    booking.setUserPickup(userPickup);
+    booking.setUserDrop(userDrop);
+
+    booking.setDate(date);
+    booking.setUserTripType(userTripType);
+    booking.setCar(car);
+    booking.setBaseAmount(baseAmount);
+    booking.setAmount(amount);
+    booking.setStatus(status);
+    booking.setDriverBhata(driverBhata);
+    booking.setNightCharges(nightCharges);
+    booking.setGst(gst);
+    booking.setServiceCharge(serviceCharge);
+    booking.setOffer(offer);
+    booking.setOfferPartial(offerPartial);
+    booking.setOfferAmount(offerAmount);
+    booking.setTxnId(txnId);
+    booking.setPayment(payment);
+    booking.setDateEnd(dateEnd);
+    booking.setTimeEnd(timeEnd);
+    booking.setCollection(collection);
+    booking.setBookingType(bookingType);
+    booking.setDescription(description);
+    booking.setCarrier(carrier);
+    booking.setDriverEnterOtpTimePreStarted(driverEnterOtpTimePreStarted);
+    booking.setOdoometerStarted(odoometerStarted);
+    booking.setOdoometerEnterTimeStarted(odoometerEnterTimeStarted);
+    booking.setDriverEnterOtpTimePostTrip(driverEnterOtpTimePostTrip);
+    booking.setOdometerEnding(odometerEnding);
+    booking.setOdoometerEnterTimeEnding(odoometerEnterTimeEnding);
+
+    bookingRepo.save(booking);
+
+    return "Booking created successfully!";
+}
+
+
+    @PostMapping("/c")
+    public Booking creatBooking(@RequestBody Booking b){
+        return this.bookingRepo.save(b);
     }
 
     @GetMapping("/get/{sourceCity}/{sourceState}/{destinationCity}/{destinationState}")

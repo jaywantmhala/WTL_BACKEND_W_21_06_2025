@@ -71,6 +71,8 @@ public class Booking {
 	private String description;
 	private String carrier;
 
+	private int collection;
+
 	private String driverEnterOtpTimePreStarted;
 
 	private String odoometerStarted;
@@ -177,7 +179,7 @@ private DriveAdmin driveAdmin;
 			String description, String carrier, String driverEnterOtpTimePreStarted, String odoometerStarted,
 			String odoometerEnterTimeStarted, String driverEnterOtpTimePostTrip, String odometerEnding,
 			String odoometerEnterTimeEnding, Vendor vendor, VendorCabs vendorCab, VendorDrivers vendorDriver,
-			Penalty penalty, CabAdmin cabAdmin, DriveAdmin driveAdmin, CarRentalUser carRentalUser) {
+			Penalty penalty, CabAdmin cabAdmin, DriveAdmin driveAdmin, CarRentalUser carRentalUser, int collection) {
 		this.id = id;
 		this.fromLocation = fromLocation;
 		this.toLocation = toLocation;
@@ -185,6 +187,7 @@ private DriveAdmin driveAdmin;
 		this.startDate = startDate;
 		this.returnDate = returnDate;
 		this.time = time;
+		this.collection=collection;
 		this.distance = distance;
 		this.userId = userId;
 		this.bookingId = bookingId;
@@ -262,6 +265,8 @@ private DriveAdmin driveAdmin;
 	public void setTripType(String tripType) {
 		this.tripType = tripType;
 	}
+
+	
 
 	public LocalDate getStartDate() {
 		return startDate;
@@ -681,6 +686,18 @@ private DriveAdmin driveAdmin;
 
 	public void setOdoometerEnterTimeEnding(String odoometerEnterTimeEnding) {
 		this.odoometerEnterTimeEnding = odoometerEnterTimeEnding;
+	}
+
+
+
+	public int getCollection() {
+		return collection;
+	}
+
+
+
+	public void setCollection(int collection) {
+		this.collection = collection;
 	}
 
 	

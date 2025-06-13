@@ -293,352 +293,575 @@ public class CabRestController {
     // );
     // }
 
-    @PostMapping("/cab1")
-    public ResponseEntity<Map<String, Object>> processForm(
-            @RequestParam("tripType") String tripType,
-            @RequestParam("pickupLocation") String pickupLocation,
-            @RequestParam("dropLocation") String dropLocation,
-            @RequestParam("date") String date,
-            @RequestParam(value = "Returndate", required = false) String returndate,
-            @RequestParam("time") String time,
-            @RequestParam(value = "distance", required = false) String distance,
-            @RequestParam(value = "packageName", required = false) String packageName,
-            @RequestParam(value="Endtime", required = false) String Endtime,
-            @RequestParam(value="carType", required = false) String carType)
+    // @PostMapping("/cab1")
+    // public ResponseEntity<Map<String, Object>> processForm(
+    //         @RequestParam("tripType") String tripType,
+    //         @RequestParam("pickupLocation") String pickupLocation,
+    //         @RequestParam("dropLocation") String dropLocation,
+    //         @RequestParam("date") String date,
+    //         @RequestParam(value = "Returndate", required = false) String returndate,
+    //         @RequestParam("time") String time,
+    //         @RequestParam(value = "distance", required = false) String distance,
+    //         @RequestParam(value = "packageName", required = false) String packageName,
+    //         @RequestParam(value="Endtime", required = false) String Endtime,
+    //         @RequestParam(value="carType", required = false) String carType)
 
-    {
+    // {
 
-        Map<String, Object> response = new HashMap<>();
+    //     Map<String, Object> response = new HashMap<>();
 
-        try {
-            int calculatedDistance = 0;
+    //     try {
+    //         int calculatedDistance = 0;
 
-            if (distance == null || distance.isEmpty() || distance.equals("0")) {
-                calculatedDistance = getDistanceFromGoogleMaps(pickupLocation, dropLocation);
-            } else {
-                String numericString = distance.replaceAll("[^0-9.]", "");
-                calculatedDistance = (int) Double.parseDouble(numericString);
-            }
+    //         if (distance == null || distance.isEmpty() || distance.equals("0")) {
+    //             calculatedDistance = getDistanceFromGoogleMaps(pickupLocation, dropLocation);
+    //         } else {
+    //             String numericString = distance.replaceAll("[^0-9.]", "");
+    //             calculatedDistance = (int) Double.parseDouble(numericString);
+    //         }
 
-            List<Trip> tripinfo = new ArrayList<>();
-            int days = 0;
+    //         List<Trip> tripinfo = new ArrayList<>();
+    //         int days = 0;
 
-            CityExtractionService.CityStateResult pickupResult = cityExtractionService.extractCityAndState(pickupLocation);
-            CityExtractionService.CityStateResult dropResult = cityExtractionService.extractCityAndState(dropLocation);
+    //         CityExtractionService.CityStateResult pickupResult = cityExtractionService.extractCityAndState(pickupLocation);
+    //         CityExtractionService.CityStateResult dropResult = cityExtractionService.extractCityAndState(dropLocation);
 
-            String cityName1 = pickupResult.getCity();   // Pickup city
-            String cityName = dropResult.getCity();      // Drop city
+    //         String cityName1 = pickupResult.getCity();   // Pickup city
+    //         String cityName = dropResult.getCity();      // Drop city
 
-            cityName = cityName.equals("Bengaluru") ? "Bangalore" : cityName;
-            cityName1 = cityName1.equals("Bengaluru") ? "Bangalore" : cityName1;
+    //         cityName = cityName.equals("Bengaluru") ? "Bangalore" : cityName;
+    //         cityName1 = cityName1.equals("Bengaluru") ? "Bangalore" : cityName1;
 
-            if ("oneWay".equalsIgnoreCase(tripType)) {
-                List<onewayTrip> oneWayTrips = tripSer.getOneWayTripsWithDefaults(
-                        cityName1,
-                        pickupResult.getState(),
-                        cityName,
-                        dropResult.getState()
-                );
+    //         if ("oneWay".equalsIgnoreCase(tripType)) {
+    //             List<onewayTrip> oneWayTrips = tripSer.getOneWayTripsWithDefaults(
+    //                     cityName1,
+    //                     pickupResult.getState(),
+    //                     cityName,
+    //                     dropResult.getState()
+    //             );
 
-                for (onewayTrip o : oneWayTrips) {
-                    tripinfo.add(o);
-                }
-            } 
-            else if ("roundTrip".equalsIgnoreCase(tripType)) {
-                LocalDate localDate1 = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
-                LocalDate localDate2 = LocalDate.parse(returndate, DateTimeFormatter.ISO_DATE);
+    //             for (onewayTrip o : oneWayTrips) {
+    //                 tripinfo.add(o);
+    //             }
+    //         } 
+    //         else if ("roundTrip".equalsIgnoreCase(tripType)) {
+    //             LocalDate localDate1 = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
+    //             LocalDate localDate2 = LocalDate.parse(returndate, DateTimeFormatter.ISO_DATE);
 
-                days = (int) ChronoUnit.DAYS.between(localDate1, localDate2) + 1;
+    //             days = (int) ChronoUnit.DAYS.between(localDate1, localDate2) + 1;
 
-                if (distance == null || distance.isEmpty() || distance.equals("0") || distance.equals("-1")) {
-                    calculatedDistance = calculatedDistance * days;
-                }
+    //             if (distance == null || distance.isEmpty() || distance.equals("0") || distance.equals("-1")) {
+    //                 calculatedDistance = calculatedDistance * days;
+    //             }
 
-                tripinfo = tripSer.getRoundTrip(cityName, cityName1);
+    //             tripinfo = tripSer.getRoundTrip(cityName, cityName1);
 
-                if (tripinfo.isEmpty()) {
-                    tripinfo.add(createDefaultRoundTrip());
-                }
-            }
+    //             if (tripinfo.isEmpty()) {
+    //                 tripinfo.add(createDefaultRoundTrip());
+    //             }
+    //         }
 
-            if ("transfer".equalsIgnoreCase(tripType)) {
-                // --- Transfer Pricing Logic ---
-                // Car types: sedan, ertiga, innova crysta
-                String car = carType != null ? carType.toLowerCase() : "sedan";
-                double basePrice = 0;
-                double extraHourRate = 0;
-                double extraKmRate = 0;
-                int maxHours = 0;
-                int maxKm = 0;
-                double total = 0;
-                double gst = 0;
-                double da = 0;
-                double toll = 0;
-                double parking = 0;
-                double subtotal = 0;
-                String packageNameUsed = packageName != null ? packageName.trim().toLowerCase() : "";
-                int usedKm = calculatedDistance;
-                int usedHours = 0;
-                try {
-                    LocalTime start = LocalTime.parse(time);
-                    LocalTime end = LocalTime.parse(Endtime);
-                    usedHours = (int) ChronoUnit.HOURS.between(start, end);
-                    if (usedHours <= 0) usedHours = 8; // default for 8hr/80km
-                } catch (Exception ex) {
-                    usedHours = 8;
-                }
-                // 1. Distance slabs (point-to-point, not packages)
-                if (packageNameUsed.isEmpty() || packageNameUsed.contains("transfer") || packageNameUsed.contains("slab")) {
-                    // Distance slab pricing
-                    if (car.equals("sedan")) {
-                        if (usedKm <= 10) basePrice = 450;
-                        else if (usedKm <= 20) basePrice = 600;
-                        else if (usedKm <= 30) basePrice = 800;
-                        else if (usedKm <= 40) basePrice = 950;
-                        else basePrice = 950 + (usedKm - 40) * 12; // extra km
-                        extraHourRate = 150;
-                        extraKmRate = 12;
-                    } else if (car.equals("ertiga")) {
-                        if (usedKm <= 10) basePrice = 650;
-                        else if (usedKm <= 20) basePrice = 850;
-                        else if (usedKm <= 30) basePrice = 1250;
-                        else if (usedKm <= 40) basePrice = 1600;
-                        else basePrice = 1600 + (usedKm - 40) * 16; // extra km
-                        extraHourRate = 200;
-                        extraKmRate = 16;
-                    } else if (car.equals("innova crysta")) {
-                        if (usedKm <= 40) basePrice = 2200;
-                        else basePrice = 2200 + (usedKm - 40) * 22; // extra km
-                        extraHourRate = 400;
-                        extraKmRate = 22;
-                    } else {
-                        basePrice = 600; // fallback
-                        extraHourRate = 150;
-                        extraKmRate = 12;
-                    }
-                    subtotal = basePrice;
-                    gst = subtotal * 0.05;
-                    total = subtotal + gst;
-                    // No DA in transfer/regular slabs
-                    // User can add parking/toll if needed
-                }
-                // 2. 8hr/80km package
-                else if (packageNameUsed.contains("8hr") || packageNameUsed.contains("80km")) {
-                    maxHours = 8;
-                    maxKm = 80;
-                    if (car.equals("sedan")) {
-                        basePrice = 2200;
-                        extraHourRate = 150;
-                        extraKmRate = 12;
-                    } else if (car.equals("ertiga")) {
-                        basePrice = 2200;
-                        extraHourRate = 200;
-                        extraKmRate = 16;
-                    } else if (car.equals("innova crysta")) {
-                        basePrice = 2200;
-                        extraHourRate = 400;
-                        extraKmRate = 22;
-                    } else {
-                        basePrice = 2200;
-                        extraHourRate = 150;
-                        extraKmRate = 12;
-                    }
-                    int extraHours = Math.max(0, usedHours - maxHours);
-                    int extraKms = Math.max(0, usedKm - maxKm);
-                    double extraHourCharges = extraHours * extraHourRate;
-                    double extraKmCharges = extraKms * extraKmRate;
-                    // For demo, get parking/toll from request or set 0
-                    try { parking = Double.parseDouble(response.getOrDefault("parking", "0").toString()); } catch (Exception e) { parking = 0; }
-                    try { toll = Double.parseDouble(response.getOrDefault("toll", "0").toString()); } catch (Exception e) { toll = 0; }
-                    subtotal = basePrice + extraHourCharges + extraKmCharges + parking + toll;
-                    gst = subtotal * 0.05;
-                    total = subtotal + gst;
-                }
-                // 3. Full Day/300km package
-                else if (packageNameUsed.contains("full day") || packageNameUsed.contains("300km")) {
-                    maxHours = 24;
-                    maxKm = 300;
-                    if (car.equals("sedan")) {
-                        basePrice = 12 * 300;
-                        extraHourRate = 150;
-                        extraKmRate = 12;
-                    } else if (car.equals("ertiga")) {
-                        basePrice = 16 * 300;
-                        extraHourRate = 200;
-                        extraKmRate = 16;
-                    } else if (car.equals("innova crysta")) {
-                        basePrice = 22 * 300;
-                        extraHourRate = 400;
-                        extraKmRate = 22;
-                    } else {
-                        basePrice = 12 * 300;
-                        extraHourRate = 150;
-                        extraKmRate = 12;
-                    }
-                    int extraHours = Math.max(0, usedHours - maxHours);
-                    int extraKms = Math.max(0, usedKm - maxKm);
-                    double extraHourCharges = extraHours * extraHourRate;
-                    double extraKmCharges = extraKms * extraKmRate;
-                    // DA, parking, toll extra in full day
-                    da = 300;   
-                    // For demo, get parking/toll from request or set 0
-                    try { parking = Double.parseDouble(response.getOrDefault("parking", "0").toString()); } catch (Exception e) { parking = 0; }
-                    try { toll = Double.parseDouble(response.getOrDefault("toll", "0").toString()); } catch (Exception e) { toll = 0; }
-                    subtotal = basePrice + extraHourCharges + extraKmCharges + da + parking + toll;
-                    gst = subtotal * 0.05;
-                    total = subtotal + gst;
-                }
-                // Build response
-                Map<String, Object> transferDetails = new HashMap<>();
-                transferDetails.put("package", packageNameUsed.isEmpty() ? "slab" : packageNameUsed);
-                transferDetails.put("basePrice", basePrice);
-                transferDetails.put("usedKm", usedKm);
-                transferDetails.put("usedHours", usedHours);
-                transferDetails.put("extraHourRate", extraHourRate);
-                transferDetails.put("extraKmRate", extraKmRate);
-                transferDetails.put("subtotal", subtotal);
-                transferDetails.put("gst", gst);
-                transferDetails.put("total", total);
-                transferDetails.put("carType", carType);
-                transferDetails.put("da", da);
-                transferDetails.put("parking", parking);
-                transferDetails.put("toll", toll);
-                response.put("transferDetails", transferDetails);
-                response.put("tripType", tripType);
-                response.put("pickupLocation", pickupLocation);
-                response.put("dropLocation", dropLocation);
-                response.put("date", date);
-                response.put("returndate", returndate);
-                response.put("time", time);
-                response.put("Endtime", Endtime);
-                response.put("distance", calculatedDistance);
-                response.put("cabinfo", cabser.getAll());
-                response.put("days", 1);
-                return ResponseEntity.ok(response);
-            }
+    //         if ("transfer".equalsIgnoreCase(tripType)) {
+    //             // --- Transfer Pricing Logic ---
+    //             // Car types: sedan, ertiga, innova crysta
+    //             String car = carType != null ? carType.toLowerCase() : "sedan";
+    //             double basePrice = 0;
+    //             double extraHourRate = 0;
+    //             double extraKmRate = 0;
+    //             int maxHours = 0;
+    //             int maxKm = 0;
+    //             double total = 0;
+    //             double gst = 0;
+    //             double da = 0;
+    //             double toll = 0;
+    //             double parking = 0;
+    //             double subtotal = 0;
+    //             String packageNameUsed = packageName != null ? packageName.trim().toLowerCase() : "";
+    //             int usedKm = calculatedDistance;
+    //             int usedHours = 0;
+    //             try {
+    //                 LocalTime start = LocalTime.parse(time);
+    //                 LocalTime end = LocalTime.parse(Endtime);
+    //                 usedHours = (int) ChronoUnit.HOURS.between(start, end);
+    //                 if (usedHours <= 0) usedHours = 8; // default for 8hr/80km
+    //             } catch (Exception ex) {
+    //                 usedHours = 8;
+    //             }
+    //             // 1. Distance slabs (point-to-point, not packages)
+    //             if (packageNameUsed.isEmpty() || packageNameUsed.contains("transfer") || packageNameUsed.contains("slab")) {
+    //                 // Distance slab pricing
+    //                 if (car.equals("sedan")) {
+    //                     if (usedKm <= 10) basePrice = 450;
+    //                     else if (usedKm <= 20) basePrice = 600;
+    //                     else if (usedKm <= 30) basePrice = 800;
+    //                     else if (usedKm <= 40) basePrice = 950;
+    //                     else basePrice = 950 + (usedKm - 40) * 12; // extra km
+    //                     extraHourRate = 150;
+    //                     extraKmRate = 12;
+    //                 } else if (car.equals("ertiga")) {
+    //                     if (usedKm <= 10) basePrice = 650;
+    //                     else if (usedKm <= 20) basePrice = 850;
+    //                     else if (usedKm <= 30) basePrice = 1250;
+    //                     else if (usedKm <= 40) basePrice = 1600;
+    //                     else basePrice = 1600 + (usedKm - 40) * 16; // extra km
+    //                     extraHourRate = 200;
+    //                     extraKmRate = 16;
+    //                 } else if (car.equals("innova crysta")) {
+    //                     if (usedKm <= 40) basePrice = 2200;
+    //                     else basePrice = 2200 + (usedKm - 40) * 22; // extra km
+    //                     extraHourRate = 400;
+    //                     extraKmRate = 22;
+    //                 } else {
+    //                     basePrice = 600; // fallback
+    //                     extraHourRate = 150;
+    //                     extraKmRate = 12;
+    //                 }
+    //                 subtotal = basePrice;
+    //                 gst = subtotal * 0.05;
+    //                 total = subtotal + gst;
+    //                 // No DA in transfer/regular slabs
+    //                 // User can add parking/toll if needed
+    //             }
+    //             // 2. 8hr/80km package
+    //             else if (packageNameUsed.contains("8hr") || packageNameUsed.contains("80km")) {
+    //                 maxHours = 8;
+    //                 maxKm = 80;
+    //                 if (car.equals("sedan")) {
+    //                     basePrice = 2200;
+    //                     extraHourRate = 150;
+    //                     extraKmRate = 12;
+    //                 } else if (car.equals("ertiga")) {
+    //                     basePrice = 2200;
+    //                     extraHourRate = 200;
+    //                     extraKmRate = 16;
+    //                 } else if (car.equals("innova crysta")) {
+    //                     basePrice = 2200;
+    //                     extraHourRate = 400;
+    //                     extraKmRate = 22;
+    //                 } else {
+    //                     basePrice = 2200;
+    //                     extraHourRate = 150;
+    //                     extraKmRate = 12;
+    //                 }
+    //                 int extraHours = Math.max(0, usedHours - maxHours);
+    //                 int extraKms = Math.max(0, usedKm - maxKm);
+    //                 double extraHourCharges = extraHours * extraHourRate;
+    //                 double extraKmCharges = extraKms * extraKmRate;
+    //                 // For demo, get parking/toll from request or set 0
+    //                 try { parking = Double.parseDouble(response.getOrDefault("parking", "0").toString()); } catch (Exception e) { parking = 0; }
+    //                 try { toll = Double.parseDouble(response.getOrDefault("toll", "0").toString()); } catch (Exception e) { toll = 0; }
+    //                 subtotal = basePrice + extraHourCharges + extraKmCharges + parking + toll;
+    //                 gst = subtotal * 0.05;
+    //                 total = subtotal + gst;
+    //             }
+    //             // 3. Full Day/300km package
+    //             else if (packageNameUsed.contains("full day") || packageNameUsed.contains("300km")) {
+    //                 maxHours = 24;
+    //                 maxKm = 300;
+    //                 if (car.equals("sedan")) {
+    //                     basePrice = 12 * 300;
+    //                     extraHourRate = 150;
+    //                     extraKmRate = 12;
+    //                 } else if (car.equals("ertiga")) {
+    //                     basePrice = 16 * 300;
+    //                     extraHourRate = 200;
+    //                     extraKmRate = 16;
+    //                 } else if (car.equals("innova crysta")) {
+    //                     basePrice = 22 * 300;
+    //                     extraHourRate = 400;
+    //                     extraKmRate = 22;
+    //                 } else {
+    //                     basePrice = 12 * 300;
+    //                     extraHourRate = 150;
+    //                     extraKmRate = 12;
+    //                 }
+    //                 int extraHours = Math.max(0, usedHours - maxHours);
+    //                 int extraKms = Math.max(0, usedKm - maxKm);
+    //                 double extraHourCharges = extraHours * extraHourRate;
+    //                 double extraKmCharges = extraKms * extraKmRate;
+    //                 // DA, parking, toll extra in full day
+    //                 da = 300;   
+    //                 // For demo, get parking/toll from request or set 0
+    //                 try { parking = Double.parseDouble(response.getOrDefault("parking", "0").toString()); } catch (Exception e) { parking = 0; }
+    //                 try { toll = Double.parseDouble(response.getOrDefault("toll", "0").toString()); } catch (Exception e) { toll = 0; }
+    //                 subtotal = basePrice + extraHourCharges + extraKmCharges + da + parking + toll;
+    //                 gst = subtotal * 0.05;
+    //                 total = subtotal + gst;
+    //             }
+    //             // Build response
+    //             Map<String, Object> transferDetails = new HashMap<>();
+    //             transferDetails.put("package", packageNameUsed.isEmpty() ? "slab" : packageNameUsed);
+    //             transferDetails.put("basePrice", basePrice);
+    //             transferDetails.put("usedKm", usedKm);
+    //             transferDetails.put("usedHours", usedHours);
+    //             transferDetails.put("extraHourRate", extraHourRate);
+    //             transferDetails.put("extraKmRate", extraKmRate);
+    //             transferDetails.put("subtotal", subtotal);
+    //             transferDetails.put("gst", gst);
+    //             transferDetails.put("total", total);
+    //             transferDetails.put("carType", carType);
+    //             transferDetails.put("da", da);
+    //             transferDetails.put("parking", parking);
+    //             transferDetails.put("toll", toll);
+    //             response.put("transferDetails", transferDetails);
+    //             response.put("tripType", tripType);
+    //             response.put("pickupLocation", pickupLocation);
+    //             response.put("dropLocation", dropLocation);
+    //             response.put("date", date);
+    //             response.put("returndate", returndate);
+    //             response.put("time", time);
+    //             response.put("Endtime", Endtime);
+    //             response.put("distance", calculatedDistance);
+    //             response.put("cabinfo", cabser.getAll());
+    //             response.put("days", 1);
+    //             return ResponseEntity.ok(response);
+    //         }
     
-            if ("car-rental".equalsIgnoreCase(tripType)) {
-                // --- All Car Rental Logic ---
-                // Dynamic per km rate based on carType
-                double perKmRate = 0.0;
-                switch (carType.toLowerCase()) {
-                    case "hatchback": perKmRate = 11.0; break;
-                    case "sedan": perKmRate = 12.0; break;
-                    case "sedanpremium": perKmRate = 13.0; break;
-                    case "suv": perKmRate = 14.0; break;
-                    case "suvplus": perKmRate = 26.0; break;
-                    default: perKmRate = 12.0; // fallback
-                }
-                // Rental packages calculated dynamically
-                class RentalPackage {
-                    String name;
-                    int maxHours;
-                    int maxKm;
-                    double price;
-                    RentalPackage(String name, int maxHours, int maxKm, double price) {
-                        this.name = name;
-                        this.maxHours = maxHours;
-                        this.maxKm = maxKm;
-                        this.price = price;
-                    }
-                }
-                List<RentalPackage> packages = Arrays.asList(
-                    new RentalPackage("4hr/40km", 4, 40, 40 * perKmRate),
-                    new RentalPackage("8hr/80km", 8, 80, 80 * perKmRate),
-                    new RentalPackage("Full Day/300km", 24, 300, 300 * perKmRate)
-                );
-                double extraHourRate = 150.0; // Rs/hr
+    //         if ("car-rental".equalsIgnoreCase(tripType)) {
+    //             // --- All Car Rental Logic ---
+    //             // Dynamic per km rate based on carType
+    //             double perKmRate = 0.0;
+    //             switch (carType.toLowerCase()) {
+    //                 case "hatchback": perKmRate = 11.0; break;
+    //                 case "sedan": perKmRate = 12.0; break;
+    //                 case "sedanpremium": perKmRate = 13.0; break;
+    //                 case "suv": perKmRate = 14.0; break;
+    //                 case "suvplus": perKmRate = 26.0; break;
+    //                 default: perKmRate = 12.0; // fallback
+    //             }
+    //             // Rental packages calculated dynamically
+    //             class RentalPackage {
+    //                 String name;
+    //                 int maxHours;
+    //                 int maxKm;
+    //                 double price;
+    //                 RentalPackage(String name, int maxHours, int maxKm, double price) {
+    //                     this.name = name;
+    //                     this.maxHours = maxHours;
+    //                     this.maxKm = maxKm;
+    //                     this.price = price;
+    //                 }
+    //             }
+    //             List<RentalPackage> packages = Arrays.asList(
+    //                 new RentalPackage("4hr/40km", 4, 40, 40 * perKmRate),
+    //                 new RentalPackage("8hr/80km", 8, 80, 80 * perKmRate),
+    //                 new RentalPackage("Full Day/300km", 24, 300, 300 * perKmRate)
+    //             );
+    //             double extraHourRate = 150.0; // Rs/hr
     
-                // 1. Validate city
-                if (!cityName.equalsIgnoreCase(cityName1)) {
-                    response.put("error", "City package not applicable: Pickup and drop must be in the same city for rental.");
-                    return ResponseEntity.ok(response);
-                }
+    //             // 1. Validate city
+    //             if (!cityName.equalsIgnoreCase(cityName1)) {
+    //                 response.put("error", "City package not applicable: Pickup and drop must be in the same city for rental.");
+    //                 return ResponseEntity.ok(response);
+    //             }
     
-                // 2. Get user-selected package (for demo, pick first package; in real use, get from request)
-                // Select package based on user input, default to first if not provided or invalid
-                RentalPackage selectedPkg = packages.get(0);
-                if (packageName != null && !packageName.isEmpty()) {
-                    for (RentalPackage pkg : packages) {
-                        if (pkg.name.equalsIgnoreCase(packageName.trim())) {
-                            selectedPkg = pkg;
-                            break;
-                        }
-                    }
-                }
-                // 3. Parse time (assume 'time' is in format HH:mm, and Endtime param is available)
-                int usedHours = 0;
-                try {
-                    LocalTime start = LocalTime.parse(time);
-                    LocalTime end = LocalTime.parse(Endtime);
-                    usedHours = (int) ChronoUnit.HOURS.between(start, end);
-                    if (usedHours <= 0) usedHours = selectedPkg.maxHours; // fallback
-                } catch (Exception ex) {
-                    usedHours = selectedPkg.maxHours;
-                }
-                int usedKm = calculatedDistance;
-                // 4. Calculate extra charges
-                int extraHours = Math.max(0, usedHours - selectedPkg.maxHours);
-                int extraKms = Math.max(0, usedKm - selectedPkg.maxKm);
-                double extraHourCharges = extraHours * extraHourRate;
-                double extraKmCharges = extraKms * perKmRate;
-                double basePrice = selectedPkg.price;
-                double subtotal = basePrice + extraHourCharges + extraKmCharges;
-                double gst = subtotal * 0.05;
-                double total = subtotal + gst;
-                // 5. Build detailed response
-                Map<String, Object> rentalDetails = new HashMap<>();
-                rentalDetails.put("package", selectedPkg.name);
-                rentalDetails.put("basePrice", basePrice);
-                rentalDetails.put("maxHours", selectedPkg.maxHours);
-                rentalDetails.put("maxKm", selectedPkg.maxKm);
-                rentalDetails.put("usedHours", usedHours);
-                rentalDetails.put("usedKm", usedKm);
-                rentalDetails.put("extraHours", extraHours);
-                rentalDetails.put("extraHourCharges", extraHourCharges);
-                rentalDetails.put("extraKms", extraKms);
-                rentalDetails.put("extraKmCharges", extraKmCharges);
-                rentalDetails.put("subtotal", subtotal);
-                rentalDetails.put("gst", gst);
-                rentalDetails.put("total", total);
-                rentalDetails.put("carType", carType);
-                rentalDetails.put("perKmRate", perKmRate);
-                response.put("rentalDetails", rentalDetails);
-                response.put("tripType", tripType);
-                response.put("pickupLocation", pickupLocation);
-                response.put("dropLocation", dropLocation);
-                response.put("date", date);
-                response.put("returndate", returndate);
-                response.put("time", time);
-                response.put("Endtime", Endtime);
-                response.put("distance", calculatedDistance);
-                response.put("cabinfo", cabser.getAll());
-                response.put("days", 1);
-                return ResponseEntity.ok(response);
-            }
+    //             // 2. Get user-selected package (for demo, pick first package; in real use, get from request)
+    //             // Select package based on user input, default to first if not provided or invalid
+    //             RentalPackage selectedPkg = packages.get(0);
+    //             if (packageName != null && !packageName.isEmpty()) {
+    //                 for (RentalPackage pkg : packages) {
+    //                     if (pkg.name.equalsIgnoreCase(packageName.trim())) {
+    //                         selectedPkg = pkg;
+    //                         break;
+    //                     }
+    //                 }
+    //             }
+    //             // 3. Parse time (assume 'time' is in format HH:mm, and Endtime param is available)
+    //             int usedHours = 0;
+    //             try {
+    //                 LocalTime start = LocalTime.parse(time);
+    //                 LocalTime end = LocalTime.parse(Endtime);
+    //                 usedHours = (int) ChronoUnit.HOURS.between(start, end);
+    //                 if (usedHours <= 0) usedHours = selectedPkg.maxHours; // fallback
+    //             } catch (Exception ex) {
+    //                 usedHours = selectedPkg.maxHours;
+    //             }
+    //             int usedKm = calculatedDistance;
+    //             // 4. Calculate extra charges
+    //             int extraHours = Math.max(0, usedHours - selectedPkg.maxHours);
+    //             int extraKms = Math.max(0, usedKm - selectedPkg.maxKm);
+    //             double extraHourCharges = extraHours * extraHourRate;
+    //             double extraKmCharges = extraKms * perKmRate;
+    //             double basePrice = selectedPkg.price;
+    //             double subtotal = basePrice + extraHourCharges + extraKmCharges;
+    //             double gst = subtotal * 0.05;
+    //             double total = subtotal + gst;
+    //             // 5. Build detailed response
+    //             Map<String, Object> rentalDetails = new HashMap<>();
+    //             rentalDetails.put("package", selectedPkg.name);
+    //             rentalDetails.put("basePrice", basePrice);
+    //             rentalDetails.put("maxHours", selectedPkg.maxHours);
+    //             rentalDetails.put("maxKm", selectedPkg.maxKm);
+    //             rentalDetails.put("usedHours", usedHours);
+    //             rentalDetails.put("usedKm", usedKm);
+    //             rentalDetails.put("extraHours", extraHours);
+    //             rentalDetails.put("extraHourCharges", extraHourCharges);
+    //             rentalDetails.put("extraKms", extraKms);
+    //             rentalDetails.put("extraKmCharges", extraKmCharges);
+    //             rentalDetails.put("subtotal", subtotal);
+    //             rentalDetails.put("gst", gst);
+    //             rentalDetails.put("total", total);
+    //             rentalDetails.put("carType", carType);
+    //             rentalDetails.put("perKmRate", perKmRate);
+    //             response.put("rentalDetails", rentalDetails);
+    //             response.put("tripType", tripType);
+    //             response.put("pickupLocation", pickupLocation);
+    //             response.put("dropLocation", dropLocation);
+    //             response.put("date", date);
+    //             response.put("returndate", returndate);
+    //             response.put("time", time);
+    //             response.put("Endtime", Endtime);
+    //             response.put("distance", calculatedDistance);
+    //             response.put("cabinfo", cabser.getAll());
+    //             response.put("days", 1);
+    //             return ResponseEntity.ok(response);
+    //         }
     
 
-            List<CabInfo> cabs = cabser.getAll();
+    //         List<CabInfo> cabs = cabser.getAll();
 
-            response.put("tripType", tripType);
-            response.put("pickupLocation", pickupLocation);
-            response.put("dropLocation", dropLocation);
-            response.put("date", date);
-            response.put("returndate", returndate);
-            response.put("time", time);
-            response.put("distance", calculatedDistance);
-            response.put("cabinfo", cabs);
-            response.put("price", 10);
-            response.put("tripinfo", tripinfo);
-            response.put("days", days);
+    //         response.put("tripType", tripType);
+    //         response.put("pickupLocation", pickupLocation);
+    //         response.put("dropLocation", dropLocation);
+    //         response.put("date", date);
+    //         response.put("returndate", returndate);
+    //         response.put("time", time);
+    //         response.put("distance", calculatedDistance);
+    //         response.put("cabinfo", cabs);
+    //         response.put("price", 10);
+    //         response.put("tripinfo", tripinfo);
+    //         response.put("days", days);
 
-            return ResponseEntity.ok(response);
+    //         return ResponseEntity.ok(response);
 
-        } catch (Exception e) {
-            response.put("error", "Failed to process request: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    //     } catch (Exception e) {
+    //         response.put("error", "Failed to process request: " + e.getMessage());
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    //     }
+    // }
+
+// for short route
+    private int getShortRouteFare(int distance, String cabType) {
+    int rate = 0;
+
+    if (distance <= 50) {
+        switch (cabType.toLowerCase()) {
+            case "hatchback": rate = 15; break;
+            case "sedan": rate = 16; break;
+            case "sedanpremium": rate = 18; break;
+            case "suv": rate = 20; break;
+            case "suvplus": rate = 22; break;
+            case "ertiga": rate = 19; break;
+        }
+    } else if (distance <= 100) {
+        switch (cabType.toLowerCase()) {
+            case "hatchback": rate = 14; break;
+            case "sedan": rate = 15; break;
+            case "sedanpremium": rate = 17; break;
+            case "suv": rate = 19; break;
+            case "suvplus": rate = 21; break;
+            case "ertiga": rate = 18; break;
+        }
+    } else if (distance <= 150) {
+        switch (cabType.toLowerCase()) {
+            case "hatchback": rate = 13; break;
+            case "sedan": rate = 14; break;
+            case "sedanpremium": rate = 16; break;
+            case "suv": rate = 18; break;
+            case "suvplus": rate = 20; break;
+            case "ertiga": rate = 17; break;
         }
     }
+
+    return rate * distance;
+}
+
+
+private int calculateDynamicFare(int distance, String cabType) {
+    double baseRate = 0, maxRate = 0;
+
+    switch (cabType.toLowerCase()) {
+        case "hatchback": baseRate = 18; maxRate = 20; break;
+        case "sedan": baseRate = 20; maxRate = 22; break;
+        case "sedanpremium": baseRate = 22; maxRate = 24; break;
+        case "suv": baseRate = 24; maxRate = 26; break;
+        case "suvplus": baseRate = 26; maxRate = 28; break;
+        case "ertiga": baseRate = 28; maxRate = 30; break;
+    }
+
+    double totalFare = 0.0;
+
+    for (int i = 1; i <= distance; i++) {
+        double ratePerKm = baseRate + ((maxRate - baseRate) / 5.0) * (i - 1);
+        totalFare += ratePerKm;
+    }
+
+    return (int) Math.round(totalFare);
+}
+
+
+
+   @PostMapping("/cab1")
+public ResponseEntity<Map<String, Object>> processForm(
+        @RequestParam("tripType") String tripType,
+        @RequestParam("pickupLocation") String pickupLocation,
+        @RequestParam("dropLocation") String dropLocation,
+        @RequestParam("date") String date,
+        @RequestParam(value = "Returndate", required = false) String returndate,
+        @RequestParam("time") String time,
+        @RequestParam(value = "distance", required = false) String distance
+        // @RequestParam(value="package",required = false) String package
+) {
+    Map<String, Object> response = new HashMap<>();
+
+    try {
+        int calculatedDistance = 0;
+
+        if (distance == null || distance.isEmpty() || distance.equals("0") || distance.equals("-1")) {
+            calculatedDistance = getDistanceFromGoogleMaps(pickupLocation, dropLocation);
+        } else {
+            String numericString = distance.replaceAll("[^0-9.]", "");
+            calculatedDistance = (int) Double.parseDouble(numericString);
+        }
+
+        List<Trip> tripinfo = new ArrayList<>();
+        int days = 0;
+
+        String cityName = extractCityName(userService.getLongNameByCity(dropLocation, apiKey), dropLocation);
+        String cityName1 = extractCityName(userService.getLongNameByCity(pickupLocation, apiKey), pickupLocation);
+
+        cityName = cityName.equals("Bengaluru") ? "Bangalore" : cityName;
+        cityName1 = cityName1.equals("Bengaluru") ? "Bangalore" : cityName1;
+
+        if ("oneWay".equalsIgnoreCase(tripType)) {
+            List<onewayTrip> oneWayTrips = tripSer.getoneWayTripData(pickupLocation, dropLocation);
+
+            if (oneWayTrips.isEmpty()) {
+                oneWayTrips.add(createDefaultOneWayTrip());
+            }
+
+            for (onewayTrip o : oneWayTrips) {
+                if (calculatedDistance <= 150) {
+                 o.setHatchback(calculateDynamicFare(calculatedDistance, "hatchback"));
+        o.setSedan(calculateDynamicFare(calculatedDistance, "sedan"));
+        o.setSedanpremium(calculateDynamicFare(calculatedDistance, "sedanpremium"));
+        o.setSuv(calculateDynamicFare(calculatedDistance, "suv"));
+        o.setSuvplus(calculateDynamicFare(calculatedDistance, "suvplus"));
+        o.setErtiga(calculateDynamicFare(calculatedDistance, "ertiga"));
+                } else {
+                    o.setHatchback(o.getHatchback() * calculatedDistance);
+                    o.setSedan(o.getSedan() * calculatedDistance);
+                    o.setSedanpremium(o.getSedanpremium() * calculatedDistance);
+                    o.setSuv(o.getSuv() * calculatedDistance);
+                    o.setSuvplus(o.getSuvplus() * calculatedDistance);
+                    o.setErtiga(o.getErtiga() * calculatedDistance);
+                }
+
+                o.setDistance((double) calculatedDistance);
+                tripinfo.add(o);
+            }
+
+        } else if ("roundTrip".equalsIgnoreCase(tripType)) {
+            LocalDate localDate1 = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
+            LocalDate localDate2 = LocalDate.parse(returndate, DateTimeFormatter.ISO_DATE);
+            days = (int) ChronoUnit.DAYS.between(localDate1, localDate2) + 1;
+
+            if (distance == null || distance.isEmpty() || distance.equals("0") || distance.equals("-1")) {
+                calculatedDistance = calculatedDistance * days;
+            }
+
+            int perKm = 300;
+            int baseKm = perKm * days;
+
+            List<roundTrip> roundTrips = tripSer.getRoundWayTripData(cityName, cityName1);
+
+            if (roundTrips.isEmpty()) {
+                roundTrips.add(createDefaultRoundTrip());
+            }
+
+            for (roundTrip t : roundTrips) {
+                int hatchbackPrice;
+                if (calculatedDistance <= baseKm) {
+                    hatchbackPrice = perKm * t.getHatchback();
+                } else {
+                    hatchbackPrice = (perKm * t.getHatchback()) + (calculatedDistance - baseKm) * t.getHatchback();
+                }
+
+                int sedanPrice;
+                if (calculatedDistance <= baseKm) {
+                    sedanPrice = perKm * t.getSedan();
+                } else {
+                    sedanPrice = (perKm * t.getSedan()) + (calculatedDistance - baseKm) * t.getSedan();
+                }
+
+                int sedanPremiumPrice;
+                if (calculatedDistance <= baseKm) {
+                    sedanPremiumPrice = perKm * t.getSedanpremium();
+                } else {
+                    sedanPremiumPrice = (perKm * t.getSedanpremium()) + (calculatedDistance - baseKm) * t.getSedanpremium();
+                }
+
+                int suvPrice;
+                if (calculatedDistance <= baseKm) {
+                    suvPrice = perKm * t.getSuv();
+                } else {
+                    suvPrice = (perKm * t.getSuv()) + (calculatedDistance - baseKm) * t.getSuv();
+                }
+
+                int suvPlusPrice;
+                if (calculatedDistance <= baseKm) {
+                    suvPlusPrice = perKm * t.getSuvplus();
+                } else {
+                    suvPlusPrice = (perKm * t.getSuvplus()) + (calculatedDistance - baseKm) * t.getSuvplus();
+                }
+
+                int ertigaPrice;
+                if (calculatedDistance <= baseKm) {
+                    ertigaPrice = perKm * t.getErtiga();
+                } else {
+                    ertigaPrice = (perKm * t.getErtiga()) + (calculatedDistance - baseKm) * t.getErtiga();
+                }
+
+                t.setHatchback(hatchbackPrice);
+                t.setSedan(sedanPrice);
+                t.setSedanpremium(sedanPremiumPrice);
+                t.setSuv(suvPrice);
+                t.setSuvplus(suvPlusPrice);
+                t.setErtiga(ertigaPrice);
+
+                tripinfo.add(t);
+            }
+        }
+
+        else if("transfer".equalsIgnoreCase(tripType)){
+
+        }
+
+        List<CabInfo> cabs = cabser.getAll();
+
+        response.put("tripType", tripType);
+        response.put("pickupLocation", pickupLocation);
+        response.put("dropLocation", dropLocation);
+        response.put("date", date);
+        response.put("returndate", returndate);
+        response.put("time", time);
+        response.put("distance", calculatedDistance);
+        response.put("cabinfo", cabs);
+        response.put("tripinfo", tripinfo);
+        response.put("days", days);
+
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        response.put("error", "Failed to process request: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+}
+
+
+
+
+
 
     private int getDistanceFromGoogleMaps(String origin, String destination) throws Exception {
         String urlString = String.format("%s?origins=%s&destinations=%s&key=%s",
