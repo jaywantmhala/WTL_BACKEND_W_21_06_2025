@@ -722,20 +722,9 @@ public class BookingController {
 			  
 			  
 			  roundTrip defaultTrip = new roundTrip(
-						null, // Set default value for id (you might want to adjust this)
-						"",   // Set default value for sourceState
-						"",   // Set default value for sourceCity
-						"",   // Set default value for destinationState
-						"",   // Set default value for destinationCity
-						14,    // Set default value for hatchback
-						16,    // Set default value for sedan
-						20,    // Set default value for sedanpremium
-						27,    // Set default value for suv
-						26, 
-						19,   // Set default value for suvplus
-						"",
-						null,
-						null   // Set default value for status
+				null, "", "", "", "",
+                12, 15, 18, 21, 26,
+                "", null, null, 0,15
 					);
 					
 			  

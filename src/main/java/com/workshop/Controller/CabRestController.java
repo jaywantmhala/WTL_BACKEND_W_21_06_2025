@@ -781,54 +781,56 @@ public ResponseEntity<Map<String, Object>> processForm(
 
             for (roundTrip t : roundTrips) {
                 int hatchbackPrice;
-                if (calculatedDistance <= baseKm) {
-                    hatchbackPrice = perKm * t.getHatchback();
+                if (calculatedDistance > baseKm) {
+                    // If calculated distance is greater than base km, charge calculated distance * rate
+                    hatchbackPrice = calculatedDistance * t.getHatchback();
                 } else {
-                    hatchbackPrice = (perKm * t.getHatchback()) + (calculatedDistance - baseKm) * t.getHatchback();
+                    // If calculated distance is smaller than base km, charge base km * rate
+                    hatchbackPrice = baseKm * t.getHatchback();
                 }
-
+            
                 int sedanPrice;
-                if (calculatedDistance <= baseKm) {
-                    sedanPrice = perKm * t.getSedan();
+                if (calculatedDistance > baseKm) {
+                    sedanPrice = calculatedDistance * t.getSedan();
                 } else {
-                    sedanPrice = (perKm * t.getSedan()) + (calculatedDistance - baseKm) * t.getSedan();
+                    sedanPrice = baseKm * t.getSedan();
                 }
-
+            
                 int sedanPremiumPrice;
-                if (calculatedDistance <= baseKm) {
-                    sedanPremiumPrice = perKm * t.getSedanpremium();
+                if (calculatedDistance > baseKm) {
+                    sedanPremiumPrice = calculatedDistance * t.getSedanpremium();
                 } else {
-                    sedanPremiumPrice = (perKm * t.getSedanpremium()) + (calculatedDistance - baseKm) * t.getSedanpremium();
+                    sedanPremiumPrice = baseKm * t.getSedanpremium();
                 }
-
+            
                 int suvPrice;
-                if (calculatedDistance <= baseKm) {
-                    suvPrice = perKm * t.getSuv();
+                if (calculatedDistance > baseKm) {
+                    suvPrice = calculatedDistance * t.getSuv();
                 } else {
-                    suvPrice = (perKm * t.getSuv()) + (calculatedDistance - baseKm) * t.getSuv();
+                    suvPrice = baseKm * t.getSuv();
                 }
-
+            
                 int suvPlusPrice;
-                if (calculatedDistance <= baseKm) {
-                    suvPlusPrice = perKm * t.getSuvplus();
+                if (calculatedDistance > baseKm) {
+                    suvPlusPrice = calculatedDistance * t.getSuvplus();
                 } else {
-                    suvPlusPrice = (perKm * t.getSuvplus()) + (calculatedDistance - baseKm) * t.getSuvplus();
+                    suvPlusPrice = baseKm * t.getSuvplus();
                 }
-
+            
                 int ertigaPrice;
-                if (calculatedDistance <= baseKm) {
-                    ertigaPrice = perKm * t.getErtiga();
+                if (calculatedDistance > baseKm) {
+                    ertigaPrice = calculatedDistance * t.getErtiga();
                 } else {
-                    ertigaPrice = (perKm * t.getErtiga()) + (calculatedDistance - baseKm) * t.getErtiga();
+                    ertigaPrice = baseKm * t.getErtiga();
                 }
-
+            
                 t.setHatchback(hatchbackPrice);
                 t.setSedan(sedanPrice);
                 t.setSedanpremium(sedanPremiumPrice);
                 t.setSuv(suvPrice);
                 t.setSuvplus(suvPlusPrice);
                 t.setErtiga(ertigaPrice);
-
+            
                 tripinfo.add(t);
             }
         }
@@ -924,9 +926,9 @@ public ResponseEntity<Map<String, Object>> processForm(
 
     private roundTrip createDefaultRoundTrip() {
         return new roundTrip(
-                null, "", "", "", "",
-                11, 12, 13, 14, 26,15,
-                "", null, null
+            null, "", "", "", "",
+            12, 15, 18, 21, 26,
+            "", null, null, 0,15
         );
     }
 
