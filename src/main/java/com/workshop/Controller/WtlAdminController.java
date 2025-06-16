@@ -560,6 +560,8 @@ public String createBooking(
         @RequestParam(required = false) String email,
         @RequestParam(required = false) String phone,
         @RequestParam(required = false) String userPickup,
+        @RequestParam(required = false) String comanyName,
+
         @RequestParam(required = false) String userDrop,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @RequestParam(required = false) String userTripType,
@@ -601,6 +603,8 @@ public String createBooking(
     booking.setTripType(tripType);
     booking.setStartDate(startDate);
     booking.setReturnDate(returnDate);
+    booking.setCompanyName(comanyName);
+    booking.setStatus(0);
     booking.setTime(time);
     booking.setDistance(distance);
     booking.setUserId(userId);

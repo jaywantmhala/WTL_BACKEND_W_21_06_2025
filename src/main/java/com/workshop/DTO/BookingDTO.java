@@ -17,6 +17,7 @@ public class BookingDTO {
     private String distance;
     private String userId;
     private String bookingId;
+    
     private String name;
     private String email;
     private String phone;
@@ -43,6 +44,7 @@ public class BookingDTO {
     private String bookingType;
     private String description;
     private VendorDTO vendor;
+    private int collection;
     private VendorCabsDTO vendorCab;
     private VendorDriversDTO vendorDriver;
     private CabAdminDTO cabAdmin;
@@ -80,6 +82,7 @@ public class BookingDTO {
         this.offerPartial = booking.getOfferPartial();
         this.offerAmount = booking.getOfferAmount();
         this.txnId = booking.getTxnId();
+        this.collection=booking.getCollection();
         this.payment = booking.getPayment();
         this.dateEnd = booking.getDateEnd();
         this.timeEnd = booking.getTimeEnd();
@@ -430,6 +433,16 @@ public class BookingDTO {
     public void setDriverAdmin(DriverAdminDTO driverAdmin) {
         this.driverAdmin = driverAdmin;
     }
+
+    public int getCollection() {
+        return collection;
+    }
+
+    public void setCollection(int collection) {
+        this.collection = collection;
+    }
+
+    
 
     
     

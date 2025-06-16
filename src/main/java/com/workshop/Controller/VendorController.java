@@ -211,7 +211,7 @@ public class VendorController {
     public ResponseEntity<?> vendorLogin(@RequestBody VendorLoginRequest loginRequest) {
         try {
             // Call vendorService to validate and retrieve vendor login response
-            VendorLoginResponse vendorLoginResponse = service.vendorLogin(loginRequest.getEmail(),
+            VendorLoginResponse vendorLoginResponse = service.vendorLogin(loginRequest.getEmail() ,
                     loginRequest.getPassword());
             return ResponseEntity.ok(vendorLoginResponse); // Return the response as JSON
         } catch (Exception e) {

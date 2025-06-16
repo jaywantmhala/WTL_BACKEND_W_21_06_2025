@@ -8,11 +8,14 @@ public class VendorLoginRequest {
 	
 	private String password;
 
-	public VendorLoginRequest(Long vendorId, String email, String password) {
+	private String contactNo;
+
+	public VendorLoginRequest(Long vendorId, String email, String password, String contactNo) {
 		super();
 		this.vendorId = vendorId;
 		this.email = email;
 		this.password = password;
+		this.contactNo=contactNo;
 	}
 
 	public VendorLoginRequest() {
@@ -43,6 +46,16 @@ public class VendorLoginRequest {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public String getContactNo() {
+		return contactNo;
+	}
+
+	public void setContactNo(String contactNo) {
+		this.contactNo = contactNo;
+	}
+
+	
 	
 	
 }

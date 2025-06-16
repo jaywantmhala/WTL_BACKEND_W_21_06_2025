@@ -677,26 +677,250 @@ public class CabRestController {
 }
 
 
-private int calculateDynamicFare(int distance, String cabType) {
-    double baseRate = 0, maxRate = 0;
+// private int calculateAffordableFare(int distance, String cabType) {
+//     double baseRate = 0, maxRate = 0;
+    
+//     switch (cabType.toLowerCase()) {
+//         case "hatchback": baseRate = 8; maxRate = 10; break;
+//         case "sedan": baseRate = 10; maxRate = 12; break;
+//         case "sedanpremium": baseRate = 12; maxRate = 14; break;
+//         case "suv": baseRate = 14; maxRate = 16; break;
+//         case "suvplus": baseRate = 16; maxRate = 18; break;
+//         case "ertiga": baseRate = 18; maxRate = 20; break;
+//         default: baseRate = 8; maxRate = 10; break; 
+//     }
+    
+//     double ratePerKm = baseRate + ((maxRate - baseRate) / 5.0);
+//     double baseFare = ratePerKm * distance;
+    
+//     double finalFare = baseFare;
+    
+//     if (distance <= 5) {
+//         double multiplier = 1.4 - (distance * 0.20); 
+//         finalFare = baseFare * multiplier;
+//     } else if (distance <= 15) {
+//         finalFare = baseFare;
+//     } else if (distance <= 30) {
+//         double multiplier = 1.0 - ((distance - 15) * 0.07); 
+//         finalFare = baseFare * multiplier;
+//     } else {
+//         double multiplier = 0.85 - ((distance - 30) * 0.05);
+//         multiplier = Math.max(multiplier, 0.75); 
+//         finalFare = baseFare * multiplier;
+//     }
+    
+//     finalFare = Math.min(finalFare, 2700);
+    
+//     return (int) Math.round(finalFare);
+// }
 
-    switch (cabType.toLowerCase()) {
-        case "hatchback": baseRate = 18; maxRate = 20; break;
-        case "sedan": baseRate = 20; maxRate = 22; break;
-        case "sedanpremium": baseRate = 22; maxRate = 24; break;
-        case "suv": baseRate = 24; maxRate = 26; break;
-        case "suvplus": baseRate = 26; maxRate = 28; break;
-        case "ertiga": baseRate = 28; maxRate = 30; break;
+
+// Add this helper method outside of calculateAffordableFare method
+private int getAdditionalRate(String type) {
+    switch (type.toLowerCase()) {
+        case "hatchback": return 15;
+        case "sedan": return 18;
+        case "ertiga": return 22;
+        case "suv": return 25;
+        case "sedanpremium": return 20;
+        case "suvplus": return 27;
+        default: return 15;
     }
+}
 
-    double totalFare = 0.0;
-
-    for (int i = 1; i <= distance; i++) {
-        double ratePerKm = baseRate + ((maxRate - baseRate) / 5.0) * (i - 1);
-        totalFare += ratePerKm;
+// Updated calculateAffordableFare method
+private int calculateAffordableFare(int distance, String cabType) {
+    cabType = cabType.toLowerCase();
+    
+    System.out.println(String.format("🚗 Calculating fare for %s, distance: %d km", cabType.toUpperCase(), distance));
+    
+    int finalFare = 0;
+    
+    if (distance >= 1 && distance <= 10) {
+        // Distance 1-10 km: Fixed prices
+        switch (cabType) {
+            case "hatchback": finalFare = 460; break;
+            case "sedan": finalFare = 450; break;
+            case "ertiga": finalFare = 500; break;
+            case "suv": finalFare = 2500; break;
+            case "sedanpremium": finalFare = 480; break;
+            case "suvplus": finalFare = 2600; break;
+            default: finalFare = 460; break;
+        }
+        System.out.println(String.format("   Range 1-10km: Fixed price ₹%d", finalFare));
+        
+    } else if (distance >= 11 && distance <= 20) {
+        // Distance 11-20 km: Fixed prices
+        switch (cabType) {
+            case "hatchback": finalFare = 650; break;
+            case "sedan": finalFare = 700; break;
+            case "ertiga": finalFare = 800; break;
+            case "suv": finalFare = 2500; break;
+            case "sedanpremium": finalFare = 750; break;
+            case "suvplus": finalFare = 2600; break;
+            default: finalFare = 650; break;
+        }
+        System.out.println(String.format("   Range 11-20km: Fixed price ₹%d", finalFare));
+        
+    } else if (distance >= 21 && distance <= 30) {
+        // Distance 21-30 km: Fixed prices
+        switch (cabType) {
+            case "hatchback": finalFare = 800; break;
+            case "sedan": finalFare = 900; break;
+            case "ertiga": finalFare = 1100; break;
+            case "suv": finalFare = 2500; break;
+            case "sedanpremium": finalFare = 1000; break;
+            case "suvplus": finalFare = 2700; break;
+            default: finalFare = 800; break;
+        }
+        System.out.println(String.format("   Range 21-30km: Fixed price ₹%d", finalFare));
+        
+    } else if (distance >= 31 && distance <= 40) {
+        // Distance 31-40 km: Fixed prices
+        switch (cabType) {
+            case "hatchback": finalFare = 1000; break;
+            case "sedan": finalFare = 1200; break;
+            case "ertiga": finalFare = 1400; break;
+            case "suv": finalFare = 2500; break;
+            case "sedanpremium": finalFare = 1300; break;
+            case "suvplus": finalFare = 2800; break;
+            default: finalFare = 1000; break;
+        }
+        System.out.println(String.format("   Range 31-40km: Fixed price ₹%d", finalFare));
+        
+    } else if (distance >= 41 && distance <= 50) {
+        // Distance 41-50 km: Base price + additional rate * 10
+        int basePriceAt40km = 0;
+        switch (cabType) {
+            case "hatchback": basePriceAt40km = 1000; break;
+            case "sedan": basePriceAt40km = 1200; break;
+            case "ertiga": basePriceAt40km = 1400; break;
+            case "suv": basePriceAt40km = 2500; break;
+            case "sedanpremium": basePriceAt40km = 1300; break;
+            case "suvplus": basePriceAt40km = 2800; break;
+            default: basePriceAt40km = 1000; break;
+        }
+        
+        int additionalRate = getAdditionalRate(cabType);
+        int extraKm = 10;
+        finalFare = basePriceAt40km + (additionalRate * extraKm);
+        
+        System.out.println(String.format("   Range 41-50km: Base ₹%d + (₹%d × %d km) = ₹%d", 
+            basePriceAt40km, additionalRate, extraKm, finalFare));
+        
+    } else if (distance >= 51 && distance <= 80) {
+        // Distance 51-80 km: Base price + (distance-50) * rate
+        int basePriceAt50km = 0;
+        switch (cabType) {
+            case "hatchback": basePriceAt50km = 1000 + (getAdditionalRate(cabType) * 10); break;
+            case "sedan": basePriceAt50km = 1200 + (getAdditionalRate(cabType) * 10); break;
+            case "ertiga": basePriceAt50km = 1400 + (getAdditionalRate(cabType) * 10); break;
+            case "suv": basePriceAt50km = 2500 + (getAdditionalRate(cabType) * 10); break;
+            case "sedanpremium": basePriceAt50km = 1300 + (getAdditionalRate(cabType) * 10); break;
+            case "suvplus": basePriceAt50km = 2800 + (getAdditionalRate(cabType) * 10); break;
+            default: basePriceAt50km = 1000 + (getAdditionalRate(cabType) * 10); break;
+        }
+        
+        int additionalRate = getAdditionalRate(cabType);
+        int extraDistance = distance - 50;
+        finalFare = basePriceAt50km + (additionalRate * extraDistance);
+        
+        System.out.println(String.format("   Range 51-80km: Base ₹%d + (₹%d × %d km) = ₹%d", 
+            basePriceAt50km, additionalRate, extraDistance, finalFare));
+        
+    } else if (distance >= 81 && distance <= 85) {
+        // Distance 81-85 km: Fixed prices
+        switch (cabType) {
+            case "hatchback": finalFare = 2200; break;
+            case "sedan": finalFare = 2400; break;
+            case "ertiga": finalFare = 2600; break;
+            case "suv": finalFare = 3000; break;
+            case "sedanpremium": finalFare = 2500; break;
+            case "suvplus": finalFare = 3200; break;
+            default: finalFare = 2200; break;
+        }
+        System.out.println(String.format("   Range 81-85km: Fixed price ₹%d", finalFare));
+        
+    } else if (distance >= 86 && distance <= 120) {
+        // Distance 86-120 km: Base price + (distance-80) * rate
+        int basePriceAt80km = 0;
+        switch (cabType) {
+            case "hatchback": basePriceAt80km = 2200; break;
+            case "sedan": basePriceAt80km = 2400; break;
+            case "ertiga": basePriceAt80km = 2600; break;
+            case "suv": basePriceAt80km = 3000; break;
+            case "sedanpremium": basePriceAt80km = 2500; break;
+            case "suvplus": basePriceAt80km = 3200; break;
+            default: basePriceAt80km = 2200; break;
+        }
+        
+        int additionalRate = getAdditionalRate(cabType);
+        int extraDistance = distance - 80;
+        finalFare = basePriceAt80km + (additionalRate * extraDistance);
+        
+        System.out.println(String.format("   Range 86-120km: Base ₹%d + (₹%d × %d km) = ₹%d", 
+            basePriceAt80km, additionalRate, extraDistance, finalFare));
+        
+    } else if (distance >= 121 && distance <= 150) {
+        // Distance 121-150 km: Base price + (distance-121) * rate
+        int basePriceAt121km = 0;
+        switch (cabType) {
+            case "hatchback": basePriceAt121km = 2600; break;
+            case "sedan": basePriceAt121km = 2800; break;
+            case "ertiga": basePriceAt121km = 3000; break;
+            case "suv": basePriceAt121km = 3500; break;
+            case "sedanpremium": basePriceAt121km = 2900; break;
+            case "suvplus": basePriceAt121km = 3700; break;
+            default: basePriceAt121km = 2600; break;
+        }
+        
+        int additionalRate = getAdditionalRate(cabType);
+        int extraDistance = distance - 121;
+        finalFare = basePriceAt121km + (additionalRate * extraDistance);
+        
+        System.out.println(String.format("   Range 121-150km: Base ₹%d + (₹%d × %d km) = ₹%d", 
+            basePriceAt121km, additionalRate, extraDistance, finalFare));
+        
+    } else {
+        // Distance outside supported range
+        System.out.println(String.format("⚠️ Distance %d km is outside supported range (1-150 km)", distance));
+        return 0;
     }
+    
+    // Apply maximum fare cap
+    finalFare = Math.min(finalFare, 2700);
+    
+    if (finalFare == 2700) {
+        System.out.println(String.format("🚗 %s - Fare capped at maximum ₹2700", cabType.toUpperCase()));
+    }
+    
+    System.out.println(String.format("✅ %s Final Fare: ₹%d (₹%.2f/km)", 
+        cabType.toUpperCase(), finalFare, (double)finalFare/distance));
+    
+    return finalFare;
+}
 
-    return (int) Math.round(totalFare);
+// Optional: Method to get pricing explanation
+private String getPricingInfo(int distance, String cabType) {
+    String distanceCategory;
+    String pricing;
+    
+    if (distance <= 5) {
+        distanceCategory = "Short Distance";
+        pricing = "Premium pricing (+20-40%)";
+    } else if (distance <= 15) {
+        distanceCategory = "Medium Distance";
+        pricing = "Standard pricing";
+    } else if (distance <= 30) {
+        distanceCategory = "Long Distance";
+        pricing = "Discounted pricing (-5 to -15%)";
+    } else {
+        distanceCategory = "Very Long Distance";
+        pricing = "Heavy discount (-15 to -25%)";
+    }
+    
+    return String.format("Distance: %dkm (%s) - %s for %s", 
+                        distance, distanceCategory, pricing, cabType);
 }
 
 
@@ -742,13 +966,127 @@ public ResponseEntity<Map<String, Object>> processForm(
 
             for (onewayTrip o : oneWayTrips) {
                 if (calculatedDistance <= 150) {
-                 o.setHatchback(calculateDynamicFare(calculatedDistance, "hatchback"));
-        o.setSedan(calculateDynamicFare(calculatedDistance, "sedan"));
-        o.setSedanpremium(calculateDynamicFare(calculatedDistance, "sedanpremium"));
-        o.setSuv(calculateDynamicFare(calculatedDistance, "suv"));
-        o.setSuvplus(calculateDynamicFare(calculatedDistance, "suvplus"));
-        o.setErtiga(calculateDynamicFare(calculatedDistance, "ertiga"));
-                } else {
+                    System.out.println(String.format("💰 Calculating optimized pricing for distance: %d km", calculatedDistance));
+                    
+                    if (calculatedDistance >= 1 && calculatedDistance <= 10) {
+                        // Distance 1-10 km: Fixed prices
+                        System.out.println("   Range 1-10km: Fixed prices");
+                        o.setHatchback(460);
+                        o.setSedan(450);
+                        o.setSedanpremium(480);
+                        o.setSuv(2500);
+                        o.setSuvplus(2600);
+                        o.setErtiga(500);
+                        
+                    } else if (calculatedDistance >= 11 && calculatedDistance <= 20) {
+                        // Distance 11-20 km: Fixed prices
+                        System.out.println("   Range 11-20km: Fixed prices");
+                        o.setHatchback(650);
+                        o.setSedan(700);
+                        o.setSedanpremium(750);
+                        o.setSuv(2500);
+                        o.setSuvplus(2600);
+                        o.setErtiga(800);
+                        
+                    } else if (calculatedDistance >= 21 && calculatedDistance <= 30) {
+                        // Distance 21-30 km: Fixed prices
+                        System.out.println("   Range 21-30km: Fixed prices");
+                        o.setHatchback(800);
+                        o.setSedan(900);
+                        o.setSedanpremium(1000);
+                        o.setSuv(2500);
+                        o.setSuvplus(2700);
+                        o.setErtiga(1100);
+                        
+                    } else if (calculatedDistance >= 31 && calculatedDistance <= 40) {
+                        // Distance 31-40 km: Fixed prices
+                        System.out.println("   Range 31-40km: Fixed prices");
+                        o.setHatchback(1000);
+                        o.setSedan(1200);
+                        o.setSedanpremium(1300);
+                        o.setSuv(2500);
+                        o.setSuvplus(2800);
+                        o.setErtiga(1400);
+                        
+                    } else if (calculatedDistance >= 41 && calculatedDistance <= 50) {
+                        System.out.println("   Range 41-50km: Base + 10km extra");
+                        int extraKm = 10;
+                        o.setHatchback(1000 + (15 * extraKm));  
+                        o.setSedan(1200 + (18 * extraKm));      
+                        o.setSedanpremium(1300 + (20 * extraKm)); 
+                        o.setSuv(2500 + (25 * extraKm));        
+                        o.setSuvplus(2800 + (27 * extraKm));    
+                        o.setErtiga(1400 + (27 * extraKm));     
+                        
+                        // if (o.getSuv() > 2700) o.setSuv(2700);
+                        // if (o.getSuvplus() > 2700) o.setSuvplus(2700);
+                        
+                    } else if (calculatedDistance >= 51 && calculatedDistance <= 80) {
+                        System.out.println("   Range 51-80km: Progressive rate");
+                        int extraDistance = calculatedDistance - 50;
+                        
+                        int hatchbackBase = 1000 + (15 * 10);  
+                        int sedanBase = 1200 + (18 * 10);      
+                        int sedanPremiumBase = 1300 + (20 * 10); 
+                        int suvBase = 2500 + (25 * 10);        
+                        int suvPlusBase = 2700;                 
+                        int ertigaBase = 1400 + (22 * 10);    
+                        
+                        o.setHatchback(hatchbackBase + (15 * extraDistance));
+                        o.setSedan(sedanBase + (18 * extraDistance));
+                        o.setSedanpremium(sedanPremiumBase + (20 * extraDistance));
+                        o.setSuv((2700 + (25 * extraDistance))); 
+                        o.setSuvplus((suvPlusBase + (27 * extraDistance))); 
+                        o.setErtiga(ertigaBase + (22 * extraDistance));
+                        
+                    } else if (calculatedDistance >= 81 && calculatedDistance <= 85) {
+                        System.out.println("   Range 81-85km: Fixed prices");
+                        o.setHatchback(2200);
+                        o.setSedan(2400);
+                        o.setSedanpremium(2500);
+                        o.setSuv(2700); // Capped
+                        o.setSuvplus(2700); 
+                        o.setErtiga(2600);
+                        
+                    } else if (calculatedDistance >= 86 && calculatedDistance <= 120) {
+                        System.out.println("   Range 86-120km: Extended rate");
+                        int extraDistance = calculatedDistance - 80;
+                        
+                        o.setHatchback(2200 + (15 * extraDistance));
+                        o.setSedan(2400 + (18 * extraDistance));
+                        o.setSedanpremium(2500 + (20 * extraDistance));
+                        o.setSuv((2700 + (25 * extraDistance))); 
+                        o.setSuvplus((2700 + (27 * extraDistance))); 
+                        o.setErtiga(2700 + (22 * extraDistance));
+                        
+                    } else if (calculatedDistance >= 121 && calculatedDistance <= 150) {
+                        System.out.println("   Range 121-150km: Final range");
+                        int extraDistance = calculatedDistance - 121;
+                        
+                        o.setHatchback(2600 + (15 * extraDistance));
+                        o.setSedan(2800 + (18 * extraDistance));
+                        o.setSedanpremium(2900 + (20 * extraDistance));
+                        o.setSuv((2700 + (25 * extraDistance) )); 
+                        o.setSuvplus((2700 + (27 * extraDistance))); 
+                        o.setErtiga(3000 + (22 * extraDistance));
+                        
+                    }
+                    //  else {
+                    //     // Distance outside supported range (less than 1 km)
+                    //     System.out.println("⚠️ Distance is outside supported range (1-150 km)");
+                    //     o.setHatchback(0);
+                    //     o.setSedan(0);
+                    //     o.setSedanpremium(0);
+                    //     o.setSuv(0);
+                    //     o.setSuvplus(0);
+                    //     o.setErtiga(0);
+                    // }
+                    
+                    // // Log final prices
+                    // System.out.println(String.format("✅ Final Prices - Hatchback: ₹%d, Sedan: ₹%d, Ertiga: ₹%d, SUV: ₹%d", 
+                    //     o.getHatchback(), o.getSedan(), o.getErtiga(), o.getSuv()));
+                }
+                 else {
                     o.setHatchback(o.getHatchback() * calculatedDistance);
                     o.setSedan(o.getSedan() * calculatedDistance);
                     o.setSedanpremium(o.getSedanpremium() * calculatedDistance);
@@ -782,10 +1120,8 @@ public ResponseEntity<Map<String, Object>> processForm(
             for (roundTrip t : roundTrips) {
                 int hatchbackPrice;
                 if (calculatedDistance > baseKm) {
-                    // If calculated distance is greater than base km, charge calculated distance * rate
                     hatchbackPrice = calculatedDistance * t.getHatchback();
                 } else {
-                    // If calculated distance is smaller than base km, charge base km * rate
                     hatchbackPrice = baseKm * t.getHatchback();
                 }
             

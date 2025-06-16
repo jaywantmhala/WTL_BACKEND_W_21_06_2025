@@ -70,6 +70,7 @@ public class Booking {
 	private String bookingType;
 	private String description;
 	private String carrier;
+	private String companyName;
 
 	private int collection;
 
@@ -179,7 +180,7 @@ private DriveAdmin driveAdmin;
 			String description, String carrier, String driverEnterOtpTimePreStarted, String odoometerStarted,
 			String odoometerEnterTimeStarted, String driverEnterOtpTimePostTrip, String odometerEnding,
 			String odoometerEnterTimeEnding, Vendor vendor, VendorCabs vendorCab, VendorDrivers vendorDriver,
-			Penalty penalty, CabAdmin cabAdmin, DriveAdmin driveAdmin, CarRentalUser carRentalUser, int collection) {
+			Penalty penalty, CabAdmin cabAdmin, DriveAdmin driveAdmin, CarRentalUser carRentalUser, int collection, String companyName) {
 		this.id = id;
 		this.fromLocation = fromLocation;
 		this.toLocation = toLocation;
@@ -230,6 +231,7 @@ private DriveAdmin driveAdmin;
 		this.cabAdmin = cabAdmin;
 		this.driveAdmin = driveAdmin;
 		this.carRentalUser = carRentalUser;
+		this.companyName=companyName;
 	}
 
 
@@ -265,6 +267,8 @@ private DriveAdmin driveAdmin;
 	public void setTripType(String tripType) {
 		this.tripType = tripType;
 	}
+
+	
 
 	
 
@@ -698,6 +702,18 @@ private DriveAdmin driveAdmin;
 
 	public void setCollection(int collection) {
 		this.collection = collection;
+	}
+
+
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
 
 	
