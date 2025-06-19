@@ -73,23 +73,26 @@ public class VendorCabController {
     
     @PostMapping("/addVendorCab/{id}")
     public ResponseEntity<?> addVendor(
-        @RequestParam("carName") String carName,
-        @RequestParam("rCNo") String rCNo,
-        @RequestParam("vehicleNo") String vehicleNo,
-        @RequestParam("cabOtherDetails") String cabOtherDetails,
-       
-        @RequestPart(value = "rCImage", required = false) MultipartFile rCImage,
-        @RequestPart(value = "vehicleNoImage", required = false) MultipartFile vehicleNoImage,
-        @RequestPart(value = "insuranceImage", required = false) MultipartFile insuranceImage,
-        @RequestPart(value = "permitImage", required = false) MultipartFile permitImage,
-        @RequestPart(value = "authorizationImage", required = false) MultipartFile authorizationImage,
-        @RequestPart(value = "cabNoPlateImage", required = false) MultipartFile cabNoPlateImage,
-        @RequestPart(value = "cabImage", required = false) MultipartFile cabImage,
-        @RequestPart(value = "cabFrontImage", required = false) MultipartFile cabFrontImage,
-        @RequestPart(value = "cabBackImage", required = false) MultipartFile cabBackImage,
-        @RequestPart(value = "cabSideImage", required = false) MultipartFile cabSideImage,
+        @PathVariable Long id,
+    
+    // 📝 TEXT INPUT FIELDS - Use @RequestParam for multipart form data
+    @RequestParam(value = "carName", required = false) String carName,
+    @RequestParam(value = "rCNo", required = false) String rCNo,
+    @RequestParam(value = "vehicleNo", required = false) String vehicleNo,
+    @RequestParam(value = "cabOtherDetails", required = false) String cabOtherDetails,
+    
+    // 🖼️ IMAGE/FILE FIELDS - Use @RequestPart with MultipartFile
+    @RequestPart(value = "rCImage", required = false) MultipartFile rCImage,
+    @RequestPart(value = "vehicleNoImage", required = false) MultipartFile vehicleNoImage,
+    @RequestPart(value = "insuranceImage", required = false) MultipartFile insuranceImage,
+    @RequestPart(value = "permitImage", required = false) MultipartFile permitImage,
+    @RequestPart(value = "authorizationImage", required = false) MultipartFile authorizationImage,
+    @RequestPart(value = "cabNoPlateImage", required = false) MultipartFile cabNoPlateImage,
+    @RequestPart(value = "cabImage", required = false) MultipartFile cabImage,
+    @RequestPart(value = "cabFrontImage", required = false) MultipartFile cabFrontImage,
+    @RequestPart(value = "cabBackImage", required = false) MultipartFile cabBackImage,
+    @RequestPart(value = "cabSideImage", required = false) MultipartFile cabSideImage
         
-        @PathVariable Long id  // Vendor ID passed from the URL
     ) {
         try {
             // // ✅ Ensure Upload Directory Exists

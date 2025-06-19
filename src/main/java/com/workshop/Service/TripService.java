@@ -239,7 +239,7 @@ public class TripService {
 
 	public void updatePricesByRoundWay(String sourceState, String destinationState, String sourceCity,
 									   String destinationCity, int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice,
-									   int suvPlusPrice) {
+									   int suvPlusPrice,int ertiga) {
 		List<roundTrip> trips = this.roundrepo.findBySourceStateAndDestinationStateAndSourceCityAndDestinationCity(
 				sourceState, destinationState, sourceCity, destinationCity);
 
@@ -249,6 +249,7 @@ public class TripService {
 			trip.setSedanpremium(sedanPremiumPrice);
 			trip.setSuv(suvPrice);
 			trip.setSuvplus(suvPlusPrice);
+			trip.setErtiga(ertiga);
 		}
 		this.roundrepo.saveAll(trips);
 	}
@@ -407,7 +408,7 @@ public class TripService {
 
 	public roundTrip postRoundTripprice(String sourceState, String destinationState, String sourceCity,
 										String destinationCity, int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice,
-										int suvPlusPrice, String status){
+										int suvPlusPrice, String status, int ertiga){
 
 		roundTrip o = new roundTrip();
 		o.setSourceState(sourceState);
@@ -419,6 +420,7 @@ public class TripService {
 		o.setSedanpremium(sedanPremiumPrice);
 		o.setSuv(suvPrice);
 		o.setSuvplus(suvPlusPrice);
+		o.setErtiga(ertiga);
 		o.setStatus("s");
 
 		return this.roundrepo.save(o);

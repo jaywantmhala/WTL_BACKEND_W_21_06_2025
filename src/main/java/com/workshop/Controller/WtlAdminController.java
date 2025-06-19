@@ -324,11 +324,12 @@ public class WtlAdminController {
             @RequestParam int sedanPrice,
             @RequestParam int sedanPremiumPrice,
             @RequestParam int suvPrice,
-            @RequestParam int suvPlusPrice) {
+            @RequestParam int suvPlusPrice,
+            @RequestParam int ertiga) {
 
         // Call the service to update trip prices
         tripSer.updatePricesByRoundWay(sourceState, destinationState, sourceCity, destinationCity,
-                hatchbackPrice, sedanPrice, sedanPremiumPrice, suvPrice, suvPlusPrice);
+                hatchbackPrice, sedanPrice, sedanPremiumPrice, suvPrice, suvPlusPrice,ertiga);
 
         // Construct a JSON response
         Map<String, String> response = new HashMap<>();
@@ -687,6 +688,7 @@ public String createBooking(
             @RequestParam int sedanPremiumPrice,
             @RequestParam int suvPrice,
             @RequestParam int suvPlusPrice,
+            @RequestParam int ertiaga,
             @RequestParam(required = false, defaultValue = "s") String status) {
 
         // Call the service method which contains your provided code.
@@ -700,9 +702,8 @@ public String createBooking(
                 sedanPremiumPrice,
                 suvPrice,
                 suvPlusPrice,
-                status);
-
-        // Return the saved one-way trip pricing object along with HTTP 200 OK status.
+                status,
+                ertiaga);
         return ResponseEntity.ok(savedTrip);
     }
 

@@ -74,122 +74,93 @@ private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/
     }
     
     @PostMapping("/addVendorDriver/{id}")
-    public ResponseEntity<?> addVendor(
-        @RequestParam("driverName") String driverName,
-        @RequestParam("contactNo") String contactNo,
-        @RequestParam("altContactNo") String altContactNo,
-        @RequestParam("address") String address,
-        @RequestParam("dLNo") String dLNo,
-        @RequestParam("pvcNo") String pvcNo,
-        @RequestParam("emailId") String emailId,
-        @RequestParam("driverOtherDetails") String driverOtherDetails,
+public ResponseEntity<?> addVendorDriver(
+    @PathVariable Long id,
 
+    // 📝 TEXT INPUT FIELDS
+    @RequestParam(value = "driverName", required = false) String driverName,
+    @RequestParam(value = "contactNo", required = false) String contactNo,
+    @RequestParam(value = "altContactNo", required = false) String altContactNo,
+    @RequestParam(value = "address", required = false) String address,
+    @RequestParam(value = "dLNo", required = false) String dLNo,
+    @RequestParam(value = "pvcNo", required = false) String pvcNo,
+    @RequestParam(value = "emailId", required = false) String emailId,
+    @RequestParam(value = "driverOtherDetails", required = false) String driverOtherDetails,
 
-       
-        @RequestPart(value = "driverImage", required = false) MultipartFile driverImage,
-        @RequestPart(value = "driverSelfie", required = false) MultipartFile driverSelfie,
-        @RequestPart(value = "dLnoImage", required = false) MultipartFile dLnoImage,
-        @RequestPart(value = "pvcImage", required = false) MultipartFile pvcImage,
-        @RequestPart(value = "driverDoc1Image", required = false) MultipartFile driverDoc1Image,
-        @RequestPart(value = "driverDoc2Image", required = false) MultipartFile driverDoc2Image,
-        @RequestPart(value = "driverDoc3Image", required = false) MultipartFile driverDoc3Image,
-        
-        @PathVariable Long id
+    // 🖼️ IMAGE/FILE FIELDS
+    @RequestPart(value = "driverImage", required = false) MultipartFile driverImage,
+    @RequestPart(value = "driverSelfie", required = false) MultipartFile driverSelfie,
+    @RequestPart(value = "dLnoImage", required = false) MultipartFile dLnoImage,
+    @RequestPart(value = "pvcImage", required = false) MultipartFile pvcImage,
+    @RequestPart(value = "driverDoc1Image", required = false) MultipartFile driverDoc1Image,
+    @RequestPart(value = "driverDoc2Image", required = false) MultipartFile driverDoc2Image,
+    @RequestPart(value = "driverDoc3Image", required = false) MultipartFile driverDoc3Image
+) {
+    try {
+        // ✅ Upload all images conditionally
+        String driverImageUrl = (driverImage != null && !driverImage.isEmpty()) ? cloudinaryService.upload(driverImage) : null;
+        String driverSelfieUrl = (driverSelfie != null && !driverSelfie.isEmpty()) ? cloudinaryService.upload(driverSelfie) : null;
+        String dLnoImageUrl = (dLnoImage != null && !dLnoImage.isEmpty()) ? cloudinaryService.upload(dLnoImage) : null;
+        String pvcImageUrl = (pvcImage != null && !pvcImage.isEmpty()) ? cloudinaryService.upload(pvcImage) : null;
+        String driverDoc1ImageUrl = (driverDoc1Image != null && !driverDoc1Image.isEmpty()) ? cloudinaryService.upload(driverDoc1Image) : null;
+        String driverDoc2ImageUrl = (driverDoc2Image != null && !driverDoc2Image.isEmpty()) ? cloudinaryService.upload(driverDoc2Image) : null;
+        String driverDoc3ImageUrl = (driverDoc3Image != null && !driverDoc3Image.isEmpty()) ? cloudinaryService.upload(driverDoc3Image) : null;
 
-       
+        // ✅ Fetch Vendor by ID
+        Vendor vendor = vendorRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Vendor not found with id " + id));
 
+        // ✅ Create and set fields
+        VendorDrivers driver = new VendorDrivers();
+        driver.setDriverName(driverName);
+        driver.setContactNo(contactNo);
+        driver.setAltContactNo(altContactNo);
+        driver.setAddress(address);
+        driver.setdLNo(dLNo);
+        driver.setPvcNo(pvcNo);
+        driver.setEmailId(emailId);
+        driver.setDriverOtherDetails(driverOtherDetails);
 
-    ) {
-        try {
-            // ✅ Ensure Upload Directory Exists
-            // ensureUploadDirExists();
+        driver.setDriverImage(driverImageUrl);
+        driver.setDriverSelfie(driverSelfieUrl);
+        driver.setdLnoImage(dLnoImageUrl);
+        driver.setPvcImage(pvcImageUrl);
+        driver.setDriverDoc1Image(driverDoc1ImageUrl);
+        driver.setDriverDoc2Image(driverDoc2ImageUrl);
+        driver.setDriverDoc3Image(driverDoc3ImageUrl);
 
-            String driverImageUrl = cloudinaryService.upload(driverImage);
-            String driverSelfieUrl = cloudinaryService.upload(driverSelfie);
-            String dLnoImageUrl = cloudinaryService.upload(dLnoImage);
-            String pvcImageUrl = cloudinaryService.upload(pvcImage);
-            String driverDoc1ImageUrl = cloudinaryService.upload(driverDoc1Image);
-            String driverDoc2ImageUrl = cloudinaryService.upload(driverDoc2Image);
-            String driverDoc3ImageUrl = cloudinaryService.upload(driverDoc3Image);
+        driver.setVendor(vendor);
 
-            
-            Vendor vendor = vendorRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Vendor not found with id " + id));
-            
+        // ✅ Send Email
+        String subject = "Driver Registration Successfully - " + driver.getDriverName();
+        String message = "<html><body>"
+            + "<h2>Dear " + driver.getDriverName() + ",</h2>"
+            + "<p>Your registration with WTL Tourism Pvt Ltd has been confirmed.</p>"
+            + "<ul>"
+            + "<li><strong>Contact No:</strong> " + driver.getContactNo() + "</li>"
+            + "<li><strong>Alt Contact No:</strong> " + driver.getAltContactNo() + "</li>"
+            + "<li><strong>Address:</strong> " + driver.getAddress() + "</li>"
+            + "<li><strong>DL No:</strong> " + driver.getdLNo() + "</li>"
+            + "<li><strong>PVC No:</strong> " + driver.getPvcNo() + "</li>"
+            + "<li><strong>Email:</strong> " + driver.getEmailId() + "</li>"
+            + "<li><strong>Password:</strong> vendorDriver@123</li>"
+            + "</ul>"
+            + "<p>Please do not share these credentials with anyone.</p>"
+            + "<hr><p>For support, contact wtltourism@gmail.com</p>"
+            + "</body></html>";
 
-            
+        emailService.sendEmail(message, subject, driver.getEmailId());
 
-            // ✅ Create Vendor Object
-          VendorDrivers v = new VendorDrivers();
-          v.setDriverName(driverName);
-          v.setContactNo(contactNo);
-          v.setAltContactNo(altContactNo);
-          v.setAddress(address);
-          v.setDriverImage(driverImageUrl);
-          v.setDriverSelfie(driverSelfieUrl);
-          v.setdLNo(dLNo);
-          v.setPvcNo(pvcNo);
-          v.setdLnoImage(dLnoImageUrl);
-          v.setEmailId(emailId);
-          v.setPvcImage(pvcImageUrl);
-          v.setDriverDoc1Image(driverDoc1ImageUrl);
-          v.setDriverDoc2Image(driverDoc2ImageUrl);
-          v.setDriverDoc3Image(driverDoc3ImageUrl);
-          v.setVendor(vendor);
-        //   String password = Math.random(Math.floor(100));
-        //    v.setPassword("vendorDriver@123");
+        // ✅ Save and return response
+        VendorDrivers savedDriver = vendorDriverService.addVendorsDriver(driver);
+        return ResponseEntity.ok(savedDriver);
 
-          String subject = "Driver Registration Successfully" + v.getDriverName();
-          String message = "<!DOCTYPE html>"
-          + "<html lang='en'>"
-          + "<head>"
-          + "<meta charset='UTF-8'>"
-          + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-          + "<title>Welcome WTL Tourism Pvt Ltd</title>"
-          + "</head>"
-          + "<body style='font-family: Arial, sans-serif; background-color: #f7f7f7; margin: 0; padding: 0;'>"
-          + "<div style='max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow: hidden;'>"
-          + "<div style='background-color: #007BFF; color: #ffffff; padding: 20px; text-align: center;'>"
-          + "<h1 style='margin: 0; font-size: 24px; font-weight: bold;'>Booking Confirmation</h1>"
-          + "</div>"
-          + "<div style='padding: 20px;'>"
-          + "<h3 style='color: #007BFF; font-size: 20px; margin-bottom: 20px;'>Hello " + v.getDriverName() + ",</h3>"
-          + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-bottom: 20px;'>Your registration has been confirmed. Below are the details of your personal information, Please kindly keep on your mind do not share this crediential to anyone:</p>"
-          + "<div style='margin-top: 20px;'>"
-          + "<ul style='list-style-type: none; padding: 0;'>"
-          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Contact No :</strong> " + v.getContactNo() + "</li>"
-          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Alternate Contact No :</strong> " + v.getAltContactNo() + "</li>"
-          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Address :</strong> " + v.getAddress() + "</li>"
-          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver License No :</strong> " + v.getdLNo() + "</li>"
-          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>PVC No :</strong> " + v.getPvcNo() + "</li>"
-          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Email Id:</strong> " + v.getEmailId() + "</li>"
-          + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Your Password For Driver App:</strong>" + "vendorDriver@123" + "</li>"
-        //   + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Cab Name:</strong> " + updatedBooking.getVendorCab().getCarName() + "</li>"
-        //   + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Vehicle No:</strong> " + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
-        //   + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Name:</strong> " + updatedBooking.getVendorDriver().getDriverName() + "</li>"
-        //   + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Contact:</strong> " + updatedBooking.getVendorDriver().getContactNo() + "</li>"
-          + "</ul>"
-          + "</div>"
-          + "<p style='font-size: 16px; line-height: 1.5; color: #333333; margin-top: 20px;'>If you have any query related to your registration, Please kindly contact to our WTL Tourism Pvt. Ltd</p>"
-          + "</div>"
-          + "<div style='text-align: center; padding: 20px; background-color: #f1f1f1; color: #777777; font-size: 14px;'>"
-          + "<p style='margin: 0;'>If you have any questions, feel free to contact us at <a href='wtltourism@gmail.com' style='color: #007BFF; text-decoration: none;'>support@example.com</a>.</p>"
-          + "<img src='https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjc1OGk0ZGVqNHFseDRrM3FvOW0xYnVyenJkcmQ2OXNsODE0djUzZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oKIPhUfA1h2U2Koko/giphy.gif' alt='Namaskar' style='width: 100px; height: auto; margin-top: 10px;'>"
-          + "</div>"
-          + "</div>"
-          + "</body>"
-          + "</html>";
-          emailService.sendEmail(message, subject, v.getEmailId());
-
-          
-           
-
-            return ResponseEntity.ok(this.vendorDriverService.addVendorsDriver(v));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error while saving vendor: " + e.getMessage());
-        }
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error while saving vendor driver: " + e.getMessage());
     }
+}
+
     
  // ✅ Utility: Get File Path
     private String getFilePath(String fileName) {
