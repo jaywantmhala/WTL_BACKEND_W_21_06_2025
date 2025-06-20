@@ -34,18 +34,18 @@ public class VehicleController {
     // Create or Update vehicle
     @PostMapping("/save")
     public ResponseEntity<OutSourceCarCab> saveVehicle(
-        @RequestParam("vehicleNameAndRegNo") String vehicleNameAndRegNo,
+        @RequestParam(value="vehicleNameAndRegNo",required = false) String vehicleNameAndRegNo,
 //        @RequestParam("status") String status,
-        @RequestParam("vehicleRcNo") String vehicleRcNo,
-        @RequestParam("insurance") MultipartFile insurance,
-        @RequestParam("permit") MultipartFile permit,
-        @RequestParam("authorization") MultipartFile authorization,
-        @RequestParam("carNoPlate") String carNoPlate,
-        @RequestParam("carImage") MultipartFile carImage,
-        @RequestParam("frontImage") MultipartFile frontImage,
-        @RequestParam("backImage") MultipartFile backImage,
-        @RequestParam("sideImage") MultipartFile sideImage,
-        @RequestParam("carOtherDetails") String carOtherDetails) {
+        @RequestParam(value="vehicleRcNo",required = false) String vehicleRcNo,
+        @RequestParam(value="insurance",required = false) MultipartFile insurance,
+        @RequestParam(value="permit",required = false) MultipartFile permit,
+        @RequestParam(value="authorization",required = false) MultipartFile authorization,
+        @RequestParam(value="carNoPlate",required = false) String carNoPlate,
+        @RequestParam(value="carImage",required = false) MultipartFile carImage,
+        @RequestParam(value="frontImage",required = false) MultipartFile frontImage,
+        @RequestParam(value="backImage",required = false) MultipartFile backImage,
+        @RequestParam(value="sideImage",required = false) MultipartFile sideImage,
+        @RequestParam(value="carOtherDetails",required = false) String carOtherDetails) {
 
         System.out.println("Vehicle Name and RegNo: " + vehicleNameAndRegNo);
 //        System.out.println("Status: " + status);

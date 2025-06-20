@@ -1250,8 +1250,8 @@ public ResponseEntity<Map<String, Object>> processForm(
     public static onewayTrip getDefaultOneWayTrip() {
         return new onewayTrip(
                 null, "", "", "", "",
-                12, 15, 18, 21, 26,
-                "", null, null, 0,15
+                14, 16, 18, 32, 27,
+                "", null, null, 0,20
         );
     }
 
@@ -1304,6 +1304,7 @@ public ResponseEntity<Map<String, Object>> processForm(
                 if (tripinfo.isEmpty()) {
                     tripinfo.add(createDefaultRoundTrip());
                 }
+                
             }
 
             int dynamicDistance;
@@ -1780,6 +1781,9 @@ public ResponseEntity<Map<String, Object>> processForm(
     public List<Visitors> getAllVisitor(){
         return this.visitorService.getAllVisitor();
     }
+
+
+    
 
 
 }

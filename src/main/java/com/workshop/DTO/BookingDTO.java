@@ -50,6 +50,10 @@ public class BookingDTO {
     private CabAdminDTO cabAdmin;
     private DriverAdminDTO driverAdmin;
 
+
+    public BookingDTO(){
+        super();
+    }
     // Constructor to map from Booking entity
     public BookingDTO(Booking booking) {
         this.id = booking.getId();

@@ -36,20 +36,20 @@ public class CabAdminController {
     // Create or Update vehicle
     @PostMapping("/save")
     public ResponseEntity<CabAdmin> saveCabAdmin(
-            @RequestParam("vehicleNameAndRegNo") String vehicleNameAndRegNo,
-            @RequestParam("vehicleRcNo") String vehicleRcNo,
-            @RequestParam("carOtherDetails") String carOtherDetails,
-            @RequestParam("status") String status,
+            @RequestParam(value="vehicleNameAndRegNo", required = false) String vehicleNameAndRegNo,
+            @RequestParam(value="vehicleRcNo", required = false) String vehicleRcNo,
+            @RequestParam(value="carOtherDetails", required = false) String carOtherDetails,
+            @RequestParam(value="status", required = false) String status,
             // @RequestParam("vehicleName") String vehicleName,
 
-            @RequestParam("vehicleRcImg") MultipartFile vehicleRcImg,
-            @RequestParam("insurance") MultipartFile insurance,
-            @RequestParam("permit") MultipartFile permit,
-            @RequestParam("fitnessCert") MultipartFile fitnessCert,
-            @RequestParam("cabImage") MultipartFile cabImage,
-            @RequestParam("frontImage") MultipartFile frontImage,
-            @RequestParam("backImage") MultipartFile backImage,
-            @RequestParam("sideImage") MultipartFile sideImage
+            @RequestParam(value="vehicleRcImg", required = false) MultipartFile vehicleRcImg,
+            @RequestParam(value="insurance", required = false) MultipartFile insurance,
+            @RequestParam(value="permit", required = false) MultipartFile permit,
+            @RequestParam(value="fitnessCert", required = false) MultipartFile fitnessCert,
+            @RequestParam(value="cabImage", required = false) MultipartFile cabImage,
+            @RequestParam(value="frontImage", required = false) MultipartFile frontImage,
+            @RequestParam(value="backImage", required = false) MultipartFile backImage,
+            @RequestParam(value="sideImage", required = false) MultipartFile sideImage
 
     ) {
 

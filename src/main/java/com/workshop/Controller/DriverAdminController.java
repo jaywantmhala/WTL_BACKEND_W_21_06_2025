@@ -34,25 +34,25 @@ public class DriverAdminController {
 	
 	 @PostMapping("/save")
 	    public ResponseEntity<DriveAdmin> saveDriveAdmin(
-	            @RequestParam("DriverName") String DriverName,
-	            @RequestParam("ContactNo") String ContactNo,
-	            @RequestParam("AltMobNum") String AltMobNum,
-	            @RequestParam("Adress") String Adress,
-	            @RequestParam("emailId") String emailId,
-	            @RequestParam("status") String status,
-	            @RequestParam("otherDetails") String otherDetails,
-	            @RequestParam("aadhaNo") String aadhaNo,
-	            @RequestParam("drLicenseNo") String drLicenseNo,
-	            @RequestParam("pvcNo2") String pvcNo2,
+	            @RequestParam(value="DriverName", required = false) String DriverName,
+	            @RequestParam(value="ContactNo", required = false) String ContactNo,
+	            @RequestParam(value="AltMobNum", required = false) String AltMobNum,
+	            @RequestParam(value="Adress", required = false) String Adress,
+	            @RequestParam(value="emailId", required = false) String emailId,
+	            @RequestParam(value="status", required = false) String status,
+	            @RequestParam(value="otherDetails", required = false) String otherDetails,
+	            @RequestParam(value="aadhaNo", required = false) String aadhaNo,
+	            @RequestParam(value="drLicenseNo", required = false) String drLicenseNo,
+	            @RequestParam(value="pvcNo2", required = false) String pvcNo2,
 
 	            
 
 
 	            
 	            @RequestParam(value = "DriverImgSelfie", required = false) MultipartFile DriverImgSelfie,
-	            @RequestParam("Aadhar") MultipartFile Aadhar,
-	            @RequestParam("DrLicenceNum") MultipartFile DrLicenceNum,
-	            @RequestParam("PvcNo") MultipartFile PvcNo
+	            @RequestParam(value="Aadhar", required = false) MultipartFile Aadhar,
+	            @RequestParam(value="DrLicenceNum", required = false) MultipartFile DrLicenceNum,
+	            @RequestParam(value="PvcNo", required = false) MultipartFile PvcNo
 	            
 	            
 	            
@@ -115,6 +115,7 @@ public class DriverAdminController {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	    }
 	}
+
 
 
 	@GetMapping("/driver/{status}")

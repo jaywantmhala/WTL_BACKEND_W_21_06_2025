@@ -971,6 +971,29 @@ public String createBooking(
         return bookingService.bookingValidated(name, phone, email);
     }
 
+
+    @PutMapping("/updateBooking/{id}")
+    public ResponseEntity<BookingDTO> updateBookingById(@PathVariable int id, @RequestBody BookingDTO bookingDTO) {
+        // Debug: Log incoming DTO
+        System.out.println("[DEBUG] updateBookingById called for id=" + id);
+        System.out.println("[DEBUG] Incoming BookingDTO: " + bookingDTO);
+        try {
+            BookingDTO updatedBooking = bookingService.updateBooking(id, bookingDTO);
+            if (updatedBooking != null) {
+                System.out.println("[DEBUG] Booking updated successfully: " + updatedBooking);
+                return ResponseEntity.ok(updatedBooking); // Return HTTP 200 OK with the updated booking DTO
+            } else {
+                System.out.println("[DEBUG] Booking not found for id=" + id);
+                return ResponseEntity.notFound().build(); // Return HTTP 404 if booking is not found
+            }
+        } catch (Exception e) {
+            System.out.println("[ERROR] Exception in updateBookingById: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
     
     
 }

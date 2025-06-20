@@ -465,5 +465,52 @@ public class BookingService {
 
         return response;
     }
+
+    public BookingDTO updateBooking(int id, BookingDTO bookingDTO) {
+        Optional<Booking> optionalBooking = repo.findById(id);
+        if (optionalBooking.isPresent()) {
+            Booking booking = optionalBooking.get();
+            // Update fields from DTO to entity
+            booking.setFromLocation(bookingDTO.getFromLocation());
+            booking.setToLocation(bookingDTO.getToLocation());
+            booking.setTripType(bookingDTO.getTripType());
+            booking.setStartDate(bookingDTO.getStartDate());
+            booking.setReturnDate(bookingDTO.getReturnDate());
+            booking.setTime(bookingDTO.getTime());
+            booking.setDistance(bookingDTO.getDistance());
+            booking.setUserId(bookingDTO.getUserId());
+            booking.setBookingId(bookingDTO.getBookingId());
+            booking.setName(bookingDTO.getName());
+            booking.setEmail(bookingDTO.getEmail());
+            booking.setPhone(bookingDTO.getPhone());
+            booking.setUserPickup(bookingDTO.getUserPickup());
+            booking.setUserDrop(bookingDTO.getUserDrop());
+            booking.setDate(bookingDTO.getDate());
+            booking.setUserTripType(bookingDTO.getUserTripType());
+            booking.setBookid(bookingDTO.getBookid());
+            booking.setCar(bookingDTO.getCar());
+            booking.setBaseAmount(bookingDTO.getBaseAmount());
+            booking.setAmount(bookingDTO.getAmount());
+            booking.setStatus(bookingDTO.getStatus());
+            booking.setDriverBhata(bookingDTO.getDriverBhata());
+            booking.setNightCharges(bookingDTO.getNightCharges());
+            booking.setGst(bookingDTO.getGst());
+            booking.setServiceCharge(bookingDTO.getServiceCharge());
+            booking.setOffer(bookingDTO.getOffer());
+            booking.setOfferPartial(bookingDTO.getOfferPartial());
+            booking.setOfferAmount(bookingDTO.getOfferAmount());
+            booking.setTxnId(bookingDTO.getTxnId());
+            booking.setPayment(bookingDTO.getPayment());
+            booking.setDateEnd(bookingDTO.getDateEnd());
+            booking.setTimeEnd(bookingDTO.getTimeEnd());
+            booking.setBookingType(bookingDTO.getBookingType());
+            booking.setDescription(bookingDTO.getDescription());
+            booking.setCollection(bookingDTO.getCollection());
+            // Save updated booking
+            Booking updated = repo.save(booking);
+            return new BookingDTO(updated);
+        }
+        return null;
+    }
     
 }

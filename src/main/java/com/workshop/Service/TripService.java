@@ -75,7 +75,7 @@ public class TripService {
 		defaultTrip.setDestinationCity(destCity);
 		defaultTrip.setDestinationState(destState);
 
-		return List.of(defaultTrip);
+		return List.of(defaultTrip);	
 	}
 
 	// UPDATED: Use static method - no injection needed
