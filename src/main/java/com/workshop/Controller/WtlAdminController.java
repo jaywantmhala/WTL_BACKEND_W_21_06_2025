@@ -63,6 +63,8 @@ import com.workshop.Service.SmsService;
 import com.workshop.Service.StatesService;
 import com.workshop.Service.TripService;
 import com.workshop.Service.UserDetailServiceImpl;
+import com.workshop.WhatsAppPackage.WhatsAppResponse;
+import com.workshop.WhatsAppPackage.WhatsAppService;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -107,6 +109,9 @@ public class WtlAdminController {
 
     @Autowired
     UserDetailServiceImpl userService;
+
+    @Autowired
+    private WhatsAppService whatsAppService;
 
     WtlAdminController(AuthenticationManagerBuilder authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -442,6 +447,13 @@ public class WtlAdminController {
                 System.out.println("Failed to send booking confirmation email.");
             }
 
+             if (updatedBooking.getVendorCab() != null && updatedBooking.getVendorDriver() != null) {
+            sendCompleteAssignmentWhatsApp(updatedBooking);
+        } else {
+            System.out.println("Waiting for cab assignment to send complete WhatsApp notification");
+        }
+
+
         }
 
         return ResponseEntity.ok(updatedBooking);
@@ -524,9 +536,54 @@ public class WtlAdminController {
                 System.out.println("Failed to send booking confirmation email.");
             }
         }
+         if (updatedBooking.getVendorCab() != null && updatedBooking.getVendorDriver() != null) {
+            sendCompleteAssignmentWhatsApp(updatedBooking);
+        } else {
+            System.out.println("Waiting for cab assignment to send complete WhatsApp notification");
+        }
+
 
         return ResponseEntity.ok(updatedBooking);
     }
+    private void sendCompleteAssignmentWhatsApp(Booking booking) {
+        try {
+            // logger.info("Sending complete assignment WhatsApp for booking: {}", booking.getBookid());
+
+            String customerPhone = booking.getPhone();
+            String driverName = booking.getVendorDriver().getDriverName();
+            String driverPhone = booking.getVendorDriver().getContactNo();
+            String vehicleNo = booking.getVendorCab().getVehicleNo();
+            String bookingId = booking.getBookid();
+
+            // logger.info("Sending complete notification - Customer: {} | Driver: {} | Driver Phone: {} | Vehicle: {}",
+                    // customerPhone, driverName, driverPhone, vehicleNo);
+
+
+            if (!whatsAppService.isValidPhoneNumber(customerPhone)) {
+                System.out.println(customerPhone);
+                // logger.warn("Invalid customer phone number for WhatsApp: {} (Booking: {})", customerPhone, bookingId);
+                return;
+            }
+
+            WhatsAppResponse whatsAppResponse = whatsAppService.sendDriverAssignmentNotification(
+                    customerPhone,
+                    driverName,
+                    driverPhone,
+                    vehicleNo,
+                    bookingId
+            );
+
+            if (whatsAppResponse != null) {
+                // logger.info("Complete assignment WhatsApp sent successfully for booking: {}", bookingId);
+            } else {
+                // logger.warn("WhatsApp API returned empty response for complete notification: {}", bookingId);
+            }
+
+        } catch (Exception e) {
+            // logger.error("Failed to send complete assignment WhatsApp for booking {}: {}", booking.getBookid(), e.getMessage());
+        }
+    }
+
 
     @PostMapping("/wtlLogin")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {

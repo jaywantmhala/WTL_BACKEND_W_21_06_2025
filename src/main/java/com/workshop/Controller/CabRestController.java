@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.workshop.Service.*;
+import com.workshop.WhatsAppPackage.BookingDetails;
+import com.workshop.WhatsAppPackage.WhatsAppResponse;
+import com.workshop.WhatsAppPackage.WhatsAppServiceException;
+
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,6 +45,7 @@ import com.workshop.Entity.Visitors;
 import com.workshop.Entity.onewayTrip;
 import com.workshop.Entity.roundTrip;
 import com.workshop.Repo.Trip;
+import  com.workshop.WhatsAppPackage.WhatsAppService;
 
 @RestController
 @RequestMapping("/api")
@@ -88,6 +93,9 @@ public class CabRestController {
 
     @Autowired
     private CityExtractionService cityExtractionService;
+
+    @Autowired
+    private WhatsAppService whatsAppService;
 
     private String apiKey = "AIzaSyCelDo4I5cPQ72TfCTQW-arhPZ7ALNcp8w";
 
@@ -1488,6 +1496,9 @@ public ResponseEntity<Map<String, Object>> processForm(
             sendConfirmationEmail(name, email, bookid, pickupLocation,
                     dropLocation, tripType, date, time, total);
 
+                     sendWhatsAppBookingConfirmation(phone, bookid, name, pickupLocation,
+                    dropLocation, date, time, tripType, total);
+
             return ResponseEntity.ok(Map.of(
                     "status", "success",
                     "bookingId", bookid,
@@ -1569,6 +1580,9 @@ public ResponseEntity<Map<String, Object>> processForm(
             sendConfirmationEmail(name, email, bookid, pickupLocation,
                     dropLocation, tripType, date, time, total);
 
+                     sendWhatsAppBookingConfirmation(phone, bookid, name, pickupLocation,
+                    dropLocation, date, time, tripType, total);
+
             return ResponseEntity.ok(Map.of(
                     "status", "success",
                     "bookingId", bookid,
@@ -1578,6 +1592,47 @@ public ResponseEntity<Map<String, Object>> processForm(
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Booking creation failed: " + e.getMessage()));
+        }
+    }
+
+    private void sendWhatsAppBookingConfirmation(String phone, String bookingId, String name,
+                                                 String pickupLocation, String dropLocation,
+                                                 String date, String time, String tripType, String total) {
+        try {
+            // logger.info("Attempting to send WhatsApp confirmation for booking: {}", bookingId);
+
+            // Validate phone number first
+            if (!whatsAppService.isValidPhoneNumber(phone)) {
+                // logger.warn("Invalid phone number for WhatsApp: {} (Booking: {})", phone, bookingId);
+                return;
+            }
+
+            // Create booking details object with proper setters
+            BookingDetails bookingDetails = new BookingDetails();
+            bookingDetails.setBookingId(bookingId);
+            bookingDetails.setCustomerName(name);
+            bookingDetails.setPickupLocation(pickupLocation);
+            bookingDetails.setDropLocation(dropLocation);
+            bookingDetails.setDate(date);
+            bookingDetails.setTime(time);
+            bookingDetails.setTripType(tripType);
+            bookingDetails.setPrice(total);
+
+            //whatsapp msg
+            WhatsAppResponse whatsAppResponse = whatsAppService.sendBookingConfirmation(phone, bookingDetails);
+
+            if (whatsAppResponse != null) {
+                // logger.info("WhatsApp booking confirmation sent successfully for booking: {}", bookingId);
+            } else {
+                // logger.warn("WhatsApp API returned empty response for booking: {}", bookingId);
+            }
+
+        } catch (WhatsAppServiceException whatsAppException) {
+            // logger.error("Failed to send WhatsApp booking confirmation for {}: {}",
+                    // bookingId, whatsAppException.getMessage());
+        } catch (Exception e) {
+            // logger.error("Unexpected error sending WhatsApp confirmation for {}: {}",
+                    // bookingId, e.getMessage());
         }
     }
 
