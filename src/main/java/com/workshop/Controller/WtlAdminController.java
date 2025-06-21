@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -197,11 +198,11 @@ public class WtlAdminController {
             @RequestParam int sedanPrice,
             @RequestParam int sedanPremiumPrice,
             @RequestParam int suvPrice,
-            @RequestParam int suvPlusPrice) {
+            @RequestParam int suvPlusPrice, @RequestParam int ertiga) {
 
         // Call the service to update trip prices
         tripSer.updatePrices(sourceState, destinationState, sourceCity, destinationCity,
-                hatchbackPrice, sedanPrice, sedanPremiumPrice, suvPrice, suvPlusPrice);
+                hatchbackPrice, sedanPrice, sedanPremiumPrice, suvPrice, suvPlusPrice, ertiga);
 
         // Construct a JSON response
         Map<String, String> response = new HashMap<>();
@@ -688,7 +689,7 @@ public String createBooking(
             @RequestParam int sedanPremiumPrice,
             @RequestParam int suvPrice,
             @RequestParam int suvPlusPrice,
-            @RequestParam int ertiaga,
+            @RequestParam int ertiga,
             @RequestParam(required = false, defaultValue = "s") String status) {
 
         // Call the service method which contains your provided code.
@@ -703,7 +704,7 @@ public String createBooking(
                 suvPrice,
                 suvPlusPrice,
                 status,
-                ertiaga);
+                ertiga);
         return ResponseEntity.ok(savedTrip);
     }
 
@@ -725,6 +726,7 @@ public String createBooking(
             @RequestParam int sedanPremiumPrice,
             @RequestParam int suvPrice,
             @RequestParam int suvPlusPrice,
+            @RequestParam int ertiga,
             @RequestParam(required = false, defaultValue = "s") String status) {
 
         onewayTrip savedTrip = tripSer.postOneWayTripprice(
@@ -737,7 +739,7 @@ public String createBooking(
                 sedanPremiumPrice,
                 suvPrice,
                 suvPlusPrice,
-                status);
+                status,ertiga);
 
         return ResponseEntity.ok(savedTrip);
     }
@@ -994,6 +996,25 @@ public String createBooking(
         }
     }
 
-    
+
+
+    @GetMapping("/byCompany")
+    public ResponseEntity<List<BookingDTO>> getBookingsByCompanyName(
+            @RequestParam String companyName) {
+        
+        List<BookingDTO> bookings = bookingService.getBookingByCompanyName(companyName);
+        
+        if (bookings.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(bookings);
+        }
+    }
+
+
+    @GetMapping("/unique-company-names")
+    public Set<String> getUniqueCompanyNames() {
+        return bookingService.getUniqueCompanyNames();
+    }
     
 }

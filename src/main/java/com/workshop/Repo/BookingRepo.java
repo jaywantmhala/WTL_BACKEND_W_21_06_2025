@@ -24,6 +24,9 @@ public interface BookingRepo extends JpaRepository<Booking, Integer> {
 
 	boolean existsByBookingId(String bookingId);
 
+	List<Booking> findByCompanyName(String companyName);
+
+
 	List<Booking> findByVendorId(Long vendorId);
 
 	// @Query("SELECT b FROM Booking b " +

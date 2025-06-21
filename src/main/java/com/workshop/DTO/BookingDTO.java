@@ -36,6 +36,7 @@ public class BookingDTO {
     private Integer serviceCharge;
     private String offer;
     private Integer offerPartial;
+    private String companyName;
     private String offerAmount;
     private String txnId;
     private String payment;
@@ -49,6 +50,15 @@ public class BookingDTO {
     private VendorDriversDTO vendorDriver;
     private CabAdminDTO cabAdmin;
     private DriverAdminDTO driverAdmin;
+    private String vendorDriverName;
+    private String vendorCabName;
+    private String cabPlateNo;;
+
+    private String vendorName;
+    private String masterAdminDriverName;
+    private String masterAdminCabName;
+    private String masterAdminCabNoPlate;
+
 
 
     public BookingDTO(){
@@ -118,10 +128,60 @@ public class BookingDTO {
 
     // Getters and setters...
 
+    
+
     public int getId() {
         return id;
     }
 
+    public String getCompanyName() {
+        return companyName;
+    }
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+    public String getVendorDriverName() {
+        return vendorDriverName;
+    }
+    public void setVendorDriverName(String vendorDriverName) {
+        this.vendorDriverName = vendorDriverName;
+    }
+    public String getVendorCabName() {
+        return vendorCabName;
+    }
+    public void setVendorCabName(String vendorCabName) {
+        this.vendorCabName = vendorCabName;
+    }
+    public String getCabPlateNo() {
+        return cabPlateNo;
+    }
+    public void setCabPlateNo(String cabPlateNo) {
+        this.cabPlateNo = cabPlateNo;
+    }
+    public String getVendorName() {
+        return vendorName;
+    }
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+    public String getMasterAdminDriverName() {
+        return masterAdminDriverName;
+    }
+    public void setMasterAdminDriverName(String masterAdminDriverName) {
+        this.masterAdminDriverName = masterAdminDriverName;
+    }
+    public String getMasterAdminCabName() {
+        return masterAdminCabName;
+    }
+    public void setMasterAdminCabName(String masterAdminCabName) {
+        this.masterAdminCabName = masterAdminCabName;
+    }
+    public String getMasterAdminCabNoPlate() {
+        return masterAdminCabNoPlate;
+    }
+    public void setMasterAdminCabNoPlate(String masterAdminCabNoPlate) {
+        this.masterAdminCabNoPlate = masterAdminCabNoPlate;
+    }
     public void setId(int id) {
         this.id = id;
     }

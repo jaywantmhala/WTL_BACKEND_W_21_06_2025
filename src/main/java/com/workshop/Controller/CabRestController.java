@@ -1105,11 +1105,12 @@ public ResponseEntity<Map<String, Object>> processForm(
             days = (int) ChronoUnit.DAYS.between(localDate1, localDate2) + 1;
 
             if (distance == null || distance.isEmpty() || distance.equals("0") || distance.equals("-1")) {
-                calculatedDistance = calculatedDistance * days;
+                calculatedDistance = calculatedDistance * 2;
             }
 
             int perKm = 300;
             int baseKm = perKm * days;
+            int averageKm = calculatedDistance;
 
             List<roundTrip> roundTrips = tripSer.getRoundWayTripData(cityName, cityName1);
 
@@ -1119,43 +1120,43 @@ public ResponseEntity<Map<String, Object>> processForm(
 
             for (roundTrip t : roundTrips) {
                 int hatchbackPrice;
-                if (calculatedDistance > baseKm) {
-                    hatchbackPrice = calculatedDistance * t.getHatchback();
+                if (averageKm> baseKm) {
+                    hatchbackPrice = averageKm * t.getHatchback();
                 } else {
                     hatchbackPrice = baseKm * t.getHatchback();
                 }
             
                 int sedanPrice;
-                if (calculatedDistance > baseKm) {
-                    sedanPrice = calculatedDistance * t.getSedan();
+                if (averageKm > baseKm) {
+                    sedanPrice = averageKm * t.getSedan();
                 } else {
                     sedanPrice = baseKm * t.getSedan();
                 }
             
                 int sedanPremiumPrice;
-                if (calculatedDistance > baseKm) {
-                    sedanPremiumPrice = calculatedDistance * t.getSedanpremium();
+                if (averageKm > baseKm) {
+                    sedanPremiumPrice = averageKm * t.getSedanpremium();
                 } else {
                     sedanPremiumPrice = baseKm * t.getSedanpremium();
                 }
             
                 int suvPrice;
-                if (calculatedDistance > baseKm) {
-                    suvPrice = calculatedDistance * t.getSuv();
+                if (averageKm > baseKm) {
+                    suvPrice = averageKm * t.getSuv();
                 } else {
                     suvPrice = baseKm * t.getSuv();
                 }
             
                 int suvPlusPrice;
-                if (calculatedDistance > baseKm) {
-                    suvPlusPrice = calculatedDistance * t.getSuvplus();
+                if (averageKm > baseKm) {
+                    suvPlusPrice = averageKm * t.getSuvplus();
                 } else {
                     suvPlusPrice = baseKm * t.getSuvplus();
                 }
             
                 int ertigaPrice;
-                if (calculatedDistance > baseKm) {
-                    ertigaPrice = calculatedDistance * t.getErtiga();
+                if (averageKm > baseKm) {
+                    ertigaPrice = averageKm * t.getErtiga();
                 } else {
                     ertigaPrice = baseKm * t.getErtiga();
                 }

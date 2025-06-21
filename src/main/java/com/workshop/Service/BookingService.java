@@ -7,9 +7,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
@@ -22,7 +25,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.workshop.CarRental.Entity.CarRentalUser;
 import com.workshop.CarRental.Repository.CarRentalRepository;
 import com.workshop.DTO.BookingDTO;
+import com.workshop.DTO.CabAdminDTO;
 import com.workshop.DTO.CancellationResult;
+import com.workshop.DTO.DriverAdminDTO;
+import com.workshop.DTO.VendorCabsDTO;
+import com.workshop.DTO.VendorDTO;
+import com.workshop.DTO.VendorDriversDTO;
 import com.workshop.Entity.Booking;
 import com.workshop.Entity.CabAdmin;
 import com.workshop.Entity.DriveAdmin;
@@ -512,5 +520,97 @@ public class BookingService {
         }
         return null;
     }
+
+     public List<BookingDTO> getBookingByCompanyName(String companyName) {
+        List<Booking> bookings = repo.findByCompanyName(companyName);
+        return bookings.stream()
+                       .map(this::convertToDTO)
+                       .collect(Collectors.toList());
+    }
+
+    public Set<String> getUniqueCompanyNames() {
+        List<String> companyNames = repo.findAll()
+            .stream()
+            .map(Booking::getCompanyName)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+            
+        return new HashSet<>(companyNames);
+    }
+    
+
+    
+
+    private BookingDTO convertToDTO(Booking booking) {
+    BookingDTO dto = new BookingDTO();
+    
+    dto.setId(booking.getId());
+    dto.setFromLocation(booking.getFromLocation());
+    dto.setToLocation(booking.getToLocation());
+    dto.setTripType(booking.getTripType());
+    dto.setStartDate(booking.getStartDate());
+    dto.setReturnDate(booking.getReturnDate());
+    dto.setTime(booking.getTime());
+    dto.setDistance(booking.getDistance());
+    dto.setUserId(booking.getUserId());
+    dto.setBookingId(booking.getBookingId());
+    dto.setName(booking.getName());
+    dto.setEmail(booking.getEmail());
+    dto.setPhone(booking.getPhone());
+    dto.setUserPickup(booking.getUserPickup());
+    dto.setUserDrop(booking.getUserDrop());
+    dto.setDate(booking.getDate());
+    dto.setUserTripType(booking.getUserTripType());
+    dto.setBookid(booking.getBookid());
+    dto.setCar(booking.getCar());
+    dto.setBaseAmount(booking.getBaseAmount());
+    dto.setAmount(booking.getAmount());
+    dto.setStatus(booking.getStatus());
+    dto.setDriverBhata(booking.getDriverBhata());
+    dto.setNightCharges(booking.getNightCharges());
+    dto.setGst(booking.getGst());
+    dto.setServiceCharge(booking.getServiceCharge());
+    dto.setOffer(booking.getOffer());
+    dto.setOfferPartial(booking.getOfferPartial());
+    dto.setOfferAmount(booking.getOfferAmount());
+    dto.setTxnId(booking.getTxnId());
+    dto.setPayment(booking.getPayment());
+    dto.setDateEnd(booking.getDateEnd());
+    dto.setTimeEnd(booking.getTimeEnd());
+    dto.setBookingType(booking.getBookingType());
+    dto.setDescription(booking.getDescription());
+    dto.setCompanyName(booking.getCompanyName());
+    dto.setCollection(booking.getCollection());
+    
+    if (booking.getVendor() != null) {
+        dto.setVendor(new VendorDTO(booking.getVendor()));
+        dto.setVendorName(booking.getVendor().getVendorCompanyName());
+    }
+    
+    if (booking.getVendorCab() != null) {
+        dto.setVendorCab(new VendorCabsDTO(booking.getVendorCab()));
+        dto.setVendorCabName(booking.getVendorCab().getCarName());
+        dto.setCabPlateNo(booking.getVendorCab().getVehicleNo());
+    }
+    
+    if (booking.getVendorDriver() != null) {
+        dto.setVendorDriver(new VendorDriversDTO(booking.getVendorDriver()));
+        dto.setVendorDriverName(booking.getVendorDriver().getDriverName());
+    }
+    
+    if (booking.getCabAdmin() != null) {
+        dto.setCabAdmin(new CabAdminDTO(booking.getCabAdmin()));
+        dto.setMasterAdminCabName(booking.getCabAdmin().getVehicleNameAndRegNo());
+        dto.setMasterAdminCabNoPlate(booking.getCabAdmin().getVehicleRcNo());
+    }
+    
+    if (booking.getDriveAdmin() != null) {
+        dto.setDriverAdmin(new DriverAdminDTO(booking.getDriveAdmin()));
+        dto.setMasterAdminDriverName(booking.getDriveAdmin().getDriverName());
+    }
+    
+    return dto;
+}
+
     
 }

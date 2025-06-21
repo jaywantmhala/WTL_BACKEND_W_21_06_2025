@@ -217,7 +217,7 @@ public class TripService {
 	}
 
 	public void updatePrices(String sourceState, String destinationState, String sourceCity, String destinationCity,
-							 int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice, int suvPlusPrice) {
+							 int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice, int suvPlusPrice, int ertiga) {
 		List<onewayTrip> trips = this.repo.findBySourceStateAndDestinationStateAndSourceCityAndDestinationCity(
 				sourceState, destinationState, sourceCity, destinationCity);
 
@@ -227,6 +227,7 @@ public class TripService {
 			trip.setSedanpremium(sedanPremiumPrice);
 			trip.setSuv(suvPrice);
 			trip.setSuvplus(suvPlusPrice);
+			trip.setErtiga(ertiga);
 		}
 		this.repo.saveAll(trips);
 	}
@@ -389,7 +390,7 @@ public class TripService {
 
 	public onewayTrip postOneWayTripprice(String sourceState, String destinationState, String sourceCity,
 										  String destinationCity, int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice,
-										  int suvPlusPrice, String status){
+										  int suvPlusPrice, String status, int ertiga){
 
 		onewayTrip o = new onewayTrip();
 		o.setSourceState(sourceState);
@@ -402,6 +403,7 @@ public class TripService {
 		o.setSuv(suvPrice);
 		o.setSuvplus(suvPlusPrice);
 		o.setStatus("s");
+		o.setErtiga(ertiga);
 
 		return this.repo.save(o);
 	}
