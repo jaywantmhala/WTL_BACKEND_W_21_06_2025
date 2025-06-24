@@ -35,11 +35,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workshop.CarRental.Entity.CarRentalUser;
 import com.workshop.CarRental.Repository.CarRentalRepository;
 import com.workshop.CarRental.Service.CarRentalBookingService;
 import com.workshop.Entity.Booking;
 import com.workshop.Entity.CabInfo;
+import com.workshop.Entity.DeviceRequest;
 import com.workshop.Entity.VendorDrivers;
 import com.workshop.Entity.Visitors;
 import com.workshop.Entity.onewayTrip;
@@ -933,7 +938,7 @@ private String getPricingInfo(int distance, String cabType) {
 
 
 
-   @PostMapping("/cab1")
+@PostMapping("/cab1")
 public ResponseEntity<Map<String, Object>> processForm(
         @RequestParam("tripType") String tripType,
         @RequestParam("pickupLocation") String pickupLocation,
@@ -941,8 +946,8 @@ public ResponseEntity<Map<String, Object>> processForm(
         @RequestParam("date") String date,
         @RequestParam(value = "Returndate", required = false) String returndate,
         @RequestParam("time") String time,
-        @RequestParam(value = "distance", required = false) String distance
-        // @RequestParam(value="package",required = false) String package
+        @RequestParam(value = "distance", required = false) String distance,
+        @RequestParam(value="packageName",required = false) String packageName
 ) {
     Map<String, Object> response = new HashMap<>();
 
@@ -1180,8 +1185,206 @@ public ResponseEntity<Map<String, Object>> processForm(
             }
         }
 
-        else if("transfer".equalsIgnoreCase(tripType)){
+        else if("rental".equalsIgnoreCase(tripType)){
+            
+            if (calculatedDistance == 0) {
+                System.out.println("⚠️ Distance not calculated, attempting to calculate from pickup location");
+                if (pickupLocation != null && !pickupLocation.isEmpty()) {
+                    String destination = (dropLocation != null && !dropLocation.isEmpty()) ? dropLocation : pickupLocation;
+                    calculatedDistance = getDistanceFromGoogleMaps(pickupLocation, destination);
+                    System.out.println(String.format("📍 Calculated distance for rental: %d km", calculatedDistance));
+                }
+            }
+            
+            String estimatedTime = "N/A";
+            if (pickupLocation != null && !pickupLocation.isEmpty() && 
+                dropLocation != null && !dropLocation.isEmpty() && 
+                !pickupLocation.equals(dropLocation)) {
+                
+                try {
+                    String encodedPickup = URLEncoder.encode(pickupLocation, "UTF-8");
+                    String encodedDrop = URLEncoder.encode(dropLocation, "UTF-8");
+                    
+                    String url = "https://maps.googleapis.com/maps/api/directions/json?" +
+                                 "origin=" + encodedPickup +
+                                 "&destination=" + encodedDrop +
+                                 "&key=" + apiKey +
+                                 "&traffic_model=best_guess" +
+                                 "&departure_time=now";
+                    
+                    RestTemplate restTemplate = new RestTemplate();
+                    String jsonResponse = restTemplate.getForObject(url, String.class);
+                    
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode root = mapper.readTree(jsonResponse);
+                    
+                    if ("OK".equals(root.path("status").asText())) {
+                        JsonNode routes = root.path("routes");
+                        if (routes.isArray() && routes.size() > 0) {
+                            JsonNode legs = routes.get(0).path("legs");
+                            if (legs.isArray() && legs.size() > 0) {
+                                JsonNode duration = legs.get(0).path("duration");
+                                estimatedTime = duration.path("text").asText();
+                                System.out.println("🕒 Google Maps estimated time: " + estimatedTime);
+                            }
+                        }
+                    } else {
+                        System.out.println("⚠️ Google Maps API error: " + root.path("status").asText());
+                        throw new Exception("API returned: " + root.path("status").asText());
+                    }
+                    
+                } catch (Exception e) {
+                    System.out.println("⚠️ Could not get travel time from API: " + e.getMessage());
+                    if (calculatedDistance > 0) {
+                        int estimatedMinutes = (int) Math.ceil((calculatedDistance * 60.0) / 30.0);
+                        int hours = estimatedMinutes / 60;
+                        int minutes = estimatedMinutes % 60;
+                        estimatedTime = hours > 0 ? 
+                            String.format("%d hr%s %d min%s", hours, hours > 1 ? "s" : "", minutes, minutes != 1 ? "s" : "") : 
+                            String.format("%d min%s", minutes, minutes != 1 ? "s" : "");
+                        System.out.println(String.format("🕒 Fallback estimated time: %s", estimatedTime));
+                    }
+                }
+            }
+            
+            String actualPackageName = packageName;
+            boolean autoUpgraded = false;
+            
+            if (calculatedDistance > 79) {
+                actualPackageName = "8hrs/80km";
+                autoUpgraded = true;
+                System.out.println(String.format("🔄 Distance %d km > 79km: Auto-upgrading to 8hrs/80km package", calculatedDistance));
+            }
+            
+            if("4hrs/40Km".equalsIgnoreCase(actualPackageName) || "4hrs/40km".equalsIgnoreCase(actualPackageName)){
+                System.out.println("4hrs/40km package was selected");
+                
+                List<roundTrip> rentalTrips = tripSer.getRoundWayTripData(pickupLocation, dropLocation);
+                
+                if (rentalTrips.isEmpty()) {
+                    rentalTrips.add(createDefaultRoundTrip());
+                }
+                
+                for (roundTrip r : rentalTrips) {
+                    System.out.println(String.format("💰 Calculating rental pricing for distance: %d km", calculatedDistance));
+                    
+                    if (calculatedDistance >= 1 && calculatedDistance <= 10) {
+                        System.out.println("   Range 1-10km: Fixed prices for 4hrs/40km package");
+                        r.setHatchback(450);
+                        r.setSedan(500);
+                        r.setSedanpremium(2600);
+                        r.setSuv(2600);
+                        r.setSuvplus(2600);
+                        r.setErtiga(550);
+                        
+                    } else if (calculatedDistance >= 11 && calculatedDistance <= 20) {
+                        System.out.println("   Range 11-20km: Fixed prices for 4hrs/40km package");
+                        r.setHatchback(650);
+                        r.setSedan(700);
+                        r.setSedanpremium(2600);
+                        r.setSuv(2600);
+                        r.setSuvplus(2600);
+                        r.setErtiga(800);
+                        
+                    } else if (calculatedDistance >= 21 && calculatedDistance <= 30) {
+                        System.out.println("   Range 21-30km: Fixed prices for 4hrs/40km package");
+                        r.setHatchback(800);
+                        r.setSedan(900);
+                        r.setSedanpremium(2600);
+                        r.setSuv(2600);
+                        r.setSuvplus(2600);
+                        r.setErtiga(1100);
+                        
+                    } else if (calculatedDistance >= 31 && calculatedDistance <= 40) {
+                        System.out.println("   Range 31-40km: Fixed prices for 4hrs/40km package");
+                        r.setHatchback(1000);
+                        r.setSedan(1200);
+                        r.setSedanpremium(2600);
+                        r.setSuv(2600);
+                        r.setSuvplus(2600);
+                        r.setErtiga(1400);
+                        
+                    } else if(calculatedDistance >= 41 && calculatedDistance <= 79) {
+                        int extraKm = calculatedDistance-40;
+                        System.out.println("   Distance outside 1-40km range for 4hrs/40km package");
+                        r.setHatchback(1000 +extraKm*11);
+                        r.setSedan(1200+extraKm*12);
+                        r.setSedanpremium(2600+extraKm*14);
+                        r.setSuv(2600+extraKm*16);
+                        r.setSuvplus(2600+extraKm*19);
+                        r.setErtiga(1400+extraKm*14);
+                    }
 
+                    else if(calculatedDistance >=80) {
+                        int extraKm = calculatedDistance-80;
+                        System.out.println("   Distance above 80km for 4hrs/40km package");
+                        r.setHatchback(1800 +extraKm*11);
+                        r.setSedan(2200+extraKm*12);
+                        r.setSedanpremium(2600+extraKm*14);
+                        r.setSuv(2600+extraKm*16);
+                        r.setSuvplus(3500+extraKm*19);
+                        r.setErtiga(2600+extraKm*14);
+                    }
+                    
+                    r.setDistance((double) calculatedDistance);
+                    tripinfo.add(r);
+                    
+                    System.out.println(String.format("✅ Final Rental Prices - Hatchback: ₹%d, Sedan: ₹%d, Ertiga: ₹%d, SUV: ₹%d, Distance: %.1f km", 
+                        r.getHatchback(), r.getSedan(), r.getErtiga(), r.getSuv(), r.getDistance()));
+                }
+                
+                response.put("selectedPackage", "4hrs/40km package was chosen");
+                response.put("availablePackages", "Available packages: 4hrs/40km, 8hrs/80km");
+                
+            } else if("8hrs/80km".equalsIgnoreCase(actualPackageName) || "8hrs/80Km".equalsIgnoreCase(actualPackageName)){
+                System.out.println("8hrs/80km package was selected");
+                
+                List<roundTrip> rentalTrips = tripSer.getRoundWayTripData(pickupLocation, dropLocation);
+                
+                if (rentalTrips.isEmpty()) {
+                    rentalTrips.add(createDefaultRoundTrip());
+                }
+                
+                for (roundTrip r : rentalTrips) {
+                    System.out.println(String.format("💰 Calculating rental pricing for 8hrs/80km package, distance: %d km", calculatedDistance));
+                    
+                 if (calculatedDistance >= 80) {
+                        int extraKm = calculatedDistance - 80;
+                        System.out.println("   Distance above 80km for 8hrs/80km package - applying dynamic pricing");
+                        
+                        r.setHatchback(1800 + extraKm * 11);
+                        r.setSedan(2000 + extraKm * 12);
+                        r.setSedanpremium(3000 + extraKm * 14);
+                        r.setSuv(3000 + extraKm * 16);
+                        r.setSuvplus(3000 + extraKm * 19);
+                        r.setErtiga(2200 + extraKm * 14);
+                    }
+                    
+                    r.setDistance((double) calculatedDistance);
+                    tripinfo.add(r);
+                    
+                    System.out.println(String.format("✅ Final Rental Prices (8hrs/80km) - Hatchback: ₹%d, Sedan: ₹%d, Ertiga: ₹%d, SUV: ₹%d, Distance: %.1f km", 
+                        r.getHatchback(), r.getSedan(), r.getErtiga(), r.getSuv(), r.getDistance()));
+                }
+                
+                if (autoUpgraded) {
+                    response.put("selectedPackage", "Auto-upgraded to 8hrs/80km package (distance > 79km)");
+                    response.put("originalPackage", packageName);
+                    response.put("upgradeReason", "Distance exceeds 79km limit for 4hrs/40km package");
+                } else {
+                    response.put("selectedPackage", "8hrs/80km package was chosen");
+                }
+                response.put("availablePackages", "Available packages: 4hrs/40km, 8hrs/80km");
+                
+            } else {
+                System.out.println("No valid package selected");
+                response.put("message", "Please select a valid package");
+                response.put("availablePackages", "Available packages: 4hrs/40km, 8hrs/80km");
+            }
+            
+            // Add estimated time to response for rental trips
+            response.put("estimatedTravelTime", estimatedTime);
+            response.put("autoUpgraded", autoUpgraded);
         }
 
         List<CabInfo> cabs = cabser.getAll();
@@ -1534,7 +1737,9 @@ public ResponseEntity<Map<String, Object>> processForm(
             @RequestParam String total,
             @RequestParam String days,
             @RequestParam String driverrate,
-            @RequestParam String phone) {
+            @RequestParam String phone,
+                        @RequestParam(required = false) String packageName
+            ) {
 
         try {
             String bookid = "WTL" + System.currentTimeMillis();
@@ -1558,6 +1763,7 @@ public ResponseEntity<Map<String, Object>> processForm(
             booking.setAmount(Integer.parseInt(price));
             booking.setGst(Integer.parseInt(gst));
             booking.setServiceCharge(Integer.parseInt(service));
+            booking.setPackageName(packageName);
 
             if ("roundTrip".equals(tripType) || "round-trip".equals(tripType)) {
                 try {
@@ -1576,12 +1782,16 @@ public ResponseEntity<Map<String, Object>> processForm(
             booking.setBookid(bookid);
 
             ser.saveBooking(booking);
+                                String baseAmount = booking.getBaseAmount();
+
 
             sendConfirmationEmail(name, email, bookid, pickupLocation,
-                    dropLocation, tripType, date, time, total);
+                    dropLocation, tripType, date, time, baseAmount);
+
+                    // String baseAmount = booking.getBaseAmount();
 
                      sendWhatsAppBookingConfirmation(phone, bookid, name, pickupLocation,
-                    dropLocation, date, time, tripType, total);
+                    dropLocation, date, time, tripType, baseAmount);
 
             return ResponseEntity.ok(Map.of(
                     "status", "success",
@@ -1836,6 +2046,14 @@ public ResponseEntity<Map<String, Object>> processForm(
     @GetMapping("/getAllVisitor")
     public List<Visitors> getAllVisitor(){
         return this.visitorService.getAllVisitor();
+    }
+
+@PostMapping("/device")
+    public ResponseEntity<String> receiveDeviceId(@RequestBody DeviceRequest request) {
+        String deviceId = request.getDeviceId();
+        System.out.println("📱 Received Device ID: " + deviceId);
+        // Optionally: save to DB or associate with user session
+        return ResponseEntity.ok("Device ID received: " + deviceId);
     }
 
 

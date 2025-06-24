@@ -63,6 +63,7 @@ import com.workshop.Service.SmsService;
 import com.workshop.Service.StatesService;
 import com.workshop.Service.TripService;
 import com.workshop.Service.UserDetailServiceImpl;
+import com.workshop.Service.VendorService;
 import com.workshop.WhatsAppPackage.WhatsAppResponse;
 import com.workshop.WhatsAppPackage.WhatsAppService;
 
@@ -109,6 +110,9 @@ public class WtlAdminController {
 
     @Autowired
     UserDetailServiceImpl userService;
+
+    @Autowired
+    private VendorService vendorService;
 
     @Autowired
     private WhatsAppService whatsAppService;
@@ -1072,6 +1076,26 @@ public String createBooking(
     @GetMapping("/unique-company-names")
     public Set<String> getUniqueCompanyNames() {
         return bookingService.getUniqueCompanyNames();
+    }
+
+
+    @GetMapping("/vendor-company-names")
+    public ResponseEntity<Map<Long, String>> getAllVendorCompanyNames() {
+        Map<Long, String> vendorCompanyNames = bookingService.getAllVendorCompanyName();
+        return ResponseEntity.ok(vendorCompanyNames);
+    }
+
+     @GetMapping("/byBookingByVendorDTO")
+    public ResponseEntity<List<BookingDTO>> getBookingsByVendorDTO(
+            @RequestParam Long vendorId) {
+        
+        List<BookingDTO> bookings = bookingService.getBookingByVendorId(vendorId);
+        
+        if (bookings.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(bookings);
+        }
     }
     
 }

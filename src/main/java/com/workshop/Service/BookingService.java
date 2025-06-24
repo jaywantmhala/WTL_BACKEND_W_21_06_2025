@@ -528,6 +528,16 @@ public class BookingService {
                        .collect(Collectors.toList());
     }
 
+
+    public List<BookingDTO> getBookingByVendorId(Long vendorId) {
+        List<Booking> bookings = repo.findByVendorId(vendorId);
+        return bookings.stream()
+                       .map(this::convertToDTO)
+                       .collect(Collectors.toList());
+    }
+
+    
+
     public Set<String> getUniqueCompanyNames() {
         List<String> companyNames = repo.findAll()
             .stream()
@@ -610,6 +620,17 @@ public class BookingService {
     }
     
     return dto;
+}
+
+
+public Map<Long, String> getAllVendorCompanyName() {
+    List<Vendor> vendor = this.vendorRepo.findAll();
+    return vendor.stream()
+                 .collect(Collectors.toMap(
+                     Vendor::getId,     
+                     Vendor::getVendorCompanyName,  
+                     (existing, replacement) -> existing 
+                 ));
 }
 
     
