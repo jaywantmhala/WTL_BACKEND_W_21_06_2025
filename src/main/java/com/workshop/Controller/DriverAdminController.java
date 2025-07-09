@@ -60,7 +60,7 @@ public class DriverAdminController {
 
 	        DriveAdmin driverAdmin = new DriveAdmin();
 	        driverAdmin.setDriverName(DriverName);
-	        driverAdmin.setContactNo(ContactNo);
+	        driverAdmin.setcontactNo(ContactNo);
 	        driverAdmin.setAltMobNum(AltMobNum);
 	        driverAdmin.setAdress(Adress);
 	        driverAdmin.setEmailId(emailId);

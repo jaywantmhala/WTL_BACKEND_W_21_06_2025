@@ -19,7 +19,7 @@ public class DriverAdminDTO {
     public DriverAdminDTO(DriveAdmin driveAdmin){
         this.id=driveAdmin.getId();
         this.DriverName=driveAdmin.getDriverName();
-        this.ContactNo=driveAdmin.getContactNo();
+        this.ContactNo=driveAdmin.getcontactNo();
         this.emailId=driveAdmin.getEmailId();
     }
 

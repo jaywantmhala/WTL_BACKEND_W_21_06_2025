@@ -1,4 +1,3 @@
-
 package com.workshop.Controller;
 
 import java.time.LocalDate;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,6 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.workshop.CarRental.Entity.CarRentalUser;
+import com.workshop.CarRental.Repository.CarRentalRepository;
 import com.workshop.DTO.BookingDTO;
 import com.workshop.DTO.CancellationRequest;
 import com.workshop.DTO.CancellationResult;
@@ -63,9 +64,6 @@ import com.workshop.Service.SmsService;
 import com.workshop.Service.StatesService;
 import com.workshop.Service.TripService;
 import com.workshop.Service.UserDetailServiceImpl;
-import com.workshop.Service.VendorService;
-import com.workshop.WhatsAppPackage.WhatsAppResponse;
-import com.workshop.WhatsAppPackage.WhatsAppService;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -97,10 +95,16 @@ public class WtlAdminController {
     private EmailService emailService;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private TripRateService tripRateService;
 
     @Autowired
     private StatesService statesService;
+
+    @Autowired
+    private CarRentalRepository carRentalRepository;
 
     @Autowired
     private CitiesService citiesService;
@@ -110,12 +114,6 @@ public class WtlAdminController {
 
     @Autowired
     UserDetailServiceImpl userService;
-
-    @Autowired
-    private VendorService vendorService;
-
-    @Autowired
-    private WhatsAppService whatsAppService;
 
     WtlAdminController(AuthenticationManagerBuilder authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -207,7 +205,21 @@ public class WtlAdminController {
             @RequestParam int sedanPrice,
             @RequestParam int sedanPremiumPrice,
             @RequestParam int suvPrice,
-            @RequestParam int suvPlusPrice, @RequestParam int ertiga) {
+            @RequestParam int suvPlusPrice,
+            @RequestParam(required = false) Integer ertiga) {
+
+        // DEBUG LOGGING: Log all received parameters
+        System.out.println("[DEBUG] /update-prices called with:");
+        System.out.println("  sourceState=" + sourceState);
+        System.out.println("  destinationState=" + destinationState);
+        System.out.println("  sourceCity=" + sourceCity);
+        System.out.println("  destinationCity=" + destinationCity);
+        System.out.println("  hatchbackPrice=" + hatchbackPrice);
+        System.out.println("  sedanPrice=" + sedanPrice);
+        System.out.println("  sedanPremiumPrice=" + sedanPremiumPrice);
+        System.out.println("  suvPrice=" + suvPrice);
+        System.out.println("  suvPlusPrice=" + suvPlusPrice);
+        System.out.println("  ertiga=" + ertiga);
 
         // Call the service to update trip prices
         tripSer.updatePrices(sourceState, destinationState, sourceCity, destinationCity,
@@ -335,11 +347,11 @@ public class WtlAdminController {
             @RequestParam int sedanPremiumPrice,
             @RequestParam int suvPrice,
             @RequestParam int suvPlusPrice,
-            @RequestParam int ertiga) {
+            @RequestParam(required = false) Integer ertiga) {
 
-        // Call the service to update trip prices
+        // Call the service to update trip prices (now with Ertiga)
         tripSer.updatePricesByRoundWay(sourceState, destinationState, sourceCity, destinationCity,
-                hatchbackPrice, sedanPrice, sedanPremiumPrice, suvPrice, suvPlusPrice,ertiga);
+                hatchbackPrice, sedanPrice, sedanPremiumPrice, suvPrice, suvPlusPrice, ertiga);
 
         // Construct a JSON response
         Map<String, String> response = new HashMap<>();
@@ -426,11 +438,11 @@ public class WtlAdminController {
                     + updatedBooking.getAmount() + "</li>"
                     + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Cab Name:</strong> "
                     + updatedBooking.getVendorCab().getCarName() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Vehicle No:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Vehicle No:</strong> "
                     + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Name:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Driver Name:</strong> "
                     + updatedBooking.getVendorDriver().getDriverName() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Contact:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Driver Contact:</strong> "
                     + updatedBooking.getVendorDriver().getContactNo() + "</li>"
                     + "</ul>"
                     + "</div>"
@@ -450,13 +462,6 @@ public class WtlAdminController {
             } else {
                 System.out.println("Failed to send booking confirmation email.");
             }
-
-             if (updatedBooking.getVendorCab() != null && updatedBooking.getVendorDriver() != null) {
-            sendCompleteAssignmentWhatsApp(updatedBooking);
-        } else {
-            System.out.println("Waiting for cab assignment to send complete WhatsApp notification");
-        }
-
 
         }
 
@@ -510,15 +515,15 @@ public class WtlAdminController {
                     + updatedBooking.getDate() + "</li>"
                     + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Time:</strong> "
                     + updatedBooking.getTime() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Amount Paid:</strong> ₹"
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Amount Paid:</strong> ₹"
                     + updatedBooking.getAmount() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Cab Name:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Cab Name:</strong> "
                     + updatedBooking.getVendorCab().getCarName() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Vehicle No:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Vehicle No:</strong> "
                     + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Name:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Driver Name:</strong> "
                     + updatedBooking.getVendorDriver().getDriverName() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Contact:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Driver Contact:</strong> "
                     + updatedBooking.getVendorDriver().getContactNo() + "</li>"
                     + "</ul>"
                     + "</div>"
@@ -540,54 +545,9 @@ public class WtlAdminController {
                 System.out.println("Failed to send booking confirmation email.");
             }
         }
-         if (updatedBooking.getVendorCab() != null && updatedBooking.getVendorDriver() != null) {
-            sendCompleteAssignmentWhatsApp(updatedBooking);
-        } else {
-            System.out.println("Waiting for cab assignment to send complete WhatsApp notification");
-        }
-
 
         return ResponseEntity.ok(updatedBooking);
     }
-    private void sendCompleteAssignmentWhatsApp(Booking booking) {
-        try {
-            // logger.info("Sending complete assignment WhatsApp for booking: {}", booking.getBookid());
-
-            String customerPhone = booking.getPhone();
-            String driverName = booking.getVendorDriver().getDriverName();
-            String driverPhone = booking.getVendorDriver().getContactNo();
-            String vehicleNo = booking.getVendorCab().getVehicleNo();
-            String bookingId = booking.getBookid();
-
-            // logger.info("Sending complete notification - Customer: {} | Driver: {} | Driver Phone: {} | Vehicle: {}",
-                    // customerPhone, driverName, driverPhone, vehicleNo);
-
-
-            if (!whatsAppService.isValidPhoneNumber(customerPhone)) {
-                System.out.println(customerPhone);
-                // logger.warn("Invalid customer phone number for WhatsApp: {} (Booking: {})", customerPhone, bookingId);
-                return;
-            }
-
-            WhatsAppResponse whatsAppResponse = whatsAppService.sendDriverAssignmentNotification(
-                    customerPhone,
-                    driverName,
-                    driverPhone,
-                    vehicleNo,
-                    bookingId
-            );
-
-            if (whatsAppResponse != null) {
-                // logger.info("Complete assignment WhatsApp sent successfully for booking: {}", bookingId);
-            } else {
-                // logger.warn("WhatsApp API returned empty response for complete notification: {}", bookingId);
-            }
-
-        } catch (Exception e) {
-            // logger.error("Failed to send complete assignment WhatsApp for booking {}: {}", booking.getBookid(), e.getMessage());
-        }
-    }
-
 
     @PostMapping("/wtlLogin")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -605,10 +565,10 @@ public class WtlAdminController {
 
     // @PostMapping("/customBooking")
     // public Booking createCustomBooking(@RequestBody Booking b) {
-    //     return this.bookingService.createCustomBooking(b);
+    // return this.bookingService.createCustomBooking(b);
     // }
 
-   @PostMapping("/create")
+    @PostMapping("/create")
 public String createBooking(
         @RequestParam(required = false) String fromLocation,
         @RequestParam(required = false) String toLocation,
@@ -624,7 +584,6 @@ public String createBooking(
         @RequestParam(required = false) String phone,
         @RequestParam(required = false) String userPickup,
         @RequestParam(required = false) String comanyName,
-
         @RequestParam(required = false) String userDrop,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @RequestParam(required = false) String userTripType,
@@ -652,14 +611,36 @@ public String createBooking(
         @RequestParam(required = false) String odoometerEnterTimeStarted,
         @RequestParam(required = false) String driverEnterOtpTimePostTrip,
         @RequestParam(required = false) String odometerEnding,
-        @RequestParam(required = false) String odoometerEnterTimeEnding
-) {
+        @RequestParam(required = false) String odoometerEnterTimeEnding) {
+    
     Booking booking = new Booking();
+    CarRentalUser carRental;
+
+    // SOLUTION 1: Check if user already exists, if not create new one
+    Optional<CarRentalUser> existingUser = carRentalRepository.findByPhone(phone);
+    
+    if (existingUser.isPresent()) {
+        // ✅ Use existing user
+        carRental = existingUser.get();
+    } else {
+        // ✅ Create new user with all required fields
+        carRental = new CarRentalUser();
+        carRental.setPhone(phone);
+            String encodedPassword = passwordEncoder.encode("CUSTOMUSER@123");
+
+        carRental.setPassword(encodedPassword);
+        carRental.setUserName(name);           // ✅ Add required fields
+        carRental.setEmail(email);             // ✅ Add email
+        carRental.setRole("USER");         // ✅ Add role if required
+        // Add any other required fields for CarRentalUser
+        
+        // ✅ SAVE CarRentalUser FIRST
+        carRental = carRentalRepository.save(carRental);
+    }
 
     // Generate unique booking ID
     String bookids = "CSTM_WTL" + System.currentTimeMillis();
-    booking.setBookid(bookids); // use generated ID
-
+    booking.setBookid(bookids);
     booking.setBookingId(bookids);
     booking.setFromLocation(userPickup);
     booking.setToLocation(userDrop);
@@ -674,11 +655,8 @@ public String createBooking(
     booking.setName(name);
     booking.setEmail(email);
     booking.setPhone(phone);
-
-    // Use the actual user pickup/drop input values
     booking.setUserPickup(userPickup);
     booking.setUserDrop(userDrop);
-
     booking.setDate(date);
     booking.setUserTripType(userTripType);
     booking.setCar(car);
@@ -706,15 +684,18 @@ public String createBooking(
     booking.setDriverEnterOtpTimePostTrip(driverEnterOtpTimePostTrip);
     booking.setOdometerEnding(odometerEnding);
     booking.setOdoometerEnterTimeEnding(odoometerEnterTimeEnding);
+    
+    // ✅ Set the saved CarRentalUser
+    booking.setCarRentalUser(carRental);
 
+    // ✅ Now save the booking
     bookingRepo.save(booking);
 
     return "Booking created successfully!";
 }
 
-
     @PostMapping("/c")
-    public Booking creatBooking(@RequestBody Booking b){
+    public Booking creatBooking(@RequestBody Booking b) {
         return this.bookingRepo.save(b);
     }
 
@@ -750,7 +731,6 @@ public String createBooking(
             @RequestParam int sedanPremiumPrice,
             @RequestParam int suvPrice,
             @RequestParam int suvPlusPrice,
-            @RequestParam int ertiga,
             @RequestParam(required = false, defaultValue = "s") String status) {
 
         // Call the service method which contains your provided code.
@@ -764,8 +744,9 @@ public String createBooking(
                 sedanPremiumPrice,
                 suvPrice,
                 suvPlusPrice,
-                status,
-                ertiga);
+                status);
+
+        // Return the saved one-way trip pricing object along with HTTP 200 OK status.
         return ResponseEntity.ok(savedTrip);
     }
 
@@ -787,7 +768,6 @@ public String createBooking(
             @RequestParam int sedanPremiumPrice,
             @RequestParam int suvPrice,
             @RequestParam int suvPlusPrice,
-            @RequestParam int ertiga,
             @RequestParam(required = false, defaultValue = "s") String status) {
 
         onewayTrip savedTrip = tripSer.postOneWayTripprice(
@@ -800,7 +780,7 @@ public String createBooking(
                 sedanPremiumPrice,
                 suvPrice,
                 suvPlusPrice,
-                status,ertiga);
+                status);
 
         return ResponseEntity.ok(savedTrip);
     }
@@ -859,15 +839,15 @@ public String createBooking(
                     + updatedBooking.getDate() + "</li>"
                     + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Time:</strong> "
                     + updatedBooking.getTime() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Amount Paid:</strong> ₹"
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Amount Paid:</strong> ₹"
                     + updatedBooking.getAmount() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Cab Name:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Cab Name:</strong> "
                     + updatedBooking.getVendorCab().getCarName() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Vehicle No:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Vehicle No:</strong> "
                     + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Name:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Driver Name:</strong> "
                     + updatedBooking.getVendorDriver().getDriverName() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Contact:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Driver Contact:</strong> "
                     + updatedBooking.getVendorDriver().getContactNo() + "</li>"
                     + "</ul>"
                     + "</div>"
@@ -939,15 +919,15 @@ public String createBooking(
                     + updatedBooking.getDate() + "</li>"
                     + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Time:</strong> "
                     + updatedBooking.getTime() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Amount Paid:</strong> ₹"
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Amount Paid:</strong> ₹"
                     + updatedBooking.getAmount() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Cab Name:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Cab Name:</strong> "
                     + updatedBooking.getVendorCab().getCarName() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Vehicle No:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Vehicle No:</strong> "
                     + updatedBooking.getVendorCab().getVehicleNo() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Name:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Driver Name:</strong> "
                     + updatedBooking.getVendorDriver().getDriverName() + "</li>"
-                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;'><strong style='color: #007BFF;'>Driver Contact:</strong> "
+                    + "<li style='margin-bottom: 10px; font-size: 14px; color: #555555;><strong style='color: #007BFF;'>Driver Contact:</strong> "
                     + updatedBooking.getVendorDriver().getContactNo() + "</li>"
                     + "</ul>"
                     + "</div>"
@@ -1034,8 +1014,7 @@ public String createBooking(
         return bookingService.bookingValidated(name, phone, email);
     }
 
-
-    @PutMapping("/updateBooking/{id}")
+    @PutMapping("/booking/{id}")
     public ResponseEntity<BookingDTO> updateBookingById(@PathVariable int id, @RequestBody BookingDTO bookingDTO) {
         // Debug: Log incoming DTO
         System.out.println("[DEBUG] updateBookingById called for id=" + id);
@@ -1057,45 +1036,4 @@ public String createBooking(
         }
     }
 
-
-
-    @GetMapping("/byCompany")
-    public ResponseEntity<List<BookingDTO>> getBookingsByCompanyName(
-            @RequestParam String companyName) {
-        
-        List<BookingDTO> bookings = bookingService.getBookingByCompanyName(companyName);
-        
-        if (bookings.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.ok(bookings);
-        }
-    }
-
-
-    @GetMapping("/unique-company-names")
-    public Set<String> getUniqueCompanyNames() {
-        return bookingService.getUniqueCompanyNames();
-    }
-
-
-    @GetMapping("/vendor-company-names")
-    public ResponseEntity<Map<Long, String>> getAllVendorCompanyNames() {
-        Map<Long, String> vendorCompanyNames = bookingService.getAllVendorCompanyName();
-        return ResponseEntity.ok(vendorCompanyNames);
-    }
-
-     @GetMapping("/byBookingByVendorDTO")
-    public ResponseEntity<List<BookingDTO>> getBookingsByVendorDTO(
-            @RequestParam Long vendorId) {
-        
-        List<BookingDTO> bookings = bookingService.getBookingByVendorId(vendorId);
-        
-        if (bookings.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.ok(bookings);
-        }
-    }
-    
 }

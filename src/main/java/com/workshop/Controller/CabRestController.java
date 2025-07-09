@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workshop.CarRental.Entity.CarRentalUser;
 import com.workshop.CarRental.Repository.CarRentalRepository;
 import com.workshop.CarRental.Service.CarRentalBookingService;
+import com.workshop.DTO.PricingResponse;
 import com.workshop.Entity.Booking;
 import com.workshop.Entity.CabInfo;
 import com.workshop.Entity.DeviceRequest;
@@ -101,6 +102,9 @@ public class CabRestController {
 
     @Autowired
     private WhatsAppService whatsAppService;
+
+    @Autowired
+    private OneFiftyService oneFiftyService;
 
     private String apiKey = "AIzaSyCelDo4I5cPQ72TfCTQW-arhPZ7ALNcp8w";
 
@@ -978,126 +982,18 @@ public ResponseEntity<Map<String, Object>> processForm(
             }
 
             for (onewayTrip o : oneWayTrips) {
-                if (calculatedDistance <= 150) {
-                    System.out.println(String.format("💰 Calculating optimized pricing for distance: %d km", calculatedDistance));
-                    
-                    if (calculatedDistance >= 1 && calculatedDistance <= 10) {
-                        // Distance 1-10 km: Fixed prices
-                        System.out.println("   Range 1-10km: Fixed prices");
-                        o.setHatchback(460);
-                        o.setSedan(450);
-                        o.setSedanpremium(480);
-                        o.setSuv(2500);
-                        o.setSuvplus(2600);
-                        o.setErtiga(500);
-                        
-                    } else if (calculatedDistance >= 11 && calculatedDistance <= 20) {
-                        // Distance 11-20 km: Fixed prices
-                        System.out.println("   Range 11-20km: Fixed prices");
-                        o.setHatchback(650);
-                        o.setSedan(700);
-                        o.setSedanpremium(750);
-                        o.setSuv(2500);
-                        o.setSuvplus(2600);
-                        o.setErtiga(800);
-                        
-                    } else if (calculatedDistance >= 21 && calculatedDistance <= 30) {
-                        // Distance 21-30 km: Fixed prices
-                        System.out.println("   Range 21-30km: Fixed prices");
-                        o.setHatchback(800);
-                        o.setSedan(900);
-                        o.setSedanpremium(1000);
-                        o.setSuv(2500);
-                        o.setSuvplus(2700);
-                        o.setErtiga(1100);
-                        
-                    } else if (calculatedDistance >= 31 && calculatedDistance <= 40) {
-                        // Distance 31-40 km: Fixed prices
-                        System.out.println("   Range 31-40km: Fixed prices");
-                        o.setHatchback(1000);
-                        o.setSedan(1200);
-                        o.setSedanpremium(1300);
-                        o.setSuv(2500);
-                        o.setSuvplus(2800);
-                        o.setErtiga(1400);
-                        
-                    } else if (calculatedDistance >= 41 && calculatedDistance <= 50) {
-                        System.out.println("   Range 41-50km: Base + 10km extra");
-                        int extraKm = 10;
-                        o.setHatchback(1000 + (15 * extraKm));  
-                        o.setSedan(1200 + (18 * extraKm));      
-                        o.setSedanpremium(1300 + (20 * extraKm)); 
-                        o.setSuv(2500 + (25 * extraKm));        
-                        o.setSuvplus(2800 + (27 * extraKm));    
-                        o.setErtiga(1400 + (27 * extraKm));     
-                        
-                        // if (o.getSuv() > 2700) o.setSuv(2700);
-                        // if (o.getSuvplus() > 2700) o.setSuvplus(2700);
-                        
-                    } else if (calculatedDistance >= 51 && calculatedDistance <= 80) {
-                        System.out.println("   Range 51-80km: Progressive rate");
-                        int extraDistance = calculatedDistance - 50;
-                        
-                        int hatchbackBase = 1000 + (15 * 10);  
-                        int sedanBase = 1200 + (18 * 10);      
-                        int sedanPremiumBase = 1300 + (20 * 10); 
-                        int suvBase = 2500 + (25 * 10);        
-                        int suvPlusBase = 2700;                 
-                        int ertigaBase = 1400 + (22 * 10);    
-                        
-                        o.setHatchback(hatchbackBase + (15 * extraDistance));
-                        o.setSedan(sedanBase + (18 * extraDistance));
-                        o.setSedanpremium(sedanPremiumBase + (20 * extraDistance));
-                        o.setSuv((2700 + (25 * extraDistance))); 
-                        o.setSuvplus((suvPlusBase + (27 * extraDistance))); 
-                        o.setErtiga(ertigaBase + (22 * extraDistance));
-                        
-                    } else if (calculatedDistance >= 81 && calculatedDistance <= 85) {
-                        System.out.println("   Range 81-85km: Fixed prices");
-                        o.setHatchback(2200);
-                        o.setSedan(2400);
-                        o.setSedanpremium(2500);
-                        o.setSuv(2700); // Capped
-                        o.setSuvplus(2700); 
-                        o.setErtiga(2600);
-                        
-                    } else if (calculatedDistance >= 86 && calculatedDistance <= 120) {
-                        System.out.println("   Range 86-120km: Extended rate");
-                        int extraDistance = calculatedDistance - 80;
-                        
-                        o.setHatchback(2200 + (15 * extraDistance));
-                        o.setSedan(2400 + (18 * extraDistance));
-                        o.setSedanpremium(2500 + (20 * extraDistance));
-                        o.setSuv((2700 + (25 * extraDistance))); 
-                        o.setSuvplus((2700 + (27 * extraDistance))); 
-                        o.setErtiga(2700 + (22 * extraDistance));
-                        
-                    } else if (calculatedDistance >= 121 && calculatedDistance <= 150) {
-                        System.out.println("   Range 121-150km: Final range");
-                        int extraDistance = calculatedDistance - 121;
-                        
-                        o.setHatchback(2600 + (15 * extraDistance));
-                        o.setSedan(2800 + (18 * extraDistance));
-                        o.setSedanpremium(2900 + (20 * extraDistance));
-                        o.setSuv((2700 + (25 * extraDistance) )); 
-                        o.setSuvplus((2700 + (27 * extraDistance))); 
-                        o.setErtiga(3000 + (22 * extraDistance));
-                        
-                    }
-                    //  else {
-                    //     // Distance outside supported range (less than 1 km)
-                    //     System.out.println("⚠️ Distance is outside supported range (1-150 km)");
-                    //     o.setHatchback(0);
-                    //     o.setSedan(0);
-                    //     o.setSedanpremium(0);
-                    //     o.setSuv(0);
-                    //     o.setSuvplus(0);
-                    //     o.setErtiga(0);
-                    // }
-                    
-                    // // Log final prices
-                    // System.out.println(String.format("✅ Final Prices - Hatchback: ₹%d, Sedan: ₹%d, Ertiga: ₹%d, SUV: ₹%d", 
-                    //     o.getHatchback(), o.getSedan(), o.getErtiga(), o.getSuv()));
+                  if (calculatedDistance <= 150) {
+                    System.out.println("💰 Using DB-based pricing for distance ≤ 150 km: " + calculatedDistance + " km");
+
+                    PricingResponse pricing = this.oneFiftyService.applyPricing(calculatedDistance); // Call DB pricing method
+
+                    o.setHatchback(pricing.getHatchback());
+                    o.setSedan(pricing.getSedan());
+                    o.setSedanpremium(pricing.getSedanpremium());
+                    o.setSuv(pricing.getSuv());
+                    o.setSuvplus(pricing.getSuvplus());
+                    o.setErtiga(pricing.getErtiga());
+
                 }
                  else {
                     o.setHatchback(o.getHatchback() * calculatedDistance);
@@ -1111,8 +1007,9 @@ public ResponseEntity<Map<String, Object>> processForm(
                 o.setDistance((double) calculatedDistance);
                 tripinfo.add(o);
             }
+        }
 
-        } else if ("roundTrip".equalsIgnoreCase(tripType)) {
+         else if ("roundTrip".equalsIgnoreCase(tripType)) {
             LocalDate localDate1 = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
             LocalDate localDate2 = LocalDate.parse(returndate, DateTimeFormatter.ISO_DATE);
             days = (int) ChronoUnit.DAYS.between(localDate1, localDate2) + 1;
@@ -1782,22 +1679,20 @@ public ResponseEntity<Map<String, Object>> processForm(
             booking.setBookid(bookid);
 
             ser.saveBooking(booking);
-                                String baseAmount = booking.getBaseAmount();
+                               
 
 
             sendConfirmationEmail(name, email, bookid, pickupLocation,
-                    dropLocation, tripType, date, time, baseAmount);
+                    dropLocation, tripType, date, time, price);
 
-                    // String baseAmount = booking.getBaseAmount();
 
                      sendWhatsAppBookingConfirmation(phone, bookid, name, pickupLocation,
-                    dropLocation, date, time, tripType, baseAmount);
+                    dropLocation, date, time, tripType, price);
 
             return ResponseEntity.ok(Map.of(
                     "status", "success",
                     "bookingId", bookid,
                     "message", "Booking created successfully"));
-
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -1807,7 +1702,7 @@ public ResponseEntity<Map<String, Object>> processForm(
 
     private void sendWhatsAppBookingConfirmation(String phone, String bookingId, String name,
                                                  String pickupLocation, String dropLocation,
-                                                 String date, String time, String tripType, String total) {
+                                                 String date, String time, String tripType, String price) {
         try {
             // logger.info("Attempting to send WhatsApp confirmation for booking: {}", bookingId);
 
@@ -1826,7 +1721,7 @@ public ResponseEntity<Map<String, Object>> processForm(
             bookingDetails.setDate(date);
             bookingDetails.setTime(time);
             bookingDetails.setTripType(tripType);
-            bookingDetails.setPrice(total);
+            bookingDetails.setPrice(price);
 
             //whatsapp msg
             WhatsAppResponse whatsAppResponse = whatsAppService.sendBookingConfirmation(phone, bookingDetails);
@@ -2056,8 +1951,67 @@ public ResponseEntity<Map<String, Object>> processForm(
         return ResponseEntity.ok("Device ID received: " + deviceId);
     }
 
+@GetMapping("/oneFiftypricing")
+    public PricingResponse  getPricingGet(
+            // @RequestParam("pickupLocation") String pickupLocation,
+            // @RequestParam("dropLocation") String dropLocation,
+            @RequestParam("distance") int distance
+    ) {
+       
+        return this.oneFiftyService.applyPricing( distance);
+    }    
+
+
+
+
+
+ @PutMapping("/oneFiftyupdate")
+    public ResponseEntity<PricingResponse> updatePricing(
+            @RequestParam int id,
+            @RequestParam int minDistance,
+            @RequestParam int maxDistance,
+            @RequestParam int hatchback,
+            @RequestParam int sedan,
+            @RequestParam int sedanpremium,
+            @RequestParam int suv,
+            @RequestParam int suvplus,
+            @RequestParam int ertiga
+    ) {
+        try {
+            PricingResponse response = oneFiftyService.updatePricingWithParams(
+                    id, minDistance, maxDistance,
+                    hatchback, sedan, sedanpremium,
+                    suv, suvplus, ertiga
+            );
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
     
+    @PostMapping("/oneFiftyCreate")
+    public ResponseEntity<PricingResponse> createPricing(
+            @RequestParam int minDistance,
+            @RequestParam int maxDistance,
+            @RequestParam int hatchback,
+            @RequestParam int sedan,
+            @RequestParam int sedanpremium,
+            @RequestParam int suv,
+            @RequestParam int suvplus,
+            @RequestParam int ertiga
+    ) {
+        try {
+            PricingResponse response = oneFiftyService.createPricingWithParams(
+                    minDistance, maxDistance,
+                    hatchback, sedan, sedanpremium,
+                    suv, suvplus, ertiga
+            );
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
 
 }

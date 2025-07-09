@@ -21,7 +21,7 @@ public class DriveAdmin {
 	
 	private String DriverName; 
 	
-	private String ContactNo;
+	private String contactNo;
 	
 	private String AltMobNum;
 	
@@ -47,6 +47,14 @@ public class DriveAdmin {
 	
 	private String status;
 
+private String role="ADMIN_DRIVER";
+
+	private String password;
+
+	private Double driverLatitude;
+
+	private Double driverLongitude;
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "driveAdmin")
 	@JsonBackReference
@@ -61,11 +69,11 @@ public class DriveAdmin {
 
 	public DriveAdmin(int id, String driverName, String contactNo, String altMobNum, String emailId, String adress,
 			String aadhaNo, String drLicenseNo, String pvcNo, String driverImgSelfie, String aadhar,
-			String drLicenceNum, String pvcNo2, String otherDetails, String status, List<Booking> booking) {
+			String drLicenceNum, String pvcNo2, String otherDetails, String status, List<Booking> booking, String role, String password, Double driverLatitude, Double driverLongitude) {
 		super();
 		this.id = id;
 		DriverName = driverName;
-		ContactNo = contactNo;
+		contactNo = contactNo;
 		AltMobNum = altMobNum;
 		this.emailId = emailId;
 		Adress = adress;
@@ -79,6 +87,10 @@ public class DriveAdmin {
 		this.otherDetails = otherDetails;
 		this.status=status;
 		this.booking=booking;
+		this.role=role;
+		this.password=password;
+		this.driverLatitude=driverLatitude;
+		this.driverLongitude=driverLongitude;
 	}
 
 
@@ -99,12 +111,12 @@ public class DriveAdmin {
 		DriverName = driverName;
 	}
 
-	public String getContactNo() {
-		return ContactNo;
+	public String getcontactNo() {
+		return contactNo;
 	}
 
-	public void setContactNo(String contactNo) {
-		ContactNo = contactNo;
+	public void setcontactNo(String contactNo) {
+		contactNo = contactNo;
 	}
 
 	public String getAltMobNum() {
@@ -229,6 +241,54 @@ public class DriveAdmin {
 
 	public void setBooking(List<Booking> booking) {
 		this.booking = booking;
+	}
+
+
+
+	public String getRole() {
+		return role;
+	}
+
+
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+
+
+	public String getPassword() {
+		return password;
+	}
+
+
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+
+
+	public Double getDriverLatitude() {
+		return driverLatitude;
+	}
+
+
+
+	public void setDriverLatitude(Double driverLatitude) {
+		this.driverLatitude = driverLatitude;
+	}
+
+
+
+	public Double getDriverLongitude() {
+		return driverLongitude;
+	}
+
+
+
+	public void setDriverLongitude(Double driverLongitude) {
+		this.driverLongitude = driverLongitude;
 	} 
 	
 	

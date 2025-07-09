@@ -52,7 +52,8 @@ public class TripService {
 	}
 
 	// UPDATED: Use static method - no injection needed
-	public List<onewayTrip> getOneWayTripsWithDefaults(String sourceCity, String sourceState, String destCity, String destState) {
+	public List<onewayTrip> getOneWayTripsWithDefaults(String sourceCity, String sourceState, String destCity,
+			String destState) {
 
 		List<Trip> existingTrips = getonewayTrip(destCity, sourceCity);
 
@@ -75,32 +76,32 @@ public class TripService {
 		defaultTrip.setDestinationCity(destCity);
 		defaultTrip.setDestinationState(destState);
 
-		return List.of(defaultTrip);	
+		return List.of(defaultTrip);
 	}
 
 	// UPDATED: Use static method - no injection needed
-	public List<onewayTrip> getAllData(String sourceCity, String sourceState, String destinationState, String destinationCity) {
+	public List<onewayTrip> getAllData(String sourceCity, String sourceState, String destinationState,
+			String destinationCity) {
 		List<onewayTrip> trips = repo.findBySourceStateAndSourceCityAndDestinationStateAndDestinationCity(
 				sourceState, sourceCity, destinationState, destinationCity);
 
+		// FIX: Only return a default if there is truly no record in the database
 		if (trips == null || trips.isEmpty()) {
-			// CHANGED: Direct static call - no injection, no circular dependency
+			// Only return a default if no record exists
 			onewayTrip newTrip = CabRestController.getDefaultOneWayTrip();
-
-			// Set the actual location data
 			newTrip.setSourceCity(sourceCity);
 			newTrip.setSourceState(sourceState);
 			newTrip.setDestinationCity(destinationCity);
 			newTrip.setDestinationState(destinationState);
-
 			return List.of(newTrip);
 		}
 
+		// Always return the actual database values (including updated Ertiga, etc.)
 		return trips;
 	}
 
 	public int getRoundDistance(LocalDate localDate1, LocalTime time1, LocalDate localDate2, LocalTime time2,
-								String distance) {
+			String distance) {
 
 		int Distance = Integer.parseInt(distance);
 
@@ -197,7 +198,7 @@ public class TripService {
 	}
 
 	public onewayTrip updatePrice(Long id, int hatchback, int sedan, int sedanpremium, int suv, int suvplus,
-								  String sourceState, String sourceCity, String destinationState, String destinationCity) {
+			String sourceState, String sourceCity, String destinationState, String destinationCity) {
 		Optional<onewayTrip> tripOptional = repo.findById(id);
 		if (tripOptional.isPresent()) {
 			onewayTrip trip = tripOptional.get();
@@ -217,19 +218,55 @@ public class TripService {
 	}
 
 	public void updatePrices(String sourceState, String destinationState, String sourceCity, String destinationCity,
-							 int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice, int suvPlusPrice, int ertiga) {
+			int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice, int suvPlusPrice, Integer ertiga) {
+		// DEBUG LOGGING: Log all received parameters
+		System.out.println("[DEBUG] TripService.updatePrices called with:");
+		System.out.println("  sourceState=" + sourceState);
+		System.out.println("  destinationState=" + destinationState);
+		System.out.println("  sourceCity=" + sourceCity);
+		System.out.println("  destinationCity=" + destinationCity);
+		System.out.println("  hatchbackPrice=" + hatchbackPrice);
+		System.out.println("  sedanPrice=" + sedanPrice);
+		System.out.println("  sedanPremiumPrice=" + sedanPremiumPrice);
+		System.out.println("  suvPrice=" + suvPrice);
+		System.out.println("  suvPlusPrice=" + suvPlusPrice);
+		System.out.println("  ertiga=" + ertiga);
+
 		List<onewayTrip> trips = this.repo.findBySourceStateAndDestinationStateAndSourceCityAndDestinationCity(
 				sourceState, destinationState, sourceCity, destinationCity);
 
-		for (onewayTrip trip : trips) {
-			trip.setHatchback(hatchbackPrice);
-			trip.setSedan(sedanPrice);
-			trip.setSedanpremium(sedanPremiumPrice);
-			trip.setSuv(suvPrice);
-			trip.setSuvplus(suvPlusPrice);
-			trip.setErtiga(ertiga);
+		if (trips == null || trips.isEmpty()) {
+			// If no trip exists, create a new one
+			onewayTrip newTrip = new onewayTrip();
+			newTrip.setSourceState(sourceState);
+			newTrip.setDestinationState(destinationState);
+			newTrip.setSourceCity(sourceCity);
+			newTrip.setDestinationCity(destinationCity);
+			newTrip.setHatchback(hatchbackPrice);
+			newTrip.setSedan(sedanPrice);
+			newTrip.setSedanpremium(sedanPremiumPrice);
+			newTrip.setSuv(suvPrice);
+			newTrip.setSuvplus(suvPlusPrice);
+			if (ertiga != null) {
+				newTrip.setErtiga(ertiga);
+			}
+			newTrip.setStatus("s"); // or whatever default status is appropriate
+			System.out.println("[DEBUG] Creating new onewayTrip with values: " + newTrip);
+			this.repo.save(newTrip);
+		} else {
+			for (onewayTrip trip : trips) {
+				trip.setHatchback(hatchbackPrice);
+				trip.setSedan(sedanPrice);
+				trip.setSedanpremium(sedanPremiumPrice);
+				trip.setSuv(suvPrice);
+				trip.setSuvplus(suvPlusPrice);
+				if (ertiga != null) {
+					trip.setErtiga(ertiga);
+				}
+				System.out.println("[DEBUG] Updating existing onewayTrip (id=" + trip.getId() + ") with values: " + trip);
+			}
+			this.repo.saveAll(trips);
 		}
-		this.repo.saveAll(trips);
 	}
 
 	public onewayTrip updatePrice(String sourceState, String destinationState, onewayTrip oneway) {
@@ -239,20 +276,43 @@ public class TripService {
 	}
 
 	public void updatePricesByRoundWay(String sourceState, String destinationState, String sourceCity,
-									   String destinationCity, int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice,
-									   int suvPlusPrice,int ertiga) {
+			String destinationCity, int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice,
+			int suvPlusPrice, Integer ertiga) {
 		List<roundTrip> trips = this.roundrepo.findBySourceStateAndDestinationStateAndSourceCityAndDestinationCity(
 				sourceState, destinationState, sourceCity, destinationCity);
 
-		for (roundTrip trip : trips) {
-			trip.setHatchback(hatchbackPrice);
-			trip.setSedan(sedanPrice);
-			trip.setSedanpremium(sedanPremiumPrice);
-			trip.setSuv(suvPrice);
-			trip.setSuvplus(suvPlusPrice);
-			trip.setErtiga(ertiga);
+		if (trips == null || trips.isEmpty()) {
+			// If no trip exists, create a new one
+			roundTrip newTrip = new roundTrip();
+			newTrip.setSourceState(sourceState);
+			newTrip.setDestinationState(destinationState);
+			newTrip.setSourceCity(sourceCity);
+			newTrip.setDestinationCity(destinationCity);
+			newTrip.setHatchback(hatchbackPrice);
+			newTrip.setSedan(sedanPrice);
+			newTrip.setSedanpremium(sedanPremiumPrice);
+			newTrip.setSuv(suvPrice);
+			newTrip.setSuvplus(suvPlusPrice);
+			if (ertiga != null) {
+				newTrip.setErtiga(ertiga);
+			}
+			newTrip.setStatus("s");
+			System.out.println("[DEBUG] Creating new roundTrip with values: " + newTrip);
+			this.roundrepo.save(newTrip);
+		} else {
+			for (roundTrip trip : trips) {
+				trip.setHatchback(hatchbackPrice);
+				trip.setSedan(sedanPrice);
+				trip.setSedanpremium(sedanPremiumPrice);
+				trip.setSuv(suvPrice);
+				trip.setSuvplus(suvPlusPrice);
+				if (ertiga != null) {
+					trip.setErtiga(ertiga);
+				}
+				System.out.println("[DEBUG] Updating existing roundTrip (id=" + trip.getId() + ") with values: " + trip);
+			}
+			this.roundrepo.saveAll(trips);
 		}
-		this.roundrepo.saveAll(trips);
 	}
 
 	public List<onewayTrip> getOneWayTripData(String pickupLocation, String dropLocation) {
@@ -270,12 +330,12 @@ public class TripService {
 
 		Map<String, Object> distanceResult = calculateDistanceBetweenLocations(pickupLocation, dropLocation);
 
-		if (!(boolean)distanceResult.get("success")) {
+		if (!(boolean) distanceResult.get("success")) {
 			throw new RuntimeException("Failed to calculate distance: " + distanceResult.get("message"));
 		}
 
-		String distanceText = (String)distanceResult.get("distanceText");
-		double distanceInKm = (double)distanceResult.get("distanceInKm");
+		String distanceText = (String) distanceResult.get("distanceText");
+		double distanceInKm = (double) distanceResult.get("distanceInKm");
 
 		List<onewayTrip> trips = getAllData(sourceCity, sourceState, destinationState, destinationCity);
 
@@ -359,8 +419,8 @@ public class TripService {
 	}
 
 	public List<onewayTrip> getAllData2(String sourceCity, String sourceState,
-										String destinationState,
-										String destinationCity) {
+			String destinationState,
+			String destinationCity) {
 		return repo.findBySourceStateAndDestinationStateAndSourceCityAndDestinationCity(
 				sourceState, destinationState, sourceCity, destinationCity);
 	}
@@ -382,15 +442,15 @@ public class TripService {
 	}
 
 	public List<roundTrip> getAllData1(String sourceCity, String sourceState,
-									   String destinationState,
-									   String destinationCity) {
+			String destinationState,
+			String destinationCity) {
 		return roundrepo.findBySourceStateAndDestinationStateAndSourceCityAndDestinationCity(
 				sourceState, destinationState, sourceCity, destinationCity);
 	}
 
 	public onewayTrip postOneWayTripprice(String sourceState, String destinationState, String sourceCity,
-										  String destinationCity, int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice,
-										  int suvPlusPrice, String status, int ertiga){
+			String destinationCity, int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice,
+			int suvPlusPrice, String status) {
 
 		onewayTrip o = new onewayTrip();
 		o.setSourceState(sourceState);
@@ -403,14 +463,13 @@ public class TripService {
 		o.setSuv(suvPrice);
 		o.setSuvplus(suvPlusPrice);
 		o.setStatus("s");
-		o.setErtiga(ertiga);
 
 		return this.repo.save(o);
 	}
 
 	public roundTrip postRoundTripprice(String sourceState, String destinationState, String sourceCity,
-										String destinationCity, int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice,
-										int suvPlusPrice, String status, int ertiga){
+			String destinationCity, int hatchbackPrice, int sedanPrice, int sedanPremiumPrice, int suvPrice,
+			int suvPlusPrice, String status) {
 
 		roundTrip o = new roundTrip();
 		o.setSourceState(sourceState);
@@ -422,17 +481,16 @@ public class TripService {
 		o.setSedanpremium(sedanPremiumPrice);
 		o.setSuv(suvPrice);
 		o.setSuvplus(suvPlusPrice);
-		o.setErtiga(ertiga);
 		o.setStatus("s");
 
 		return this.roundrepo.save(o);
 	}
 
-	public List<onewayTrip> getAllTransportRates(){
+	public List<onewayTrip> getAllTransportRates() {
 		return this.repo.findAll();
 	}
 
-	public List<roundTrip> getAllRoundTripTransportRates(){
+	public List<roundTrip> getAllRoundTripTransportRates() {
 		return this.roundrepo.findAll();
 	}
 
@@ -443,7 +501,8 @@ public class TripService {
 				return true;
 			}
 
-			List<onewayTrip> asDestination = onewayTripRepository.findByDestinationCityIgnoreCaseAndDestinationStateIgnoreCase(city, state);
+			List<onewayTrip> asDestination = onewayTripRepository
+					.findByDestinationCityIgnoreCaseAndDestinationStateIgnoreCase(city, state);
 			return !asDestination.isEmpty();
 
 		} catch (Exception e) {
@@ -475,13 +534,13 @@ public class TripService {
 			List<onewayTrip> asSource = onewayTripRepository.findBySourceCityIgnoreCase(location);
 			if (!asSource.isEmpty()) {
 				onewayTrip trip = asSource.get(0);
-				return new String[]{trip.getSourceCity(), trip.getSourceState()};
+				return new String[] { trip.getSourceCity(), trip.getSourceState() };
 			}
 
 			List<onewayTrip> asDestination = onewayTripRepository.findByDestinationCityIgnoreCase(location);
 			if (!asDestination.isEmpty()) {
 				onewayTrip trip = asDestination.get(0);
-				return new String[]{trip.getDestinationCity(), trip.getDestinationState()};
+				return new String[] { trip.getDestinationCity(), trip.getDestinationState() };
 			}
 
 			return null;
@@ -490,4 +549,5 @@ public class TripService {
 			return null;
 		}
 	}
+	
 }

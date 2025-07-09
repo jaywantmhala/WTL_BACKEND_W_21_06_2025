@@ -178,6 +178,7 @@ public class VendorCabController {
     @GetMapping("/{vendorId}/cabs")
     public ResponseEntity<List<VendorCabs>> getAllVendorCabByVendorId(@PathVariable Long vendorId) {
         try {
+
             // Call service method to get all VendorCabs for the given vendorId
             List<VendorCabs> vendorCabs = vendorCabService.getOrder(vendorId);
 
@@ -187,6 +188,7 @@ public class VendorCabController {
             // Return a 404 Not Found response if vendor is not found
             return ResponseEntity.notFound().build();
         }
+        
     }
 
 }

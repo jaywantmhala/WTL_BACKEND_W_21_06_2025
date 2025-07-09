@@ -11,7 +11,7 @@ public class EmailService {
 
     public boolean sendEmail(String message, String subject, String to) {
         boolean f = false;
-        String from = "parshuramdairyfarm@gmail.com"; // Replace with your email
+        String from = "contactwtltourism@gmail.com"; // Replace with your email
         String host = "smtp.gmail.com";
 
         // Set up properties for the mail session
