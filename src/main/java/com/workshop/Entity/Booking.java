@@ -71,6 +71,7 @@ public class Booking {
 	private String description;
 	private String carrier;
 	private String companyName;
+	private int days;
 
 	private int collection;
 
@@ -182,7 +183,7 @@ private DriveAdmin driveAdmin;
 			String description, String carrier, String driverEnterOtpTimePreStarted, String odoometerStarted,
 			String odoometerEnterTimeStarted, String driverEnterOtpTimePostTrip, String odometerEnding,
 			String odoometerEnterTimeEnding, Vendor vendor, VendorCabs vendorCab, VendorDrivers vendorDriver,
-			Penalty penalty, CabAdmin cabAdmin, DriveAdmin driveAdmin, CarRentalUser carRentalUser, int collection, String companyName, String packageName) {
+			Penalty penalty, CabAdmin cabAdmin, DriveAdmin driveAdmin, CarRentalUser carRentalUser, int collection, String companyName, String packageName,int days) {
 		this.id = id;
 		this.fromLocation = fromLocation;
 		this.toLocation = toLocation;
@@ -216,6 +217,7 @@ private DriveAdmin driveAdmin;
 		this.offerAmount = offerAmount;
 		this.txnId = txnId;
 		this.payment = payment;
+		this.days=days;
 		this.dateEnd = dateEnd;
 		this.timeEnd = timeEnd;
 		this.bookingType = bookingType;
@@ -741,6 +743,16 @@ private DriveAdmin driveAdmin;
 	// public void setUser(User user) {
 	// 	this.user = user;
 	// }
+
+    public int getDays() {
+        return days;
+    }
+
+    public void setDays(int days) {
+        this.days = days;
+    }
+
+
 
 
 	

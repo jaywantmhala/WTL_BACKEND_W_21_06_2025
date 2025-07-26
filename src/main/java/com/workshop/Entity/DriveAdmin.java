@@ -67,31 +67,35 @@ private String role="ADMIN_DRIVER";
 
 	
 
-	public DriveAdmin(int id, String driverName, String contactNo, String altMobNum, String emailId, String adress,
-			String aadhaNo, String drLicenseNo, String pvcNo, String driverImgSelfie, String aadhar,
-			String drLicenceNum, String pvcNo2, String otherDetails, String status, List<Booking> booking, String role, String password, Double driverLatitude, Double driverLongitude) {
-		super();
+	
+
+	public DriveAdmin(int id, String DriverName, String contactNo, String AltMobNum, String emailId, String Adress,
+			String aadhaNo, String drLicenseNo, String pvcNo2, String DriverImgSelfie, String Aadhar,
+			String DrLicenceNum, String pvcNo, String otherDetails, String status, String role, String password,
+			Double driverLatitude, Double driverLongitude, List<Booking> booking) {
 		this.id = id;
-		DriverName = driverName;
-		contactNo = contactNo;
-		AltMobNum = altMobNum;
+		this.DriverName = DriverName;
+		this.contactNo = contactNo;
+		this.AltMobNum = AltMobNum;
 		this.emailId = emailId;
-		Adress = adress;
+		this.Adress = Adress;
 		this.aadhaNo = aadhaNo;
 		this.drLicenseNo = drLicenseNo;
 		this.pvcNo2 = pvcNo2;
-		DriverImgSelfie = driverImgSelfie;
-		Aadhar = aadhar;
-		DrLicenceNum = drLicenceNum;
-		PvcNo = pvcNo2;
+		this.DriverImgSelfie = DriverImgSelfie;
+		this.Aadhar = Aadhar;
+		this.DrLicenceNum = DrLicenceNum;
+		this.PvcNo = PvcNo;
 		this.otherDetails = otherDetails;
-		this.status=status;
-		this.booking=booking;
-		this.role=role;
-		this.password=password;
-		this.driverLatitude=driverLatitude;
-		this.driverLongitude=driverLongitude;
+		this.status = status;
+		this.role = role;
+		this.password = password;
+		this.driverLatitude = driverLatitude;
+		this.driverLongitude = driverLongitude;
+		this.booking = booking;
 	}
+
+
 
 
 
@@ -116,7 +120,7 @@ private String role="ADMIN_DRIVER";
 	}
 
 	public void setcontactNo(String contactNo) {
-		contactNo = contactNo;
+		this.contactNo = contactNo;
 	}
 
 	public String getAltMobNum() {

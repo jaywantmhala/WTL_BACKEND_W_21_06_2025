@@ -53,6 +53,7 @@ public class BookingDTO {
     private String vendorDriverName;
     private String vendorCabName;
     private String cabPlateNo;;
+        private int days;
 
     private String vendorName;
     private String masterAdminDriverName;
@@ -92,6 +93,7 @@ public class BookingDTO {
         this.nightCharges = booking.getNightCharges();
         this.gst = booking.getGst();
         this.serviceCharge = booking.getServiceCharge();
+        this.days=booking.getDays();
         this.offer = booking.getOffer();
         this.offerPartial = booking.getOfferPartial();
         this.offerAmount = booking.getOfferAmount();
@@ -504,6 +506,14 @@ public class BookingDTO {
 
     public void setCollection(int collection) {
         this.collection = collection;
+    }
+
+    public int getDays() {
+        return days;
+    }
+
+    public void setDays(int days) {
+        this.days = days;
     }
 
     

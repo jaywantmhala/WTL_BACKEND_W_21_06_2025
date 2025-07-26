@@ -37,44 +37,57 @@ public class DriverAdminService {
 
     // Create or Update vehicle with multiple images
     public DriveAdmin saveDriverAdmin(DriveAdmin driveAdmin,
-                                       MultipartFile DriverImgSelfie,
-                                       MultipartFile Aadhar,
-                                       MultipartFile DrLicenceNum,
-                                       MultipartFile PvcNo
-                                      ) throws IOException {
+                                   MultipartFile DriverImgSelfie,
+                                   MultipartFile Aadhar,
+                                   MultipartFile DrLicenceNum,
+                                   MultipartFile PvcNo) throws IOException {
 
-                                        driveAdmin.setDriverImgSelfie(
-                                            DriverImgSelfie != null && !DriverImgSelfie.isEmpty() 
-                                                ? cloudinaryService.upload(DriverImgSelfie) 
-                                                : null
-                                        );
-                                        
-                                        driveAdmin.setAadhar(
-                                            Aadhar != null && !Aadhar.isEmpty() 
-                                                ? cloudinaryService.upload(Aadhar) 
-                                                : null
-                                        );
-                                        
-                                        driveAdmin.setDrLicenceNum(
-                                            DrLicenceNum != null && !DrLicenceNum.isEmpty() 
-                                                ? cloudinaryService.upload(DrLicenceNum) 
-                                                : null
-                                        );
-                                        
-                                        driveAdmin.setPvcNo(
-                                            PvcNo != null && !PvcNo.isEmpty() 
-                                                ? cloudinaryService.upload(PvcNo) 
-                                                : null
-                                        );
-                                        
-    	
-    	
+    // // Ensure all text fields are properly set (defensive programming)
+    // if (driveAdmin.getcontactNo() == null || driveAdmin.getcontactNo().trim().isEmpty()) {
+    //     System.out.println("Warning: ContactNo is null or empty");
+    // }
+    
+    // if (driveAdmin.getDrLicenseNo() == null || driveAdmin.getDrLicenseNo().trim().isEmpty()) {
+    //     System.out.println("Warning: DrLicenseNo is null or empty");
+    // }
 
-        // Debugging: print the vehicle object to verify its state before saving
-        System.out.println("Vehicle object to save: " + driveAdmin);
+    // Set image URLs from Cloudinary uploads
+    driveAdmin.setDriverImgSelfie(
+        DriverImgSelfie != null && !DriverImgSelfie.isEmpty() 
+            ? cloudinaryService.upload(DriverImgSelfie) 
+            : driveAdmin.getDriverImgSelfie() // Keep existing value if no new upload
+    );
+    
+    driveAdmin.setAadhar(
+        Aadhar != null && !Aadhar.isEmpty() 
+            ? cloudinaryService.upload(Aadhar) 
+            : driveAdmin.getAadhar()
+    );
+    
+    driveAdmin.setDrLicenceNum(
+        DrLicenceNum != null && !DrLicenceNum.isEmpty() 
+            ? cloudinaryService.upload(DrLicenceNum) 
+            : driveAdmin.getDrLicenceNum()
+    );
+    
+    driveAdmin.setPvcNo(
+        PvcNo != null && !PvcNo.isEmpty() 
+            ? cloudinaryService.upload(PvcNo) 
+            : driveAdmin.getPvcNo()
+    );
 
-        return driverAdminRepo.save(driveAdmin); // Save the vehicle details with the image paths
-    }
+    // // Add validation
+    // if (driveAdmin.getcontactNo() != null) {
+    //     System.out.println("Contact No: " + driveAdmin.getcontactNo());
+    // }
+    
+    // if (driveAdmin.getDrLicenseNo() != null) {
+    //     System.out.println("Dr License No: " + driveAdmin.getDrLicenseNo());
+    // }
+
+    return driverAdminRepo.save(driveAdmin);
+}
+
 
     // Get all vehicles
     public List<DriveAdmin> getDriverAdmin() {
@@ -129,5 +142,8 @@ public class DriverAdminService {
             .filter(c -> c.getStatus().equals(status)) // Filter by status
             .collect(Collectors.toList()); // Collect the filtered results into a list
 }
+
+
 	
+
 }

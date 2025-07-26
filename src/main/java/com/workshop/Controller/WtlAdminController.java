@@ -611,6 +611,7 @@ public String createBooking(
         @RequestParam(required = false) String odoometerEnterTimeStarted,
         @RequestParam(required = false) String driverEnterOtpTimePostTrip,
         @RequestParam(required = false) String odometerEnding,
+        @RequestParam(required = false) int days,
         @RequestParam(required = false) String odoometerEnterTimeEnding) {
     
     Booking booking = new Booking();
@@ -626,7 +627,8 @@ public String createBooking(
         // ✅ Create new user with all required fields
         carRental = new CarRentalUser();
         carRental.setPhone(phone);
-            String encodedPassword = passwordEncoder.encode("CUSTOMUSER@123");
+        String c = phone;
+            String encodedPassword = passwordEncoder.encode(c);
 
         carRental.setPassword(encodedPassword);
         carRental.setUserName(name);           // ✅ Add required fields
@@ -660,6 +662,7 @@ public String createBooking(
     booking.setDate(date);
     booking.setUserTripType(userTripType);
     booking.setCar(car);
+    booking.setDays(days);
     booking.setBaseAmount(baseAmount);
     booking.setAmount(amount);
     booking.setStatus(status);
@@ -677,7 +680,10 @@ public String createBooking(
     booking.setCollection(collection);
     booking.setBookingType(bookingType);
     booking.setDescription(description);
-    booking.setCarrier(carrier);
+    booking.setCarrier(carrier);  
+    booking.setName(name);
+    booking.setEmail(email);
+    booking.setPhone(phone);  
     booking.setDriverEnterOtpTimePreStarted(driverEnterOtpTimePreStarted);
     booking.setOdoometerStarted(odoometerStarted);
     booking.setOdoometerEnterTimeStarted(odoometerEnterTimeStarted);

@@ -35,7 +35,7 @@ public class DriverAdminController {
 	 @PostMapping("/save")
 	    public ResponseEntity<DriveAdmin> saveDriveAdmin(
 	            @RequestParam(value="DriverName", required = false) String DriverName,
-	            @RequestParam(value="ContactNo", required = false) String ContactNo,
+	            @RequestParam(value="contactNo", required = false) String contactNo,
 	            @RequestParam(value="AltMobNum", required = false) String AltMobNum,
 	            @RequestParam(value="Adress", required = false) String Adress,
 	            @RequestParam(value="emailId", required = false) String emailId,
@@ -60,11 +60,14 @@ public class DriverAdminController {
 
 	        DriveAdmin driverAdmin = new DriveAdmin();
 	        driverAdmin.setDriverName(DriverName);
-	        driverAdmin.setcontactNo(ContactNo);
+	        driverAdmin.setcontactNo(contactNo);
 	        driverAdmin.setAltMobNum(AltMobNum);
 	        driverAdmin.setAdress(Adress);
 	        driverAdmin.setEmailId(emailId);
 	        driverAdmin.setOtherDetails(otherDetails);
+			driverAdmin.setAadhaNo(aadhaNo);
+			driverAdmin.setDrLicenseNo(drLicenseNo);
+			driverAdmin.setPvcNo2(pvcNo2);
 	        driverAdmin.setStatus(status);
 
 	        try {
